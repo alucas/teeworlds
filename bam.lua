@@ -146,6 +146,8 @@ function build(settings)
 	settings.cc.includes:Add("src")
 
 	if family == "unix" then
+		settings.link.libs:Add("dl")
+
    		if platform == "macosx" then
 			settings.link.frameworks:Add("Carbon")
 			settings.link.frameworks:Add("AppKit")

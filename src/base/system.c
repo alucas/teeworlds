@@ -27,6 +27,8 @@
 	#include <pthread.h>
 
 	#include <dirent.h>
+
+	#include <dlfcn.h>
 	
 	#if defined(CONF_PLATFORM_MACOSX)
 		#include <Carbon/Carbon.h>
@@ -1532,6 +1534,60 @@ unsigned str_quickhash(const char *str)
 	return hash;
 }
 
+void *library_load(const char *path)
+{
+	void *handle;
+
+#if defined(CONF_FAMILY_UNIX)
+	handle = dlopen(path, RTLD_LAZY);
+	if (!handle)
+	{
+		fprintf(stderr, "%s\n", dlerror());
+		return NULL;
+	}
+#else
+	handle = NULL;
+#endif
+
+	return handle;
+}
+
+void *library_load_function(const char *name, void *library)
+{
+	void *function;
+
+#if defined(CONF_FAMILY_UNIX)
+	dlerror();    /* Clear any existing error */
+
+	function = dlsym(library, name);
+
+	char *error = dlerror();
+	if (error != NULL)
+	{
+		fprintf(stderr, "%s\n", error);
+		return NULL;
+	}
+#else
+	function = NULL;
+#endif
+
+	return function;
+}
+
+int library_unload(void *library)
+{
+#if defined(CONF_FAMILY_UNIX)
+	if(dlclose(library) != 0)
+	{
+		fprintf(stderr, "%s\n", dlerror());
+		return -1;
+	}
+#else
+	return -1;
+#endif
+
+	return 0;
+}
 
 #if defined(__cplusplus)
 }
