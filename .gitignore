@@ -18,3 +18,10 @@ teeworlds*
 teeworlds_srv*
 tileset_borderfix*
 versionsrv*
+
+Doxyfile
+html
+
+bin/
+
+*~

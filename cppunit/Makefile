@@ -1,0 +1,34 @@
+PREFIX= ../../
+
+#INCDIR = ../../../cppunit/lib/include 
+INCDIR = ../src/game/server/
+LIBDIR = ../../../cppunit/lib/lib
+
+OBJDIR= objs/
+BINDIR= bin/
+SRCDIR= src/
+
+CC= g++
+CPPFLAGS= -I$(INCDIR) -I../src/ -L$(LIBDIR)
+CFLAGS= -g -O0 
+LDFLAGS=
+LDLIBS= -lcppunit -lpthread
+
+OUTFILE= $(BINDIR)helloworld
+OBJS= $(OBJDIR)helloworld.o ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(wildcard ../objs/base/*.o) $(wildcard ../objs/engine/external/*/*.o) $(wildcard ../objs/engine/shared/*.o) $(wildcard ../objs/game/*.o) $(wildcard ../objs/game/server/*.o)  $(wildcard ../objs/game/server/*/*.o) 
+
+
+
+all: $(OUTFILE)
+
+$(OUTFILE): $(OBJS)
+		test -d $(BINDIR) || mkdir $(BINDIR)
+		$(CC) $^ $(LDLIBS) -o $@
+
+
+$(OBJDIR)helloworld.o: $(SRCDIR)helloworld.cpp
+		test -d $(OBJDIR) || mkdir $(OBJDIR)
+		$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+
+clean:
+		rm $(OUTFILE) $(SRCDIR)*~ $(OBJDIR)*.o *~ *.o
