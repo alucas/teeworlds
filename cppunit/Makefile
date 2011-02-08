@@ -2,7 +2,7 @@ PREFIX= ../../
 
 #INCDIR = ../../../cppunit/lib/include 
 INCDIR = ../src/game/server/
-LIBDIR = ../../../cppunit/lib/lib
+LIBDIR = lib/
 
 OBJDIR= objs/
 BINDIR= bin/
