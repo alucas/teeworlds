@@ -153,6 +153,7 @@ function build(settings)
 			settings.link.frameworks:Add("AppKit")
 		else
 			settings.link.libs:Add("pthread")
+			settings.cc.flags:Add("-rdynamic")
 		end
 	elseif family == "windows" then
 		settings.link.libs:Add("gdi32")
@@ -182,6 +183,7 @@ function build(settings)
 	engine_settings = settings:Copy()
 	server_settings = engine_settings:Copy()
 	client_settings = engine_settings:Copy()
+	mods_settings = engine_settings:Copy()
 	launcher_settings = engine_settings:Copy()
 
 	if family == "unix" then
@@ -195,6 +197,8 @@ function build(settings)
 			client_settings.link.libs:Add("X11")
 			client_settings.link.libs:Add("GL")
 			client_settings.link.libs:Add("GLU")
+			mods_settings.link.flags:Add("-shared")
+			mods_settings.link.flags:Add("-nostartfiles")
 		end
 		
 	elseif family == "windows" then
@@ -216,11 +220,12 @@ function build(settings)
 	masterserver = Compile(settings, Collect("src/mastersrv/*.cpp"))
 	game_shared = Compile(settings, Collect("src/game/*.cpp"), nethash, network_source)
 	game_client = Compile(settings, CollectRecursive("src/game/client/*.cpp"), client_content_source)
-	game_server = Compile(settings, CollectRecursive("src/game/server/*.cpp"), server_content_source)
+	game_server = Compile(settings, Collect("src/game/server/*.cpp", "src/game/server/entities/*.cpp"), server_content_source)
 	game_editor = Compile(settings, Collect("src/game/editor/*.cpp"))
 
 	-- build tools (TODO: fix this so we don't get double _d_d stuff)
 	tools_src = Collect("src/tools/*.cpp", "src/tools/*.c")
+	mods_src = Collect("src/game/server/gamemodes/*.cpp")
 
 	client_osxlaunch = {}
 	server_osxlaunch = {}
@@ -243,6 +248,12 @@ function build(settings)
 	server_exe = Link(server_settings, "teeworlds_srv", engine, server,
 		game_shared, game_server, zlib)
 
+	mods = {}
+	for index,value in ipairs(mods_src) do
+		modname = "plugin/" .. PathFilename(PathBase(value))
+		mods[index] = Link(mods_settings, modname, Compile(settings, value))
+	end
+
 	serverlaunch = {}
 	if platform == "macosx" then
 		serverlaunch = Link(launcher_settings, "serverlaunch", server_osxlaunch)
@@ -258,12 +269,13 @@ function build(settings)
 	c = PseudoTarget("client".."_"..settings.config_name, client_exe, client_depends)
 	s = PseudoTarget("server".."_"..settings.config_name, server_exe, serverlaunch)
 	g = PseudoTarget("game".."_"..settings.config_name, client_exe, server_exe)
+	o = PseudoTarget("mod".."_"..settings.config_name, mods) 
 
 	v = PseudoTarget("versionserver".."_"..settings.config_name, versionserver_exe)
 	m = PseudoTarget("masterserver".."_"..settings.config_name, masterserver_exe)
 	t = PseudoTarget("tools".."_"..settings.config_name, tools)
 
-	all = PseudoTarget(settings.config_name, c, s, v, m, t)
+	all = PseudoTarget(settings.config_name, c, s, v, m, t, o)
 	return all
 end
 

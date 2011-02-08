@@ -1050,6 +1050,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//players = new CPlayer[MAX_CLIENTS];
 
 	// select gametype
+	/*
 	if(str_comp(g_Config.m_SvGametype, "mod") == 0)
 		m_pController = new CGameControllerMOD(this);
 	else if(str_comp(g_Config.m_SvGametype, "ctf") == 0)
@@ -1058,6 +1059,11 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		m_pController = new CGameControllerTDM(this);
 	else
 		m_pController = new CGameControllerDM(this);
+	// */
+	void *lib = library_load("plugin/ctf");
+	if(lib == NULL){
+		exit(1);
+	}
 
 	Server()->SetBrowseInfo(m_pController->m_pGameType, -1);
 
