@@ -15,13 +15,20 @@ LDFLAGS=
 LDLIBS= -lcppunit -lpthread
 
 OUTFILE= $(BINDIR)TestPlayer
-TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(wildcard ../objs/base/*.o) $(wildcard ../objs/engine/external/*/*.o) $(wildcard ../objs/engine/shared/*.o) $(wildcard ../objs/game/*.o) $(wildcard ../objs/game/server/*.o)  $(wildcard ../objs/game/server/*/*.o) 
+TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(wildcard ../objs/base/*.o) $(wildcard ../objs/engine/external/*/*.o) $(wildcard ../objs/engine/shared/*.o) $(wildcard ../objs/game/*.o) $(wildcard ../objs/game/server/*.o)  $(wildcard ../objs/game/server/*/*.o)
 
 OBJS= $(OBJDIR)TestPlayer.o $(OBJDIR)mockobjs.o $(TWOBJS) 
 
 
 
-all: $(OUTFILE)
+all: bam 
+
+.PHONY: bam unit_test
+
+unit_test:$(OUTFILE)
+
+bam:
+		cd ..;../bam/bam release;cd cppunit;make unit_test
 
 $(OUTFILE): $(OBJS)
 		test -d $(BINDIR) || mkdir $(BINDIR)
