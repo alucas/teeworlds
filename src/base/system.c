@@ -1539,7 +1539,7 @@ void *library_load(const char *path)
 	void *handle;
 
 #if defined(CONF_FAMILY_UNIX)
-	handle = dlopen(path, RTLD_LAZY);
+	handle = dlopen(path, RTLD_LAZY | RTLD_GLOBAL);
 	if (!handle)
 	{
 		fprintf(stderr, "%s\n", dlerror());

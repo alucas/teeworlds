@@ -1060,10 +1060,16 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	else
 		m_pController = new CGameControllerDM(this);
 	// */
-	void *lib = library_load("plugin/ctf");
-	if(lib == NULL){
-		exit(1);
-	}
+
+	char libName[128];
+	str_format(libName, 128, "plugin/%s", g_Config.m_SvGametype);
+
+	void *lib = library_load(libName);
+
+	CreateGameController_t *CreateGameController = (CreateGameController_t *)library_load_function("CreateGameController", lib);
+	DestroyGameController_t *DestroyGameController = (DestroyGameController_t *)library_load_function("DestroyGameController", lib);
+
+	m_pController = CreateGameController(this);
 
 	Server()->SetBrowseInfo(m_pController->m_pGameType, -1);
 

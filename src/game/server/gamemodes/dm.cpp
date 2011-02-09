@@ -14,3 +14,13 @@ void CGameControllerDM::Tick()
 	DoPlayerScoreWincheck();
 	IGameController::Tick();
 }
+
+IGameController *CreateGameController(CGameContext *pContext)
+{
+	return new CGameControllerDM(pContext);
+}
+
+void DestroyGameController(IGameController *pController)
+{
+	delete pController;
+}

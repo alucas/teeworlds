@@ -153,7 +153,7 @@ function build(settings)
 			settings.link.frameworks:Add("AppKit")
 		else
 			settings.link.libs:Add("pthread")
-			settings.cc.flags:Add("-rdynamic")
+			settings.link.flags:Add("-rdynamic")
 		end
 	elseif family == "windows" then
 		settings.link.libs:Add("gdi32")
@@ -193,10 +193,13 @@ function build(settings)
             client_settings.link.frameworks:Add("Carbon")
             client_settings.link.frameworks:Add("Cocoa")
             launcher_settings.link.frameworks:Add("Cocoa")
+			mods_settings.link.flags:Add("-dynamiclib")
+			mods_settings.link.flags:Add("-undefined dynamic_lookup")
 		else
 			client_settings.link.libs:Add("X11")
 			client_settings.link.libs:Add("GL")
 			client_settings.link.libs:Add("GLU")
+			mods_settings.cc.flags:Add("-fPIC");
 			mods_settings.link.flags:Add("-shared")
 			mods_settings.link.flags:Add("-nostartfiles")
 		end

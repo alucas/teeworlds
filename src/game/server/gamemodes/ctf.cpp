@@ -213,3 +213,13 @@ void CGameControllerCTF::Tick()
 		}
 	}
 }
+
+IGameController *CreateGameController(CGameContext *pContext)
+{
+	return new CGameControllerCTF(pContext);
+}
+
+void DestroyGameController(IGameController *pController)
+{
+	delete pController;
+}

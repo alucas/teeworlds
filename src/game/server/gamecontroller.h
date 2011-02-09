@@ -144,4 +144,10 @@ public:
 	virtual void PostReset();
 };
 
+typedef IGameController *CreateGameController_t(CGameContext *);
+typedef void DestroyGameController_t(IGameController *);
+
+extern "C" IGameController *CreateGameController(CGameContext *pContext);
+extern "C" void DestroyGameController(IGameController *pController);
+
 #endif

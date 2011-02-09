@@ -20,3 +20,13 @@ void CGameControllerMOD::Tick()
 	
 	IGameController::Tick();
 }
+
+IGameController *CreateGameController(CGameContext *pContext)
+{
+	return new CGameControllerMOD(pContext);
+}
+
+void DestroyGameController(IGameController *pController)
+{
+	delete pController;
+}

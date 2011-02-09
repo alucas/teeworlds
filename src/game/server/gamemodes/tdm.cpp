@@ -32,3 +32,13 @@ void CGameControllerTDM::Tick()
 	DoTeamScoreWincheck();
 	IGameController::Tick();
 }
+
+IGameController *CreateGameController(CGameContext *pContext)
+{
+	return new CGameControllerTDM(pContext);
+}
+
+void DestroyGameController(IGameController *pController)
+{
+	delete pController;
+}
