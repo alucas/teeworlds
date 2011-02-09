@@ -11,11 +11,12 @@
 
 #include "mockobjs.h"
 
-
 class Test : public CPPUNIT_NS::TestCase
 {
   CPPUNIT_TEST_SUITE(Test);
-  CPPUNIT_TEST(testPlayer);
+  CPPUNIT_TEST(PlayerTick);
+  //CPPUNIT_TEST(testPlayer);
+
   CPPUNIT_TEST_SUITE_END();
 
   MockGameWorld *gw;
@@ -26,7 +27,8 @@ public:
     gw = new MockGameWorld();
     gw->SetGameServer(new MockGameServer());
     entity = new CEntity(gw,0);
-    
+
+
   }
   void tearDown(void) {
     /*    delete gw;
@@ -34,9 +36,18 @@ public:
   } 
 
 protected:
-  void testPlayer(void) {
+  
+
+  void PlayerTick(void) {
     entity->Tick();
+
+    //int GetCID() const { return m_ClientID; };
+
+
+
   }
+
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Test);

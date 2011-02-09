@@ -14,10 +14,10 @@ CFLAGS= -g -O0
 LDFLAGS=
 LDLIBS= -lcppunit -lpthread
 
-OUTFILE= $(BINDIR)helloworld
+OUTFILE= $(BINDIR)TestPlayer
 TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(wildcard ../objs/base/*.o) $(wildcard ../objs/engine/external/*/*.o) $(wildcard ../objs/engine/shared/*.o) $(wildcard ../objs/game/*.o) $(wildcard ../objs/game/server/*.o)  $(wildcard ../objs/game/server/*/*.o) 
 
-OBJS= $(OBJDIR)helloworld.o $(OBJDIR)mockobjs.o $(TWOBJS) 
+OBJS= $(OBJDIR)TestPlayer.o $(OBJDIR)mockobjs.o $(TWOBJS) 
 
 
 
@@ -28,7 +28,7 @@ $(OUTFILE): $(OBJS)
 		$(CC) $^ $(LDLIBS) -o $@
 
 
-$(OBJDIR)helloworld.o: $(SRCDIR)helloworld.cpp $(SRCDIR)mockobjs.h
+$(OBJDIR)TestPlayer.o: $(SRCDIR)TestPlayer.cpp $(SRCDIR)mockobjs.h
 		test -d $(OBJDIR) || mkdir $(OBJDIR)
 		$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
@@ -38,3 +38,4 @@ $(OBJDIR)mockobjs.o: $(SRCDIR)mockobjs.cpp $(SRCDIR)mockobjs.h
 
 clean:
 		rm $(OUTFILE) $(SRCDIR)*~ $(OBJDIR)*.o *~ *.o
+
