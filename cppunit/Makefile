@@ -19,8 +19,6 @@ TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ..
 
 OBJS= $(OBJDIR)unittest.o $(OBJDIR)mockobjs.o $(TWOBJS) 
 
-
-
 all: bam 
 
 .PHONY: bam unit_test
@@ -35,6 +33,7 @@ $(OUTFILE): $(OBJS)
 		$(CC) $^ $(LDLIBS) -o $@
 
 
+
 $(OBJDIR)unittest.o: $(SRCDIR)unittest.cpp $(SRCDIR)mockobjs.h
 		test -d $(OBJDIR) || mkdir $(OBJDIR)
 		$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
@@ -45,3 +44,4 @@ $(OBJDIR)mockobjs.o: $(SRCDIR)mockobjs.cpp $(SRCDIR)mockobjs.h
 
 clean:
 		rm $(OUTFILE) $(SRCDIR)*~ $(OBJDIR)*.o *~ *.o
+

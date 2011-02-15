@@ -15,6 +15,7 @@
 #include "engine/server.h"
 #include "engine/server/server.h"
 #include "flag.h"
+
 #include "player.h"
 
 class CGameContext;
