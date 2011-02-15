@@ -1,5 +1,3 @@
-//--- Hello, World! for CppUnit
-
 #include <iostream>
 
 #include <cppunit/TestRunner.h>
@@ -9,45 +7,67 @@
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 
+
 #include "mockobjs.h"
+
 
 class Test : public CPPUNIT_NS::TestCase
 {
   CPPUNIT_TEST_SUITE(Test);
-  CPPUNIT_TEST(PlayerTick);
-  //CPPUNIT_TEST(testPlayer);
-
+  CPPUNIT_TEST(testSnap);
   CPPUNIT_TEST_SUITE_END();
 
   MockGameWorld *gw;
-  CEntity *entity;
+  //CEntity *entity;
+  MockGameServer *mgs;
+  MockServer *ms;
 
 public:
   void setUp(void) {
-    gw = new MockGameWorld();
-    gw->SetGameServer(new MockGameServer());
-    entity = new CEntity(gw,0);
-
-
+    
+    ms = new MockServer();
+    gw = new MockGameWorld(ms);
+    mgs = new MockGameServer();
+    gw->SetGameServer(mgs);
+    
   }
   void tearDown(void) {
-    /*    delete gw;
-	  delete entity;*/
+    //    delete gw->GameServer();
+
+    //delete mgs; 
+    //commente car cause un segfault dans le destructeur
+    // de la classe mere
+    delete ms;
+    delete gw;
   } 
 
 protected:
-  
+  void testSnap(void) {
+    int PosX = 20;
+    int PosY = 10;
+    int team = 1;
 
-  void PlayerTick(void) {
-    entity->Tick();
+    CFlag *flag = new CFlag(gw,1);
+    flag->m_Pos = vec2(PosX,PosY);
+    mgs->m_World.InsertEntity(flag);
 
-    //int GetCID() const { return m_ClientID; };
+    CEntity * entity = mgs->m_World.FindFirst(CGameWorld::ENTTYPE_FLAG);
+    CPPUNIT_ASSERT(entity);
+    CServer::NewClientCallback(0,ms);
+    ms->setIngame(0);
 
+    ms->m_SnapshotBuilder.Init();
 
+    mgs->m_World.Snap(0);
 
+    CNetObj_Flag  * netflag = (CNetObj_Flag *)ms->m_SnapshotBuilder.GetItem(0)->Data();
+    CPPUNIT_ASSERT(netflag->m_X == PosX 
+		   && netflag->m_Y == PosY 
+		   && netflag->m_Team == 1 
+		   && netflag->m_CarriedBy);
+
+    delete flag;
   }
-
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Test);

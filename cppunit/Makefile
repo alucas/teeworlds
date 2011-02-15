@@ -1,3 +1,4 @@
+
 PREFIX= ../../
 
 #INCDIR = ../../../cppunit/lib/include 
@@ -9,17 +10,17 @@ BINDIR= bin/
 SRCDIR= src/
 
 CC= g++
-CPPFLAGS= -I$(INCDIR) -I../src/ -Isrc/ -L$(LIBDIR)
+CPPFLAGS= -I$(INCDIR) -I../src/engine/shared/ -I../src/ -Isrc/ -I../src/game/server/entities -L$(LIBDIR)
 CFLAGS= -g -O0 
 LDFLAGS=
 LDLIBS= -lcppunit -lpthread
 
-OUTFILE= $(BINDIR)TestPlayer
-TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(wildcard ../objs/base/*.o) $(wildcard ../objs/engine/external/*/*.o) $(wildcard ../objs/engine/shared/*.o) $(wildcard ../objs/game/*.o) $(wildcard ../objs/game/server/*.o)  $(wildcard ../objs/game/server/*/*.o) ../objs/game/server/player.o
 
-OBJS= $(OBJDIR)TestPlayer.o $(OBJDIR)mockobjs.o $(TWOBJS) 
+OUTFILE= $(BINDIR)unittest
+TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(wildcard ../objs/base/*.o) $(wildcard ../objs/engine/external/*/*.o) $(wildcard ../objs/engine/shared/*.o) $(wildcard ../objs/game/*.o) $(wildcard ../objs/game/server/*.o)  $(wildcard ../objs/game/server/*/*.o) $(wildcard ../objs/engine/server/*.o)
 
 
+OBJS= $(OBJDIR)unittest.o $(OBJDIR)mockobjs.o $(TWOBJS) 
 
 all: bam 
 
@@ -36,8 +37,7 @@ $(OUTFILE): $(OBJS)
 		test -d $(BINDIR) || mkdir $(BINDIR)
 		$(CC) $^ $(LDLIBS) -o $@
 
-# $< : première dépendance de la liste des dépendances 
-$(OBJDIR)TestPlayer.o: $(SRCDIR)TestPlayer.cpp $(SRCDIR)mockobjs.h
+$(OBJDIR)unittest.o: $(SRCDIR)unittest.cpp $(SRCDIR)mockobjs.h
 		test -d $(OBJDIR) || mkdir $(OBJDIR)
 		$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
