@@ -3,11 +3,10 @@
 #ifndef GAME_GAMECORE_H
 #define GAME_GAMECORE_H
 
-#include <math.h>
-
 #include <base/system.h>
 #include <base/math.h>
 
+#include <math.h>
 #include "collision.h"
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
@@ -46,8 +45,6 @@ public:
 	bool Set(const char *pName, float Value);
 	bool Get(int Index, float *pValue);
 	bool Get(const char *pName, float *pValue);
-
-	virtual float GetGravity(){ return m_Gravity; }
 };
 
 
@@ -173,7 +170,6 @@ public:
 	
 	CTuningParams m_Tuning;
 	class CCharacterCore *m_apCharacters[MAX_CLIENTS];
-
 };
 
 class CCharacterCore

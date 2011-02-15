@@ -1,4 +1,3 @@
-
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #ifndef BASE_VMATH_H
@@ -14,19 +13,19 @@ class vector2_base
 public:
 	union { T x,u; };
 	union { T y,v; };
-
+	
 	vector2_base() {}
 	vector2_base(float nx, float ny)
 	{
 		x = nx;
 		y = ny;
 	}
-
+	
 	vector2_base operator -() const { return vector2_base(-x, -y); }
 	vector2_base operator -(const vector2_base &v) const { return vector2_base(x-v.x, y-v.y); }
 	vector2_base operator +(const vector2_base &v) const { return vector2_base(x+v.x, y+v.y); }
 	vector2_base operator *(const T v) const { return vector2_base(x*v, y*v); }
-
+	
 	const vector2_base &operator =(const vector2_base &v) { x = v.x; y = v.y; return *this; }
 
 	const vector2_base &operator +=(const vector2_base &v) { x += v.x; y += v.y; return *this; }
