@@ -1,6 +1,8 @@
 #ifndef MOCK_OBJS_H
 #define MOCK_OBJS_H
 
+#include <iostream>
+
 #include "protocol.h"
 #include "network.h"
 #include "engine/masterserver.h"
@@ -25,7 +27,8 @@ class MockServer : public CServer
 {
 public:
   MockServer(){};
-  ~MockServer(){};
+  ~MockServer(){
+  };
   virtual int Tick() {
     return 100;
   };
@@ -37,9 +40,8 @@ class MockGameServer : public CGameContext
 public:
   MockGameServer() : CGameContext(){
   };
-
+  
   ~MockGameServer(){
-
   };
 };
 
@@ -47,7 +49,11 @@ class MockGameWorld : public CGameWorld
 {
 public :
   MockGameWorld(MockServer *ms);
-  
+  ~MockGameWorld() {
+
+  }
+
+
   virtual CGameContext *GameServer() {return msg;}
   virtual IServer *Server(){return srv;}
 
@@ -63,7 +69,9 @@ class MockController : public IGameController
 {
 public:
   MockController(CGameContext *gc);
-  ~MockController(){};
+  ~MockController(){
+ 
+  };
   int ClampTeam(int team) { return team;};
 };
 

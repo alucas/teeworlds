@@ -19,7 +19,7 @@ class Test : public CPPUNIT_NS::TestCase
 
   MockGameWorld *gw;
   //CEntity *entity;
-  CFlag *flag;
+  MockGameServer *mgs;
   MockServer *ms;
 
 public:
@@ -27,15 +27,18 @@ public:
     
     ms = new MockServer();
     gw = new MockGameWorld(ms);
-    gw->SetGameServer(new MockGameServer());
-    
-    
-    
+    mgs = new MockGameServer();
+    gw->SetGameServer(mgs);
     
   }
   void tearDown(void) {
-    /*    delete gw;
-	  delete entity;*/
+    //    delete gw->GameServer();
+
+    //delete mgs; 
+    //commente car cause un segfault dans le destructeur
+    // de la classe mere
+    delete ms;
+    delete gw;
   } 
 
 protected:
@@ -44,22 +47,26 @@ protected:
     int PosY = 10;
     int team = 1;
 
-    flag = new CFlag(gw,1);
+    CFlag *flag = new CFlag(gw,1);
     flag->m_Pos = vec2(PosX,PosY);
-    gw->GameServer()->m_World.InsertEntity(flag);
-    CEntity * entity = gw->GameServer()->m_World.FindFirst(CGameWorld::ENTTYPE_FLAG);
+    mgs->m_World.InsertEntity(flag);
+
+    CEntity * entity = mgs->m_World.FindFirst(CGameWorld::ENTTYPE_FLAG);
     CPPUNIT_ASSERT(entity);
     CServer::NewClientCallback(0,ms);
     ms->setIngame(0);
 
     ms->m_SnapshotBuilder.Init();
-    gw->GameServer()->m_World.Snap(0);
+
+    mgs->m_World.Snap(0);
 
     CNetObj_Flag  * netflag = (CNetObj_Flag *)ms->m_SnapshotBuilder.GetItem(0)->Data();
     CPPUNIT_ASSERT(netflag->m_X == PosX 
 		   && netflag->m_Y == PosY 
 		   && netflag->m_Team == 1 
 		   && netflag->m_CarriedBy);
+
+    delete flag;
   }
 };
 
