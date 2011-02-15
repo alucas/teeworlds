@@ -1,16 +1,27 @@
 #ifndef MOCK_OBJS_H
 #define MOCK_OBJS_H
 
+#include "protocol.h"
+#include "network.h"
+#include "engine/masterserver.h"
+#include "engine/map.h"
+#include "snapshot.h"
+#include "demo.h"
+#include "engine.h"
+#include "engine/server/register.h"
+#include "engine/console.h"
+#include "engine/server.h"
+#include "engine/server/server.h"
+#include "flag.h"
 #include "player.h"
-
 
 class CGameContext;
 class IServer;
 class IGameController;
 class MockServer;
+class CServer;
 
-
-class MockServer : public IServer
+class MockServer : public CServer
 {
 public:
   MockServer(){};
@@ -18,25 +29,7 @@ public:
   virtual int Tick() {
     return 100;
   };
-
-  virtual void SetClientName(int ClientID, const char *pName){};
-  virtual void SetClientScore(int ClientID, int Score){};
-  virtual void SetBrowseInfo(const char *pGameType, int Progression){};
-  virtual int SendMsg(CMsgPacker *pMsg, int Flags, int ClientId){return 0;};    
-
-  virtual int SnapNewID(){return 0;};
-  virtual void SnapFreeID(int ID){};
-  virtual void *SnapNewItem(int Type, int Id, int Size){};
-
-
-  virtual const char* ClientName(int){};
-  virtual bool ClientIngame(int) {return true;};
-  virtual int GetClientInfo(int, IServer::CClientInfo*) {return 0;};
-  virtual void GetClientIP(int, char*, int) {};
-  virtual int* LatestInput(int, int*) {int i = 0;return  &i;};
-  virtual void SnapSetStaticsize(int, int) {};
-  virtual bool IsAuthed(int) {return true;};
-  virtual void Kick(int, const char*){};
+  void setIngame(int index);
 };
 
 class MockGameServer : public CGameContext
@@ -53,7 +46,7 @@ public:
 class MockGameWorld : public CGameWorld 
 {
 public :
-  MockGameWorld();
+  MockGameWorld(MockServer *ms);
   
   virtual CGameContext *GameServer() {return msg;}
   virtual IServer *Server(){return srv;}

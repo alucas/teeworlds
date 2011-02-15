@@ -9,15 +9,15 @@ BINDIR= bin/
 SRCDIR= src/
 
 CC= g++
-CPPFLAGS= -I$(INCDIR) -I../src/ -Isrc/ -L$(LIBDIR)
+CPPFLAGS= -I$(INCDIR) -I../src/engine/shared/ -I../src/ -Isrc/ -I../src/game/server/entities -L$(LIBDIR)
 CFLAGS= -g -O0 
 LDFLAGS=
 LDLIBS= -lcppunit -lpthread
 
-OUTFILE= $(BINDIR)helloworld
-TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(wildcard ../objs/base/*.o) $(wildcard ../objs/engine/external/*/*.o) $(wildcard ../objs/engine/shared/*.o) $(wildcard ../objs/game/*.o) $(wildcard ../objs/game/server/*.o)  $(wildcard ../objs/game/server/*/*.o)
+OUTFILE= $(BINDIR)unittest
+TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(wildcard ../objs/base/*.o) $(wildcard ../objs/engine/external/*/*.o) $(wildcard ../objs/engine/shared/*.o) $(wildcard ../objs/game/*.o) $(wildcard ../objs/game/server/*.o)  $(wildcard ../objs/game/server/*/*.o) $(wildcard ../objs/engine/server/*.o)
 
-OBJS= $(OBJDIR)helloworld.o $(OBJDIR)mockobjs.o $(TWOBJS) 
+OBJS= $(OBJDIR)unittest.o $(OBJDIR)mockobjs.o $(TWOBJS) 
 
 
 
@@ -35,7 +35,7 @@ $(OUTFILE): $(OBJS)
 		$(CC) $^ $(LDLIBS) -o $@
 
 
-$(OBJDIR)helloworld.o: $(SRCDIR)helloworld.cpp $(SRCDIR)mockobjs.h
+$(OBJDIR)unittest.o: $(SRCDIR)unittest.cpp $(SRCDIR)mockobjs.h
 		test -d $(OBJDIR) || mkdir $(OBJDIR)
 		$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
