@@ -11,8 +11,9 @@
 class CPlayer
 {
 	MACRO_ALLOC_POOL_ID()
-	
+		
 public:
+
 	CPlayer(CGameContext *pGameServer, int CID, int Team);
 	~CPlayer();
 
@@ -94,5 +95,7 @@ private:
 		int m_Max;	
 	} m_Latency;
 };
+
+
 
 #endif

@@ -4,6 +4,7 @@
 #define GAME_COLLISION_H
 
 #include <base/vmath.h>
+#include <iostream>
 
 class CCollision
 {
@@ -25,8 +26,11 @@ public:
 
 	CCollision();
 	void Init(class CLayers *pLayers);
-	bool CheckPoint(float x, float y) { return IsTileSolid(round(x), round(y)); }
-	bool CheckPoint(vec2 p) { return CheckPoint(p.x, p.y); }
+	virtual bool CheckPoint(float x, float y) { return IsTileSolid(round(x), round(y)); }
+	bool CheckPoint(vec2 p) { 
+	  std::cout << "bad check Point" << std::endl;
+	  return CheckPoint(p.x, p.y); 
+	}
 	int GetCollisionAt(float x, float y) { return GetTile(round(x), round(y)); }
 	int GetWidth() { return m_Width; };
 	int GetHeight() { return m_Height; };

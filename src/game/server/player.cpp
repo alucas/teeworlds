@@ -3,7 +3,7 @@
 #include <new>
 #include <engine/shared/config.h>
 #include "player.h"
-
+#include <iostream>
 
 MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
@@ -11,14 +11,23 @@ IServer *CPlayer::Server() const { return m_pGameServer->Server(); }
 	
 CPlayer::CPlayer(CGameContext *pGameServer, int CID, int Team)
 {
+  std::cout << "hello start1 " << std::endl;
 	m_pGameServer = pGameServer;
+std::cout << "hello start2 " << std::endl;
 	m_RespawnTick = Server()->Tick();
+std::cout << "hello start3 " << std::endl;
 	m_DieTick = Server()->Tick();
+std::cout << "hello start4 " << std::endl;
 	m_ScoreStartTick = Server()->Tick();
+std::cout << "hello start5 " << std::endl;
 	Character = 0;
+std::cout << "hello start6 " << std::endl;
 	this->m_ClientID = CID;
+std::cout << "hello start7 " << std::endl;
 	m_Team = GameServer()->m_pController->ClampTeam(Team);
+std::cout << "hello start8 " << std::endl;
 	m_LastActionTick = Server()->Tick();
+std::cout << "hello start9 " << std::endl;
 }
 
 CPlayer::~CPlayer()

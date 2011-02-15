@@ -1,6 +1,8 @@
 #ifndef MOCK_OBJS_H
 #define MOCK_OBJS_H
 
+#include <iostream>
+
 //src/game/server/player.h
 #include "player.h"
 
@@ -57,7 +59,10 @@ public :
   MockGameWorld();
   
   virtual CGameContext *GameServer() {return msg;}
-  virtual IServer *Server(){return srv;}
+  virtual IServer *Server(){
+    std::cout <<"server() dans mockobj.h"<< std::endl ;   
+    return srv;
+  }
 
 private :
   CGameContext *msg;

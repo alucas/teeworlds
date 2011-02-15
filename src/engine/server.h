@@ -4,6 +4,7 @@
 #define ENGINE_SERVER_H
 #include "kernel.h"
 #include "message.h"
+#include <iostream>
 
 class IServer : public IInterface
 {
@@ -22,7 +23,11 @@ public:
 		int m_Latency;
 	};
 	
-	int Tick() const { return m_CurrentGameTick; }
+	int Tick() const { 
+	  std::cout<<"tick() dans server.h" <<std::endl;
+	  return m_CurrentGameTick; 
+	  std::cout<<"end tick() dans server.h " <<std::endl;
+	}
 	int TickSpeed() const { return m_TickSpeed; }
 
 	virtual const char *ClientName(int ClientID) = 0;

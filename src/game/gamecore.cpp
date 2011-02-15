@@ -1,5 +1,7 @@
+
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include <iostream>
 #include "gamecore.h"
 
 const char *CTuningParams::m_apNames[] =
@@ -39,7 +41,7 @@ bool CTuningParams::Get(const char *pName, float *pValue)
 	for(int i = 0; i < Num(); i++)
 		if(str_comp_nocase(pName, m_apNames[i]) == 0)
 			return Get(i, pValue);
-	
+
 	return false;
 }
 
@@ -74,21 +76,25 @@ void CCharacterCore::Reset()
 	m_TriggeredEvents = 0;
 }
 
+
 void CCharacterCore::Tick(bool UseInput)
 {
+ 
 	float PhysSize = 28.0f;
 	m_TriggeredEvents = 0;
 	
 	// get ground state
 	bool Grounded = false;
+  
 	if(m_pCollision->CheckPoint(m_Pos.x+PhysSize/2, m_Pos.y+PhysSize/2+5))
 		Grounded = true;
+  
 	if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
 		Grounded = true;
 	
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
-
-	m_Vel.y += m_pWorld->m_Tuning.m_Gravity;
+	
+	m_Vel.y += m_pWorld->m_Tuning.GetGravity();
 	
 	float MaxSpeed = Grounded ? m_pWorld->m_Tuning.m_GroundControlSpeed : m_pWorld->m_Tuning.m_AirControlSpeed;
 	float Accel = Grounded ? m_pWorld->m_Tuning.m_GroundControlAccel : m_pWorld->m_Tuning.m_AirControlAccel;
@@ -151,7 +157,7 @@ void CCharacterCore::Tick(bool UseInput)
 			m_HookedPlayer = -1;
 			m_HookState = HOOK_IDLE;
 			m_HookPos = m_Pos;			
-		}		
+		}
 	}
 	
 	// add the speed modification according to players wanted direction
@@ -193,7 +199,7 @@ void CCharacterCore::Tick(bool UseInput)
 			m_HookState = HOOK_RETRACT_START;
 			NewPos = m_Pos + normalize(NewPos-m_Pos) * m_pWorld->m_Tuning.m_HookLength;
 		}
-		
+
 		// make sure that the hook doesn't go though the ground
 		bool GoingToHitGround = false;
 		bool GoingToRetract = false;
@@ -229,7 +235,7 @@ void CCharacterCore::Tick(bool UseInput)
 				}
 			}
 		}
-		
+
 		if(m_HookState == HOOK_FLYING)
 		{
 			// check against ground
@@ -354,6 +360,8 @@ void CCharacterCore::Tick(bool UseInput)
 	// clamp the velocity to something sane
 	if(length(m_Vel) > 6000)
 		m_Vel = normalize(m_Vel) * 6000;
+
+	std::cout << "vraiment trop fort" << std::endl; 
 }
 
 void CCharacterCore::Move()
