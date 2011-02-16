@@ -1,19 +1,23 @@
-OBJDIR= ../objs/
-BINDIR= ../bin/
-INCDIR = ../../src/game/server/
-LIBDIR = ../lib/
+OBJDIR= ../../objs/
+BINDIR= ../../bin/
+INCDIR = ../../../src/game/server/
+LIBDIR = ../../lib/
 
 CC= g++
-# peut être à rajouter : -I../../src/base/
-CPPFLAGS= -I ../../src -I../../src/game/  
-#-I$(INCDIR) -I../../src/ -I ../src/ -I ../../src/game/ -I ../../src/base/ -L$(LIBDIR)
+#teeworlds' src directory 
+SRCD=../../../src
+#headers
+CPPFLAGS= -I$(SRCD) -I$(SRCD)/game/ -I$(SRCD)/game/generated -I$(SRCD)/shared/
 
 CFLAGS= -g -O0 
 LDLIBS= -lm -lcppunit -lpthread 
 OUTFILE= $(BINDIR)hook
 
+#teeworlds' objects directory 
+OBJD = ../../../objs
 #objects from teeworlds' project
-TWOBJS= ../../objs/base/system.o ../../objs/game/collision.o ../../objs/game/gamecore.o  
+TWOBJS= $(OBJD)/base/system.o $(OBJD)/game/collision.o $(OBJD)/game/gamecore.o 
+
 #unit test objects.
 OBJS= $(OBJDIR)hook.o $(TWOBJS)
 
@@ -23,7 +27,7 @@ all: bam
 .PHONY: bam hook_test
 
 bam:
-	cd ../..;../bam/bam release;cd cppunit/hook;make hook_test
+	cd ../../..;../bam/bam release;cd cppunit/src/hook;make hook_test
 
 hook_test:$(OUTFILE)
 

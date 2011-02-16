@@ -1,7 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "gamecore.h"
-#include <iostream>
 
 const char *CTuningParams::m_apNames[] =
 {
@@ -77,21 +76,19 @@ void CCharacterCore::Reset()
 
 void CCharacterCore::Tick(bool UseInput)
 {
-  std::cout << "hello tick 0" << std::endl;
+ 
 	float PhysSize = 28.0f;
 	m_TriggeredEvents = 0;
-	  std::cout << "hello tick 1" << std::endl;
+	 
 	// get ground state
 	bool Grounded = false;
 
-	//std::cout << ((m_pCollision != NULL)?"good":"bad");
-
-	if(m_pCollision->CheckPoint(m_Pos.x+PhysSize/2, m_Pos.y+PhysSize/2+5))
-		Grounded = true;
-	  std::cout << "hello tick 2" << std::endl;
+       	if(m_pCollision->CheckPoint(m_Pos.x+PhysSize/2, m_Pos.y+PhysSize/2+5))
+	  Grounded = true;
+	
 	if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
-		Grounded = true;
-	  std::cout << "hello tick 3" << std::endl;
+	  Grounded = true;
+	
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
 
 	m_Vel.y += m_pWorld->m_Tuning.m_Gravity;
@@ -99,7 +96,7 @@ void CCharacterCore::Tick(bool UseInput)
 	float MaxSpeed = Grounded ? m_pWorld->m_Tuning.m_GroundControlSpeed : m_pWorld->m_Tuning.m_AirControlSpeed;
 	float Accel = Grounded ? m_pWorld->m_Tuning.m_GroundControlAccel : m_pWorld->m_Tuning.m_AirControlAccel;
 	float Friction = Grounded ? m_pWorld->m_Tuning.m_GroundFriction : m_pWorld->m_Tuning.m_AirFriction;
-	  std::cout << "hello tick 4" << std::endl;
+
 	// handle input
 	if(UseInput)
 	{
@@ -119,7 +116,7 @@ void CCharacterCore::Tick(bool UseInput)
 
 		// handle jump
 		if(m_Input.m_Jump)
-		{
+		  {
 			if(!(m_Jumped&1))
 			{
 				if(Grounded)
@@ -194,15 +191,20 @@ void CCharacterCore::Tick(bool UseInput)
 	else if(m_HookState == HOOK_FLYING)
 	{
 		vec2 NewPos = m_HookPos+m_HookDir*m_pWorld->m_Tuning.m_HookFireSpeed;
+
 		if(distance(m_Pos, NewPos) > m_pWorld->m_Tuning.m_HookLength)
 		{
 			m_HookState = HOOK_RETRACT_START;
-			NewPos = m_Pos + normalize(NewPos-m_Pos) * m_pWorld->m_Tuning.m_HookLength;
+			//Mock object technique used for cppunit. Please keep it 
+			float hookLength = m_pWorld->GetHookLength();
+			//PLUS it clarifies this expression :)
+			NewPos = m_Pos + normalize(NewPos-m_Pos) * hookLength;
 		}
 		
 		// make sure that the hook doesn't go though the ground
 		bool GoingToHitGround = false;
 		bool GoingToRetract = false;
+
 		int Hit = m_pCollision->IntersectLine(m_HookPos, NewPos, &NewPos, 0);
 		if(Hit)
 		{
@@ -235,7 +237,7 @@ void CCharacterCore::Tick(bool UseInput)
 				}
 			}
 		}
-		
+
 		if(m_HookState == HOOK_FLYING)
 		{
 			// check against ground
@@ -360,6 +362,7 @@ void CCharacterCore::Tick(bool UseInput)
 	// clamp the velocity to something sane
 	if(length(m_Vel) > 6000)
 		m_Vel = normalize(m_Vel) * 6000;
+
 }
 
 void CCharacterCore::Move()
@@ -415,3 +418,6 @@ void CCharacterCore::Quantize()
 	Read(&Core);
 }
 
+float CWorldCore:: GetHookLength(){
+  return m_Tuning.m_HookLength;
+}

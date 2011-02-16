@@ -7,7 +7,11 @@
 class MockWorldCore : public CWorldCore
 {
  public:
-  MockWorldCore(){ std::cout<<" constructeur mock world core " << std::endl; };  
+  MockWorldCore(){};  
+  
+  float GetHookLength(){
+    return 1; //Arbitrary value. Chosen to be low.
+  }
 };
 
 #endif
