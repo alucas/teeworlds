@@ -34,12 +34,6 @@ class Test : public CPPUNIT_NS::TestCase
 
   CPPUNIT_TEST_SUITE_END();
 
-  /*
-  MockGameWorld *gw;
-  CEntity *entity;
-  MockGameServer* mockGameServer;
-  CPlayer *player;
-  */
 public:
 
   void setUp(void) {
@@ -61,7 +55,7 @@ protected:
   void CharacterCoreTick(void) {
     cout << "start charactercoretick" << endl;
     cout << charCore.m_HookTick << endl;
-    charCore.Tick(true);
+    charCore.Tick(false);
     cout << "end charactercoretick" << endl;
 
     // à faire :

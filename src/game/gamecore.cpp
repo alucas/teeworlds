@@ -1,6 +1,7 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "gamecore.h"
+#include <iostream>
 
 const char *CTuningParams::m_apNames[] =
 {
@@ -76,16 +77,21 @@ void CCharacterCore::Reset()
 
 void CCharacterCore::Tick(bool UseInput)
 {
+  std::cout << "hello tick 0" << std::endl;
 	float PhysSize = 28.0f;
 	m_TriggeredEvents = 0;
-	
+	  std::cout << "hello tick 1" << std::endl;
 	// get ground state
 	bool Grounded = false;
+
+	//std::cout << ((m_pCollision != NULL)?"good":"bad");
+
 	if(m_pCollision->CheckPoint(m_Pos.x+PhysSize/2, m_Pos.y+PhysSize/2+5))
 		Grounded = true;
+	  std::cout << "hello tick 2" << std::endl;
 	if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
 		Grounded = true;
-	
+	  std::cout << "hello tick 3" << std::endl;
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
 
 	m_Vel.y += m_pWorld->m_Tuning.m_Gravity;
@@ -93,7 +99,7 @@ void CCharacterCore::Tick(bool UseInput)
 	float MaxSpeed = Grounded ? m_pWorld->m_Tuning.m_GroundControlSpeed : m_pWorld->m_Tuning.m_AirControlSpeed;
 	float Accel = Grounded ? m_pWorld->m_Tuning.m_GroundControlAccel : m_pWorld->m_Tuning.m_AirControlAccel;
 	float Friction = Grounded ? m_pWorld->m_Tuning.m_GroundFriction : m_pWorld->m_Tuning.m_AirFriction;
-	
+	  std::cout << "hello tick 4" << std::endl;
 	// handle input
 	if(UseInput)
 	{
