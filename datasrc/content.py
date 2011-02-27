@@ -1,4 +1,3 @@
-import copy
 from datatypes import *
 
 class Sound(Struct):
@@ -227,6 +226,7 @@ image_browseicons = Image("browseicons", "browse_icons.png")
 image_emoticons = Image("emoticons", "emoticons.png")
 image_demobuttons = Image("demobuttons", "demo_buttons.png")
 image_fileicons = Image("fileicons", "file_icons.png")
+image_flag = Image("flag", "flag.png")
 
 container.images.Add(image_null)
 container.images.Add(image_game)
@@ -239,6 +239,7 @@ container.images.Add(Image("console_bg", "console.png"))
 container.images.Add(Image("console_bar", "console_bar.png"))
 container.images.Add(image_demobuttons)
 container.images.Add(image_fileicons)
+container.images.Add(image_flag)
 
 container.pickups.Add(Pickup("health"))
 container.pickups.Add(Pickup("armor"))
@@ -252,6 +253,7 @@ set_browseicons = SpriteSet("browseicons", image_browseicons, 4, 1)
 set_emoticons = SpriteSet("emoticons", image_emoticons, 4, 4)
 set_demobuttons = SpriteSet("demobuttons", image_demobuttons, 5, 1)
 set_fileicons = SpriteSet("fileicons", image_fileicons, 8, 1)
+set_flag = SpriteSet("flag", image_flag, 8, 8)
 
 container.spritesets.Add(set_particles)
 container.spritesets.Add(set_game)
@@ -260,6 +262,7 @@ container.spritesets.Add(set_browseicons)
 container.spritesets.Add(set_emoticons)
 container.spritesets.Add(set_demobuttons)
 container.spritesets.Add(set_fileicons)
+container.spritesets.Add(set_flag)
 
 container.sprites.Add(Sprite("part_slice", set_particles, 0,0,1,1))
 container.sprites.Add(Sprite("part_ball", set_particles, 1,0,1,1))
@@ -333,8 +336,8 @@ container.sprites.Add(Sprite("pickup_armor", set_game, 12,2,2,2))
 container.sprites.Add(Sprite("pickup_weapon", set_game, 3,0,6,2))
 container.sprites.Add(Sprite("pickup_ninja", set_game, 2,10,8,2))
 
-container.sprites.Add(Sprite("flag_blue", set_game, 12,8,4,8))
-container.sprites.Add(Sprite("flag_red", set_game, 16,8,4,8))
+container.sprites.Add(Sprite("flag", set_flag, 4,0,4,8))
+container.sprites.Add(Sprite("flag_outline", set_flag, 0,0,4,8))
 
 container.sprites.Add(Sprite("tee_body", set_tee, 0,0,3,3))
 container.sprites.Add(Sprite("tee_body_outline", set_tee, 3,0,3,3))

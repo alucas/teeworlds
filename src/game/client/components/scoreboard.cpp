@@ -213,15 +213,24 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 			(m_pClient->m_Snap.m_paFlags[1] && m_pClient->m_Snap.m_paFlags[1]->m_CarriedBy == pInfo->m_ClientID))
 		{
 			Graphics()->BlendNormal();
-			Graphics()->TextureSet(g_pData->m_aImages[IMAGE_GAME].m_Id);
+			Graphics()->TextureSet(g_pData->m_aImages[IMAGE_FLAG].m_Id);
 			Graphics()->QuadsBegin();
 
-			if(pInfo->m_Team == TEAM_RED) RenderTools()->SelectSprite(SPRITE_FLAG_BLUE, SPRITE_FLAG_FLIP_X);
-			else RenderTools()->SelectSprite(SPRITE_FLAG_RED, SPRITE_FLAG_FLIP_X);
-			
-			float size = 64.0f;
-			IGraphics::CQuadItem QuadItem(x+55, y-15, size/2, size);
+			IGraphics::CQuadItem QuadItem(x+55, y-15, 64.0f/2, 64.0f);
+
+			RenderTools()->SelectSprite(SPRITE_FLAG_OUTLINE, SPRITE_FLAG_FLIP_X);
+
 			Graphics()->QuadsDrawTL(&QuadItem, 1);
+
+			RenderTools()->SelectSprite(SPRITE_FLAG, SPRITE_FLAG_FLIP_X);
+
+			if(pInfo->m_Team == TEAM_BLUE)
+				Graphics()->SetColor(0.91f, 0.04f, 0.08f, 1.0f);
+			else
+				Graphics()->SetColor(0.00f, 0.32f, 0.87f, 1.0f);
+			
+			Graphics()->QuadsDrawTL(&QuadItem, 1);
+
 			Graphics()->QuadsEnd();
 		}
 		

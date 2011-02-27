@@ -112,11 +112,24 @@ void CHud::RenderScoreHud()
 					{
 						// draw flag
 						Graphics()->BlendNormal();
-						Graphics()->TextureSet(g_pData->m_aImages[IMAGE_GAME].m_Id);
+						Graphics()->TextureSet(g_pData->m_aImages[IMAGE_FLAG].m_Id);
 						Graphics()->QuadsBegin();
-						RenderTools()->SelectSprite(t==0?SPRITE_FLAG_RED:SPRITE_FLAG_BLUE);
+
 						IGraphics::CQuadItem QuadItem(Whole-ScoreWidthMax-ImageSize, 246.0f+t*20, ImageSize/2, ImageSize);
+
+						RenderTools()->SelectSprite(SPRITE_FLAG_OUTLINE);
+
 						Graphics()->QuadsDrawTL(&QuadItem, 1);
+
+						RenderTools()->SelectSprite(SPRITE_FLAG);
+
+						if(t == 0)
+							Graphics()->SetColor(0.91f, 0.04f, 0.08f, 1.0f);
+						else
+							Graphics()->SetColor(0.00f, 0.32f, 0.87f, 1.0f);
+
+						Graphics()->QuadsDrawTL(&QuadItem, 1);
+
 						Graphics()->QuadsEnd();
 					}
 					else if(m_pClient->m_Snap.m_paFlags[t]->m_CarriedBy >= 0)

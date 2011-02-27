@@ -9,6 +9,28 @@
 #include <game/client/animstate.h>
 #include "killmessages.h"
 
+void CKillMessages::RenderFlag(int Killmsg, IGraphics::CQuadItem *pQuadItem, int Flags)
+{
+	Graphics()->BlendNormal();
+	Graphics()->TextureSet(g_pData->m_aImages[IMAGE_FLAG].m_Id);
+	Graphics()->QuadsBegin();
+
+	RenderTools()->SelectSprite(SPRITE_FLAG_OUTLINE, Flags);
+
+	Graphics()->QuadsDrawTL(pQuadItem, 1);
+
+	RenderTools()->SelectSprite(SPRITE_FLAG, Flags);
+
+	if(m_aKillmsgs[Killmsg].m_VictimTeam == TEAM_BLUE)
+		Graphics()->SetColor(0.91f, 0.04f, 0.08f, 1.0f);
+	else
+		Graphics()->SetColor(0.00f, 0.32f, 0.87f, 1.0f);
+
+	Graphics()->QuadsDrawTL(pQuadItem, 1);
+
+	Graphics()->QuadsEnd();
+}
+
 void CKillMessages::OnReset()
 {
 	m_KillmsgCurrent = 0;
@@ -74,19 +96,8 @@ void CKillMessages::OnRender()
 		{
 			if(m_aKillmsgs[r].m_ModeSpecial&1)
 			{
-				Graphics()->BlendNormal();
-				Graphics()->TextureSet(g_pData->m_aImages[IMAGE_GAME].m_Id);
-				Graphics()->QuadsBegin();
-
-				if(m_aKillmsgs[r].m_VictimTeam == TEAM_RED)
-					RenderTools()->SelectSprite(SPRITE_FLAG_BLUE);
-				else
-					RenderTools()->SelectSprite(SPRITE_FLAG_RED);
-				
-				float Size = 56.0f;
-				IGraphics::CQuadItem QuadItem(x, y-16, Size/2, Size);
-				Graphics()->QuadsDrawTL(&QuadItem, 1);
-				Graphics()->QuadsEnd();					
+				IGraphics::CQuadItem QuadItem(x, y-16, 56.0f/2, 56.0f);
+				RenderFlag(r, &QuadItem);
 			}
 		}
 		
@@ -111,19 +122,8 @@ void CKillMessages::OnRender()
 			{
 				if(m_aKillmsgs[r].m_ModeSpecial&2)
 				{
-					Graphics()->BlendNormal();
-					Graphics()->TextureSet(g_pData->m_aImages[IMAGE_GAME].m_Id);
-					Graphics()->QuadsBegin();
-
-					if(m_aKillmsgs[r].m_KillerTeam == TEAM_RED)
-						RenderTools()->SelectSprite(SPRITE_FLAG_BLUE, SPRITE_FLAG_FLIP_X);
-					else
-						RenderTools()->SelectSprite(SPRITE_FLAG_RED, SPRITE_FLAG_FLIP_X);
-					
-					float Size = 56.0f;
-					IGraphics::CQuadItem QuadItem(x-56, y-16, Size/2, Size);
-					Graphics()->QuadsDrawTL(&QuadItem, 1);
-					Graphics()->QuadsEnd();				
+					IGraphics::CQuadItem QuadItem(x-56, y-16, 56.0f/2, 56.0f);
+					RenderFlag(r, &QuadItem, SPRITE_FLAG_FLIP_X);
 				}
 			}				
 			

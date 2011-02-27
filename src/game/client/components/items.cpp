@@ -158,28 +158,38 @@ void CItems::RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent)
 	float Size = 42.0f;
 
 	Graphics()->BlendNormal();
-	Graphics()->TextureSet(g_pData->m_aImages[IMAGE_GAME].m_Id);
+	Graphics()->TextureSet(g_pData->m_aImages[IMAGE_FLAG].m_Id);
 	Graphics()->QuadsBegin();
 
-	if(pCurrent->m_Team == TEAM_RED)
-		RenderTools()->SelectSprite(SPRITE_FLAG_RED);
-	else
-		RenderTools()->SelectSprite(SPRITE_FLAG_BLUE);
+	for(int p = 0; p < 2; p++){
+		bool DrawOutLine = (p == 0) ? true : false;
 
-	Graphics()->QuadsSetRotation(Angle);
+		RenderTools()->SelectSprite(DrawOutLine == true ? SPRITE_FLAG_OUTLINE : SPRITE_FLAG);
 
-	vec2 Pos = mix(vec2(pPrev->m_X, pPrev->m_Y), vec2(pCurrent->m_X, pCurrent->m_Y), Client()->IntraGameTick());
+		Graphics()->QuadsSetRotation(Angle);
+
+		vec2 Pos = mix(vec2(pPrev->m_X, pPrev->m_Y), vec2(pCurrent->m_X, pCurrent->m_Y), Client()->IntraGameTick());
 	
-	// make sure that the flag isn't interpolated between capture and return
-	if(pPrev->m_CarriedBy != pCurrent->m_CarriedBy)
-		Pos = vec2(pCurrent->m_X, pCurrent->m_Y);
+		// make sure that the flag isn't interpolated between capture and return
+		if(pPrev->m_CarriedBy != pCurrent->m_CarriedBy)
+			Pos = vec2(pCurrent->m_X, pCurrent->m_Y);
 
-	// make sure to use predicted position if we are the carrier
-	if(m_pClient->m_Snap.m_pLocalInfo && pCurrent->m_CarriedBy == m_pClient->m_Snap.m_pLocalInfo->m_ClientID)
-		Pos = m_pClient->m_LocalCharacterPos;
+		// make sure to use predicted position if we are the carrier
+		if(m_pClient->m_Snap.m_pLocalInfo && pCurrent->m_CarriedBy == m_pClient->m_Snap.m_pLocalInfo->m_ClientID)
+			Pos = m_pClient->m_LocalCharacterPos;
 
-	IGraphics::CQuadItem QuadItem(Pos.x, Pos.y-Size*0.75f, Size, Size*2);
-	Graphics()->QuadsDraw(&QuadItem, 1);
+		if(DrawOutLine == false)
+		{
+			if(pCurrent->m_Team == TEAM_RED)
+				Graphics()->SetColor(0.91f, 0.04f, 0.08f, 1.0f);
+			else
+				Graphics()->SetColor(0.00f, 0.32f, 0.87f, 1.0f);
+		}
+
+		IGraphics::CQuadItem QuadItem(Pos.x, Pos.y-Size*0.75f, Size, Size*2);
+		Graphics()->QuadsDraw(&QuadItem, 1);
+	}
+	
 	Graphics()->QuadsEnd();
 }
 
