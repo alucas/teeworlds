@@ -74,13 +74,13 @@ void CGraphics_OpenGL::Flush()
 
 	glVertexPointer(3, GL_FLOAT,
 			sizeof(CVertex),
-			(char*)m_aVertices);
+			(char*)&(m_aVertices[0].m_Pos));
 	glTexCoordPointer(2, GL_FLOAT,
 			sizeof(CVertex),
-			(char*)m_aVertices + sizeof(float)*3);
+			(char*)&(m_aVertices[0].m_Tex));
 	glColorPointer(4, GL_FLOAT,
 			sizeof(CVertex),
-			(char*)m_aVertices + sizeof(float)*5);
+			(char*)&(m_aVertices[0].m_Color));
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
