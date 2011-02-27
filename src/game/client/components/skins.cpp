@@ -11,57 +11,72 @@
 
 #include "skins.h"
 
+#define IMAGE_EXTENSION_STRING ".png"
+#define IMAGE_EXTENSION_SIZE 4
+
+#define DEC_RED   0
+#define DEC_GREEN 1
+#define DEC_BLUE  2
+#define DEC_ALPHA 3
+
+#define BODY_SIZE 96
+
 void CSkins::SkinScan(const char *pName, int IsDir, int DirType, void *pUser)
 {
 	CSkins *pSelf = (CSkins *)pUser;
-	int l = str_length(pName);
-	if(l < 4 || IsDir || str_comp(pName+l-4, ".png") != 0)
+	int NameLength = str_length(pName);
+	if(IsDir || NameLength <= IMAGE_EXTENSION_SIZE || str_comp(pName + NameLength - IMAGE_EXTENSION_SIZE, IMAGE_EXTENSION_STRING) != 0)
 		return;
 		
-	char aBuf[512];
-	str_format(aBuf, sizeof(aBuf), "skins/%s", pName);
+	char aBuffer[512];
+	str_format(aBuffer, sizeof(aBuffer), "skins/%s", pName);
 	CImageInfo Info;
-	if(!pSelf->Graphics()->LoadPNG(&Info, aBuf, DirType))
+	if(!pSelf->Graphics()->LoadPNG(&Info, aBuffer, DirType))
 	{
-		str_format(aBuf, sizeof(aBuf), "failed to load skin from %s", pName);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "game", aBuf);
+		str_format(aBuffer, sizeof(aBuffer), "failed to load skin from %s", pName);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "game", aBuffer);
+		return;
+	}
+
+	if(Info.m_Format != CImageInfo::FORMAT_RGBA)
+	{
+		mem_free(Info.m_pData);
+		
+		str_format(aBuffer, sizeof(aBuffer), "the skin from %s doesn't have alpha channel", pName);
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "game", aBuffer);
 		return;
 	}
 	
 	CSkin Skin;
 	Skin.m_OrgTexture = pSelf->Graphics()->LoadTextureRaw(Info.m_Width, Info.m_Height, Info.m_Format, Info.m_pData, Info.m_Format, 0);
 	
-	int BodySize = 96; // body size
-	unsigned char *d = (unsigned char *)Info.m_pData;
+	unsigned char *pData = (unsigned char *)Info.m_pData;
 	int Pitch = Info.m_Width*4;
 
 	// dig out blood color
 	{
 		int aColors[3] = {0};
-		for(int y = 0; y < BodySize; y++)
-			for(int x = 0; x < BodySize; x++)
+		for(int y = 0; y < BODY_SIZE; y++)
+			for(int x = 0; x < BODY_SIZE; x++)
 			{
-				if(d[y*Pitch+x*4+3] > 128)
+				if(pData[y*Pitch + x*4 + DEC_ALPHA] > 128)
 				{
-					aColors[0] += d[y*Pitch+x*4+0];
-					aColors[1] += d[y*Pitch+x*4+1];
-					aColors[2] += d[y*Pitch+x*4+2];
+					aColors[DEC_RED]   += pData[y*Pitch + x*4 + DEC_RED];
+					aColors[DEC_GREEN] += pData[y*Pitch + x*4 + DEC_GREEN];
+					aColors[DEC_BLUE]  += pData[y*Pitch + x*4 + DEC_BLUE];
 				}
 			}
 			
 		Skin.m_BloodColor = normalize(vec3(aColors[0], aColors[1], aColors[2]));
 	}
 	
-	// create colorless version
-	int Step = Info.m_Format == CImageInfo::FORMAT_RGBA ? 4 : 3;
-
 	// make the texture gray scale
 	for(int i = 0; i < Info.m_Width*Info.m_Height; i++)
 	{
-		int v = (d[i*Step]+d[i*Step+1]+d[i*Step+2])/3;
-		d[i*Step] = v;
-		d[i*Step+1] = v;
-		d[i*Step+2] = v;
+		int v = (pData[i*4 + DEC_RED] + pData[i*4 + DEC_GREEN] + pData[i*4 + DEC_BLUE])/3;
+		pData[i*4 + DEC_RED]   = v;
+		pData[i*4 + DEC_GREEN] = v;
+		pData[i*4 + DEC_BLUE]  = v;
 	}
 
 	
@@ -70,11 +85,11 @@ void CSkins::SkinScan(const char *pName, int IsDir, int DirType, void *pUser)
 	int NewWeight = 192;
 		
 	// find most common frequence
-	for(int y = 0; y < BodySize; y++)
-		for(int x = 0; x < BodySize; x++)
+	for(int y = 0; y < BODY_SIZE; y++)
+		for(int x = 0; x < BODY_SIZE; x++)
 		{
-			if(d[y*Pitch+x*4+3] > 128)
-				Freq[d[y*Pitch+x*4]]++;
+			if(pData[y*Pitch + x*4 + DEC_ALPHA] > 128)
+				Freq[pData[y*Pitch + x*4]]++;
 		}
 		
 	for(int i = 1; i < 256; i++)
@@ -86,26 +101,27 @@ void CSkins::SkinScan(const char *pName, int IsDir, int DirType, void *pUser)
 	// reorder
 	int InvOrgWeight = 255-OrgWeight;
 	int InvNewWeight = 255-NewWeight;
-	for(int y = 0; y < BodySize; y++)
-		for(int x = 0; x < BodySize; x++)
+	for(int y = 0; y < BODY_SIZE; y++)
+		for(int x = 0; x < BODY_SIZE; x++)
 		{
-			int v = d[y*Pitch+x*4];
+			int v = pData[y*Pitch + x*4];
 			if(v <= OrgWeight)
 				v = (int)(((v/(float)OrgWeight) * NewWeight));
 			else
 				v = (int)(((v-OrgWeight)/(float)InvOrgWeight)*InvNewWeight + NewWeight);
-			d[y*Pitch+x*4] = v;
-			d[y*Pitch+x*4+1] = v;
-			d[y*Pitch+x*4+2] = v;
+
+			pData[y*Pitch + x*4 + DEC_RED]   = v;
+			pData[y*Pitch + x*4 + DEC_GREEN] = v;
+			pData[y*Pitch + x*4 + DEC_BLUE]  = v;
 		}
 	
 	Skin.m_ColorTexture = pSelf->Graphics()->LoadTextureRaw(Info.m_Width, Info.m_Height, Info.m_Format, Info.m_pData, Info.m_Format, 0);
 	mem_free(Info.m_pData);
 
 	// set skin data	
-	str_copy(Skin.m_aName, pName, min((int)sizeof(Skin.m_aName),l-3));
-	str_format(aBuf, sizeof(aBuf), "load skin %s", Skin.m_aName);
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "game", aBuf);
+	str_copy(Skin.m_aName, pName, min((int)sizeof(Skin.m_aName), NameLength - IMAGE_EXTENSION_SIZE + 1));
+	str_format(aBuffer, sizeof(aBuffer), "load skin %s", Skin.m_aName);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "game", aBuffer);
 	pSelf->m_aSkins.add(Skin);
 }
 
