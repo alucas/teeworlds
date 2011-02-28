@@ -14,6 +14,7 @@
 #include <game/client/components/effects.h>
 
 #include "items.h"
+#include "engine/shared/config.h"
 
 void CItems::RenderProjectile(const CNetObj_Projectile *pCurrent, int ItemID)
 {
@@ -152,7 +153,7 @@ void CItems::RenderPickup(const CNetObj_Pickup *pPrev, const CNetObj_Pickup *pCu
 	Graphics()->QuadsEnd();
 }
 
-void CItems::RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent)
+void CItems::RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent, vec4 *pFlagColor)
 {
 	float Angle = 0.0f;
 	float Size = 42.0f;
@@ -179,12 +180,7 @@ void CItems::RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent)
 			Pos = m_pClient->m_LocalCharacterPos;
 
 		if(DrawOutLine == false)
-		{
-			if(pCurrent->m_Team == TEAM_RED)
-				Graphics()->SetColor(0.91f, 0.04f, 0.08f, 1.0f);
-			else
-				Graphics()->SetColor(0.00f, 0.32f, 0.87f, 1.0f);
-		}
+			Graphics()->SetColor(pFlagColor->r, pFlagColor->g, pFlagColor->b, pFlagColor->a);
 
 		IGraphics::CQuadItem QuadItem(Pos.x, Pos.y-Size*0.75f, Size, Size*2);
 		Graphics()->QuadsDraw(&QuadItem, 1);
@@ -296,7 +292,21 @@ void CItems::OnRender()
 		{
 			const void *pPrev = Client()->SnapFindItem(IClient::SNAP_PREV, Item.m_Type, Item.m_ID);
 			if (pPrev)
-				RenderFlag((const CNetObj_Flag *)pPrev, (const CNetObj_Flag *)pData);
+			{
+				const int TeamColors[] =
+				{
+					g_Config.m_TeamColor1,
+					g_Config.m_TeamColor2,
+					g_Config.m_TeamColor3,
+					g_Config.m_TeamColor4
+				};
+
+				int c = TeamColors[((const CNetObj_Flag *)pData)->m_Team];
+				vec3 RGBColor = HslToRgb(vec3(((c>>16)&0xff)/255.0f, ((c>>8)&0xff)/255.0f, 0.5f+(c&0xff)/255.0f*0.5f));
+				vec4 FlagColor(RGBColor.r, RGBColor.g, RGBColor.b, 1.0f);
+				
+				RenderFlag((const CNetObj_Flag *)pPrev, (const CNetObj_Flag *)pData, &FlagColor);
+			}
 		}
 	}
 
