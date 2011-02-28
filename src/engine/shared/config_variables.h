@@ -38,10 +38,10 @@ MACRO_CONFIG_INT(PlayerColorBody, player_color_body, 65408, 0, 0xFFFFFF, CFGFLAG
 MACRO_CONFIG_INT(PlayerColorFeet, player_color_feet, 65408, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Player feet color")
 MACRO_CONFIG_STR(PlayerSkin, player_skin, 24, "default", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Player skin")
 
-MACRO_CONFIG_INT(TeamColor1, team_color_1, 0xFF0000, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "First team color")
-MACRO_CONFIG_INT(TeamColor2, team_color_2, 0x0000FF, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Second team color")
-MACRO_CONFIG_INT(TeamColor3, team_color_3, 0x00FF00, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Third team color")
-MACRO_CONFIG_INT(TeamColor4, team_color_4, 0xFFFF00, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Fourth team color")
+MACRO_CONFIG_INT(TeamColor1, team_color_1, 65387, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "First team color")
+MACRO_CONFIG_INT(TeamColor2, team_color_2, 10223467, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Second team color")
+MACRO_CONFIG_INT(TeamColor3, team_color_3, 5684736, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Third team color")
+MACRO_CONFIG_INT(TeamColor4, team_color_4, 1965824, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Fourth team color")
 
 MACRO_CONFIG_INT(UiPage, ui_page, 5, 0, 9, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Interface page")
 MACRO_CONFIG_INT(UiToolboxPage, ui_toolbox_page, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toolbox page")

@@ -981,7 +981,14 @@ void CGameClient::CClientData::UpdateRenderInfo()
 	// force team colors
 	if(g_GameClient.m_Snap.m_pGameobj && g_GameClient.m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS)
 	{
-		const int TeamColors[2] = {65387, 10223467};
+		const int TeamColors[] =
+		{
+			g_Config.m_TeamColor1,
+			g_Config.m_TeamColor2,
+			g_Config.m_TeamColor3,
+			g_Config.m_TeamColor4
+		};
+
 		if(m_Team >= TEAM_RED && m_Team <= TEAM_BLUE)
 		{
 			m_RenderInfo.m_Texture = g_GameClient.m_pSkins->Get(m_SkinID)->m_ColorTexture;
