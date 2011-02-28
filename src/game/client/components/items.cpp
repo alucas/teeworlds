@@ -1,5 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include <base/tl/color.h>
 #include <engine/graphics.h>
 #include <engine/demo.h>
 #include <game/generated/protocol.h>
@@ -301,11 +302,11 @@ void CItems::OnRender()
 					g_Config.m_TeamColor4
 				};
 
-				int c = TeamColors[((const CNetObj_Flag *)pData)->m_Team];
-				vec3 RGBColor = HslToRgb(vec3(((c>>16)&0xff)/255.0f, ((c>>8)&0xff)/255.0f, 0.5f+(c&0xff)/255.0f*0.5f));
-				vec4 FlagColor(RGBColor.r, RGBColor.g, RGBColor.b, 1.0f);
+				const CNetObj_Flag *pDataFlag = (const CNetObj_Flag *)pData;
+
+				vec4 FlagColor = GetRgbColorV4(TeamColors[pDataFlag->m_Team]);
 				
-				RenderFlag((const CNetObj_Flag *)pPrev, (const CNetObj_Flag *)pData, &FlagColor);
+				RenderFlag((const CNetObj_Flag *)pPrev, pDataFlag, &FlagColor);
 			}
 		}
 	}
