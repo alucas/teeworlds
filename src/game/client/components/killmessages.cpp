@@ -11,24 +11,13 @@
 
 void CKillMessages::RenderFlag(int Killmsg, IGraphics::CQuadItem *pQuadItem, int Flags)
 {
-	Graphics()->BlendNormal();
-	Graphics()->TextureSet(g_pData->m_aImages[IMAGE_FLAG].m_Id);
-	Graphics()->QuadsBegin();
-
-	RenderTools()->SelectSprite(SPRITE_FLAG_OUTLINE, Flags);
-
-	Graphics()->QuadsDrawTL(pQuadItem, 1);
-
-	RenderTools()->SelectSprite(SPRITE_FLAG, Flags);
-
+	vec4 FlagColor;
 	if(m_aKillmsgs[Killmsg].m_VictimTeam == TEAM_BLUE)
-		Graphics()->SetColor(0.91f, 0.04f, 0.08f, 1.0f);
+		FlagColor = RenderTools()->GetTeamColor(TEAM_RED);
 	else
-		Graphics()->SetColor(0.00f, 0.32f, 0.87f, 1.0f);
+		FlagColor = RenderTools()->GetTeamColor(TEAM_BLUE);
 
-	Graphics()->QuadsDrawTL(pQuadItem, 1);
-
-	Graphics()->QuadsEnd();
+	RenderTools()->RenderFlag(pQuadItem, 0.0f, FlagColor, Flags);
 }
 
 void CKillMessages::OnReset()

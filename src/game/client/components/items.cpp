@@ -154,42 +154,24 @@ void CItems::RenderPickup(const CNetObj_Pickup *pPrev, const CNetObj_Pickup *pCu
 	Graphics()->QuadsEnd();
 }
 
-void CItems::RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent, vec4 *pFlagColor)
-{
-	float Angle = 0.0f;
+void CItems::RenderMainFlag(const CNetObj_Flag* pPrev, const CNetObj_Flag* pCurrent){
+	vec2 Pos = mix(vec2(pPrev->m_X, pPrev->m_Y), vec2(pCurrent->m_X, pCurrent->m_Y), Client()->IntraGameTick());
+
+	// make sure that the flag isn't interpolated between capture and return
+	if(pPrev->m_CarriedBy != pCurrent->m_CarriedBy)
+		Pos = vec2(pCurrent->m_X, pCurrent->m_Y);
+
+	// make sure to use predicted position if we are the carrier
+	if(m_pClient->m_Snap.m_pLocalInfo && pCurrent->m_CarriedBy == m_pClient->m_Snap.m_pLocalInfo->m_ClientID)
+		Pos = m_pClient->m_LocalCharacterPos;
+
 	float Size = 42.0f;
+	IGraphics::CQuadItem QuadItem(Pos.x - Size/2, Pos.y - Size*0.75f - Size, Size, Size*2);
 
-	Graphics()->BlendNormal();
-	Graphics()->TextureSet(g_pData->m_aImages[IMAGE_FLAG].m_Id);
-	Graphics()->QuadsBegin();
+	vec4 FlagColor = RenderTools()->GetTeamColor(pCurrent->m_Team);
 
-	for(int p = 0; p < 2; p++){
-		bool DrawOutLine = (p == 0) ? true : false;
-
-		RenderTools()->SelectSprite(DrawOutLine == true ? SPRITE_FLAG_OUTLINE : SPRITE_FLAG);
-
-		Graphics()->QuadsSetRotation(Angle);
-
-		vec2 Pos = mix(vec2(pPrev->m_X, pPrev->m_Y), vec2(pCurrent->m_X, pCurrent->m_Y), Client()->IntraGameTick());
-	
-		// make sure that the flag isn't interpolated between capture and return
-		if(pPrev->m_CarriedBy != pCurrent->m_CarriedBy)
-			Pos = vec2(pCurrent->m_X, pCurrent->m_Y);
-
-		// make sure to use predicted position if we are the carrier
-		if(m_pClient->m_Snap.m_pLocalInfo && pCurrent->m_CarriedBy == m_pClient->m_Snap.m_pLocalInfo->m_ClientID)
-			Pos = m_pClient->m_LocalCharacterPos;
-
-		if(DrawOutLine == false)
-			Graphics()->SetColor(pFlagColor->r, pFlagColor->g, pFlagColor->b, pFlagColor->a);
-
-		IGraphics::CQuadItem QuadItem(Pos.x, Pos.y-Size*0.75f, Size, Size*2);
-		Graphics()->QuadsDraw(&QuadItem, 1);
-	}
-	
-	Graphics()->QuadsEnd();
+	RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, 0);
 }
-
 
 void CItems::RenderLaser(const struct CNetObj_Laser *pCurrent)
 {
@@ -293,21 +275,7 @@ void CItems::OnRender()
 		{
 			const void *pPrev = Client()->SnapFindItem(IClient::SNAP_PREV, Item.m_Type, Item.m_ID);
 			if (pPrev)
-			{
-				const int TeamColors[] =
-				{
-					g_Config.m_TeamColor1,
-					g_Config.m_TeamColor2,
-					g_Config.m_TeamColor3,
-					g_Config.m_TeamColor4
-				};
-
-				const CNetObj_Flag *pDataFlag = (const CNetObj_Flag *)pData;
-
-				vec4 FlagColor = GetRgbColorV4(TeamColors[pDataFlag->m_Team]);
-				
-				RenderFlag((const CNetObj_Flag *)pPrev, pDataFlag, &FlagColor);
-			}
+				RenderMainFlag((const CNetObj_Flag *)pPrev, (const CNetObj_Flag *)pData);
 		}
 	}
 

@@ -5,6 +5,7 @@
 
 #include <base/vmath.h>
 #include <game/mapitems.h>
+#include <engine/graphics.h>
 #include "ui.h"
 
 
@@ -67,6 +68,7 @@ public:
 
 	// object render methods (gc_render_obj.cpp)
 	void RenderTee(class CAnimState *pAnim, CTeeRenderInfo *pInfo, int Emote, vec2 Direction, vec2 Posistion);
+	void RenderFlag(IGraphics::CQuadItem *pQuadItem, float Angle, vec4 FlagColor, int Flags);
 
 	// map render methods (gc_render_map.cpp)
 	static void RenderEvalEnvelope(CEnvPoint *pPoints, int NumPoints, int Channels, float Time, float *pResult);
@@ -76,7 +78,7 @@ public:
 	// helpers
 	void MapscreenToWorld(float CenterX, float CenterY, float ParallaxX, float ParallaxY,
 		float OffsetX, float OffsetY, float Aspect, float Zoom, float *pPoints);	
-	
+	vec4 GetTeamColor(int Team);
 };
 
 #endif

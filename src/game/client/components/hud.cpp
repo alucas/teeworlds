@@ -111,26 +111,15 @@ void CHud::RenderScoreHud()
 					if(m_pClient->m_Snap.m_paFlags[t]->m_CarriedBy == -2 || (m_pClient->m_Snap.m_paFlags[t]->m_CarriedBy == -1 && ((Client()->GameTick()/10)&1)))
 					{
 						// draw flag
-						Graphics()->BlendNormal();
-						Graphics()->TextureSet(g_pData->m_aImages[IMAGE_FLAG].m_Id);
-						Graphics()->QuadsBegin();
-
 						IGraphics::CQuadItem QuadItem(Whole-ScoreWidthMax-ImageSize, 246.0f+t*20, ImageSize/2, ImageSize);
 
-						RenderTools()->SelectSprite(SPRITE_FLAG_OUTLINE);
-
-						Graphics()->QuadsDrawTL(&QuadItem, 1);
-
-						RenderTools()->SelectSprite(SPRITE_FLAG);
-
+						vec4 FlagColor;
 						if(t == 0)
-							Graphics()->SetColor(0.91f, 0.04f, 0.08f, 1.0f);
+							FlagColor = RenderTools()->GetTeamColor(TEAM_RED);
 						else
-							Graphics()->SetColor(0.00f, 0.32f, 0.87f, 1.0f);
+							FlagColor = RenderTools()->GetTeamColor(TEAM_BLUE);
 
-						Graphics()->QuadsDrawTL(&QuadItem, 1);
-
-						Graphics()->QuadsEnd();
+						RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, 0);
 					}
 					else if(m_pClient->m_Snap.m_paFlags[t]->m_CarriedBy >= 0)
 					{

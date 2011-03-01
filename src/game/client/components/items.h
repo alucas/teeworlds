@@ -8,11 +8,13 @@ class CItems : public CComponent
 {	
 	void RenderProjectile(const CNetObj_Projectile *pCurrent, int ItemID);
 	void RenderPickup(const CNetObj_Pickup *pPrev, const CNetObj_Pickup *pCurrent);
-	void RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent, vec4 *pFlagColor);
+	void RenderMainFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent);
 	void RenderLaser(const struct CNetObj_Laser *pCurrent);
 	
 public:
 	virtual void OnRender();
+
+	static void RenderFlag(class IGraphics *Graphics, class CRenderTools *RenderTools, IGraphics::CQuadItem *pQuadItem, float Angle, vec4 FlagColor);
 };
 
 #endif
