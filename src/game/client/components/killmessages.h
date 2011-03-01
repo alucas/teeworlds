@@ -31,8 +31,6 @@ public:
 	CKillMsg m_aKillmsgs[MAX_KILLMSGS];
 	int m_KillmsgCurrent;
 
-	virtual void RenderFlag(int Killmsg, IGraphics::CQuadItem *pQuadItem, int Flag=0);
-	
 	virtual void OnReset();
 	virtual void OnRender();
 	virtual void OnMessage(int MsgType, void *pRawMsg);
