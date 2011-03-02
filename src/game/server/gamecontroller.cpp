@@ -557,14 +557,14 @@ void IGameController::Snap(int SnappingClient)
 	if(SnappingClient == -1)
 	{
 		// we are recording a demo, just set the scores
-		pGameObj->m_TeamscoreRed = m_aTeamscore[TEAM_RED];
-		pGameObj->m_TeamscoreBlue = m_aTeamscore[TEAM_BLUE];
+		pGameObj->m_Teamscore[0] = m_aTeamscore[TEAM_RED];
+		pGameObj->m_Teamscore[1] = m_aTeamscore[TEAM_BLUE];
 	}
 	else
 	{
 		// TODO: this little hack should be removed
-		pGameObj->m_TeamscoreRed = IsTeamplay() ? m_aTeamscore[TEAM_RED] : GameServer()->m_apPlayers[SnappingClient]->m_Score;
-		pGameObj->m_TeamscoreBlue = m_aTeamscore[TEAM_BLUE];
+		pGameObj->m_Teamscore[0] = IsTeamplay() ? m_aTeamscore[TEAM_RED] : GameServer()->m_apPlayers[SnappingClient]->m_Score;
+		pGameObj->m_Teamscore[1] = m_aTeamscore[TEAM_BLUE];
 	}
 }
 

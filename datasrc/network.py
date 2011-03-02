@@ -21,7 +21,8 @@ enum
 {
 	TEAM_SPECTATORS=-1,
 	TEAM_RED,
-	TEAM_BLUE
+	TEAM_BLUE,
+	NUM_TEAMS=4
 };
 '''
 
@@ -90,7 +91,7 @@ Objects = [
 		NetIntAny("m_X"),
 		NetIntAny("m_Y"),
 		
-		NetIntRange("m_Team", 'TEAM_RED', 'TEAM_BLUE'),
+		NetIntRange("m_Team", 0, 'NUM_TEAMS'),
 		NetIntRange("m_CarriedBy", -2, 'MAX_CLIENTS-1')
 	]),
 
@@ -110,8 +111,8 @@ Objects = [
 		NetTick("m_RoundNum"),
 		NetTick("m_RoundCurrent"),
 
-		NetIntAny("m_TeamscoreRed"),
-		NetIntAny("m_TeamscoreBlue"),
+
+		NetArrayIntAny("m_Teamscore", 'NUM_TEAMS')
 	]),
 
 	NetObject("CharacterCore", [
@@ -148,7 +149,7 @@ Objects = [
 	NetObject("PlayerInfo", [
 		NetIntRange("m_Local", 0, 1),
 		NetIntRange("m_ClientID", 0, 'MAX_CLIENTS-1'),
-		NetIntRange("m_Team", 'TEAM_SPECTATORS', 'TEAM_BLUE'),
+		NetIntRange("m_Team", 'TEAM_SPECTATORS', 'NUM_TEAMS'),
 
 		NetIntAny("m_Score"),
 		NetIntAny("m_Latency"),
@@ -211,7 +212,7 @@ Messages = [
 	]),
 
 	NetMessage("Sv_Chat", [
-		NetIntRange("m_Team", 'TEAM_SPECTATORS', 'TEAM_BLUE'),
+		NetIntRange("m_Team", 'TEAM_SPECTATORS', 'NUM_TEAMS'),
 		NetIntRange("m_ClientID", -1, 'MAX_CLIENTS-1'),
 		NetString("m_pMessage"),
 	]),
@@ -267,7 +268,7 @@ Messages = [
 	]),
 
 	NetMessage("Cl_SetTeam", [
-		NetIntRange("m_Team", 'TEAM_SPECTATORS', 'TEAM_BLUE'),
+		NetIntRange("m_Team", 'TEAM_SPECTATORS', 'NUM_TEAMS'),
 	]),
 	
 	NetMessage("Cl_StartInfo", [

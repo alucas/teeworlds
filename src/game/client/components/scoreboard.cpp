@@ -141,7 +141,7 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 	if(m_pClient->m_Snap.m_pGameobj)
 	{
 		char aBuf[128];
-		int Score = Team == TEAM_RED ? m_pClient->m_Snap.m_pGameobj->m_TeamscoreRed : m_pClient->m_Snap.m_pGameobj->m_TeamscoreBlue;
+		int Score = Team == TEAM_RED ? m_pClient->m_Snap.m_pGameobj->m_Teamscore[0] : m_pClient->m_Snap.m_pGameobj->m_Teamscore[1];
 		str_format(aBuf, sizeof(aBuf), "%d", Score);
 		tw = TextRender()->TextWidth(0, 48, aBuf, -1);
 		TextRender()->Text(0, x+w-tw-30, y, 48, aBuf, -1);
@@ -281,9 +281,9 @@ void CScoreboard::OnRender()
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
 		{
 			const char *pText = Localize("Draw!");
-			if(m_pClient->m_Snap.m_pGameobj->m_TeamscoreRed > m_pClient->m_Snap.m_pGameobj->m_TeamscoreBlue)
+			if(m_pClient->m_Snap.m_pGameobj->m_Teamscore[0] > m_pClient->m_Snap.m_pGameobj->m_Teamscore[1])
 				pText = Localize("Red team wins!");
-			else if(m_pClient->m_Snap.m_pGameobj->m_TeamscoreBlue > m_pClient->m_Snap.m_pGameobj->m_TeamscoreRed)
+			else if(m_pClient->m_Snap.m_pGameobj->m_Teamscore[1] > m_pClient->m_Snap.m_pGameobj->m_Teamscore[0])
 				pText = Localize("Blue team wins!");
 				
 			float w = TextRender()->TextWidth(0, 86.0f, pText, -1);

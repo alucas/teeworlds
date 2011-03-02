@@ -72,17 +72,15 @@ void CKillMessages::OnRender()
 		
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_FLAGS)
 		{
-			if(m_aKillmsgs[r].m_ModeSpecial&1)
+			if(m_aKillmsgs[r].m_ModeSpecial & 0xf)
 			{
 				IGraphics::CQuadItem QuadItem(x, y-16, 56.0f/2, 56.0f);
-				
-				vec4 FlagColor;
-				if(m_aKillmsgs[r].m_VictimTeam == TEAM_BLUE)
-					FlagColor = RenderTools()->GetTeamColor(TEAM_RED);
-				else
-					FlagColor = RenderTools()->GetTeamColor(TEAM_BLUE);
 
-				RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, 0);
+				int TeamFlag = (m_aKillmsgs[r].m_ModeSpecial & 0xf) - 1;
+				vec4 TeeFlagColor = RenderTools()->GetTeamColor(TeamFlag);
+				dbg_msg("color", "killer team : %d", TeamFlag);
+				
+				RenderTools()->RenderFlag(&QuadItem, 0.0f, TeeFlagColor, 0);
 			}
 		}
 		
@@ -105,16 +103,14 @@ void CKillMessages::OnRender()
 		{
 			if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_FLAGS)
 			{
-				if(m_aKillmsgs[r].m_ModeSpecial&2)
+				if(m_aKillmsgs[r].m_ModeSpecial & 0xf0)
 				{
 					IGraphics::CQuadItem QuadItem(x-56, y-16, 56.0f/2, 56.0f);
 
-					vec4 FlagColor;
-					if(m_aKillmsgs[r].m_KillerTeam == TEAM_BLUE)
-						FlagColor = RenderTools()->GetTeamColor(TEAM_RED);
-					else
-						FlagColor = RenderTools()->GetTeamColor(TEAM_BLUE);
-
+					int TeamFlag = ((m_aKillmsgs[r].m_ModeSpecial & 0xf0) - 1) >> 4;
+					vec4 FlagColor = RenderTools()->GetTeamColor(TeamFlag);
+					dbg_msg("color", "victim team : %d", TeamFlag);
+					
 					RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
 				}
 			}				
