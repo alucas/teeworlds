@@ -695,7 +695,8 @@ void CGameClient::OnNewSnapshot()
 
 	// go trough all the items in the snapshot and gather the info we want
 	{
-		m_Snap.m_aTeamSize[TEAM_RED] = m_Snap.m_aTeamSize[TEAM_BLUE] = 0;
+		for(int i =0; i < NUM_TEAMS; i++)
+			m_Snap.m_aTeamSize[i] = 0;
 		
 		int Num = Client()->SnapNumItems(IClient::SNAP_CURRENT);
 		for(int i = 0; i < Num; i++)
@@ -990,7 +991,7 @@ void CGameClient::CClientData::UpdateRenderInfo()
 			g_Config.m_TeamColor4
 		};
 
-		if(m_Team >= TEAM_RED && m_Team <= TEAM_BLUE)
+		if(m_Team >= 0 && m_Team < NUM_TEAMS)
 		{
 			m_RenderInfo.m_Texture = g_GameClient.m_pSkins->Get(m_SkinID)->m_ColorTexture;
 			m_RenderInfo.m_ColorBody = GetRgbColorV4(TeamColors[m_Team]);

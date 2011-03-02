@@ -83,11 +83,17 @@ void CHud::RenderScoreHud()
 		if(GameFlags&GAMEFLAG_TEAMS)
 		{
 			char aScoreTeam[NUM_TEAMS][32];
+			float aScoreTeamWidth[NUM_TEAMS];
+			float ScoreWidthMax = TextRender()->TextWidth(0, 14.0f, "100", -1);
 			for(int i = 0; i < NUM_TEAMS; i++)
+			{
 				str_format(aScoreTeam[i], sizeof(aScoreTeam)/2, "%d", m_pClient->m_Snap.m_pGameobj->m_Teamscore[i]);
+				aScoreTeamWidth[i] = TextRender()->TextWidth(0, 14.0f, aScoreTeam[i], -1);
 
-			float aScoreTeamWidth[2] = {TextRender()->TextWidth(0, 14.0f, aScoreTeam[TEAM_RED], -1), TextRender()->TextWidth(0, 14.0f, aScoreTeam[TEAM_BLUE], -1)};
-			float ScoreWidthMax = max(max(aScoreTeamWidth[TEAM_RED], aScoreTeamWidth[TEAM_BLUE]), TextRender()->TextWidth(0, 14.0f, "100", -1));
+				if(aScoreTeamWidth[i] > ScoreWidthMax)
+					ScoreWidthMax = aScoreTeamWidth[i];
+			}
+
 			float Split = 3.0f;
 			float ImageSize = GameFlags&GAMEFLAG_FLAGS ? 16.0f : Split;
 		
@@ -114,11 +120,7 @@ void CHud::RenderScoreHud()
 						// draw flag
 						IGraphics::CQuadItem QuadItem(Whole-ScoreWidthMax-ImageSize, 266.0f-t*20, ImageSize/2, ImageSize);
 
-						vec4 FlagColor;
-						if(t == 0)
-							FlagColor = RenderTools()->GetTeamColor(TEAM_RED);
-						else
-							FlagColor = RenderTools()->GetTeamColor(TEAM_BLUE);
+						vec4 FlagColor = RenderTools()->GetTeamColor(t);
 
 						RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, 0);
 					}
@@ -273,7 +275,7 @@ void CHud::RenderTeambalanceWarning()
 	bool Flash = time_get()/(time_freq()/2)%2 == 0;
 	if (m_pClient->m_Snap.m_pGameobj && (m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS) != 0)
 	{	
-		int TeamDiff = m_pClient->m_Snap.m_aTeamSize[TEAM_RED]-m_pClient->m_Snap.m_aTeamSize[TEAM_BLUE];
+		int TeamDiff = m_pClient->m_Snap.m_aTeamSize[0]-m_pClient->m_Snap.m_aTeamSize[1];
 		if (g_Config.m_ClWarningTeambalance && (TeamDiff >= 2 || TeamDiff <= -2))
 		{
 			const char *pText = Localize("Please balance teams!");

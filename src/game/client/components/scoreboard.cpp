@@ -141,7 +141,7 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 	if(m_pClient->m_Snap.m_pGameobj)
 	{
 		char aBuf[128];
-		int Score = Team == TEAM_RED ? m_pClient->m_Snap.m_pGameobj->m_Teamscore[0] : m_pClient->m_Snap.m_pGameobj->m_Teamscore[1];
+		int Score = m_pClient->m_Snap.m_pGameobj->m_Teamscore[Team];
 		str_format(aBuf, sizeof(aBuf), "%d", Score);
 		tw = TextRender()->TextWidth(0, 48, aBuf, -1);
 		TextRender()->Text(0, x+w-tw-30, y, 48, aBuf, -1);
@@ -209,20 +209,15 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 		TextRender()->Text(0, x+w-35.0f-Width, y+(FontSize-FontSizeResize)/2, FontSizeResize, aBuf, -1);
 
 		// render avatar
-		if((m_pClient->m_Snap.m_paFlags[0] && m_pClient->m_Snap.m_paFlags[0]->m_CarriedBy == pInfo->m_ClientID) ||
-			(m_pClient->m_Snap.m_paFlags[1] && m_pClient->m_Snap.m_paFlags[1]->m_CarriedBy == pInfo->m_ClientID))
-		{
+		for(int i = 0; i < NUM_TEAMS; i++)
+			if(m_pClient->m_Snap.m_paFlags[i] && m_pClient->m_Snap.m_paFlags[i]->m_CarriedBy == pInfo->m_ClientID)
+			{
+				IGraphics::CQuadItem QuadItem(x+55, y-15, 64.0f/2, 64.0f);
 
-			IGraphics::CQuadItem QuadItem(x+55, y-15, 64.0f/2, 64.0f);
+				vec4 FlagColor = RenderTools()->GetTeamColor(m_pClient->m_Snap.m_paFlags[i]->m_Team);
 
-			vec4 FlagColor;
-			if(pInfo->m_Team == TEAM_BLUE)
-				FlagColor = RenderTools()->GetTeamColor(TEAM_RED);
-			else
-				FlagColor = RenderTools()->GetTeamColor(TEAM_BLUE);
-
-			RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
-		}
+				RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
+			}
 		
 		CTeeRenderInfo TeeInfo = m_pClient->m_aClients[pInfo->m_ClientID].m_RenderInfo;
 		TeeInfo.m_Size *= TeeSizeMod;
@@ -280,18 +275,20 @@ void CScoreboard::OnRender()
 			
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
 		{
-			const char *pText = Localize("Draw!");
+			const char *pText;
 			if(m_pClient->m_Snap.m_pGameobj->m_Teamscore[0] > m_pClient->m_Snap.m_pGameobj->m_Teamscore[1])
 				pText = Localize("Red team wins!");
 			else if(m_pClient->m_Snap.m_pGameobj->m_Teamscore[1] > m_pClient->m_Snap.m_pGameobj->m_Teamscore[0])
 				pText = Localize("Blue team wins!");
+			else
+				pText = Localize("Draw!");
 				
 			float w = TextRender()->TextWidth(0, 86.0f, pText, -1);
 			TextRender()->Text(0, Width/2-w/2, 39, 86.0f, pText, -1);
 		}
 		
-		RenderScoreboard(Width/2-w-20, 150.0f, w, TEAM_RED, Localize("Red team"));
-		RenderScoreboard(Width/2 + 20, 150.0f, w, TEAM_BLUE, Localize("Blue team"));
+		RenderScoreboard(Width/2-w-20, 150.0f, w, 0, Localize("Red team"));
+		RenderScoreboard(Width/2 + 20, 150.0f, w, 1, Localize("Blue team"));
 	}
 
 	RenderGoals(Width/2-w/2, 150+750+25, w);

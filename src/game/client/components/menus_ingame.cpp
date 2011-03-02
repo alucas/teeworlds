@@ -51,29 +51,21 @@ void CMenus::RenderGame(CUIRect MainView)
 		
 		if(m_pClient->m_Snap.m_pGameobj->m_Flags & GAMEFLAG_TEAMS)
 		{
-			if(m_pClient->m_Snap.m_pLocalInfo->m_Team != TEAM_RED)
-			{
-				MainView.VSplitLeft(10.0f, &Button, &MainView);
-				MainView.VSplitLeft(120.0f, &Button, &MainView);
-				static int s_SpectateButton = 0;
-				if(DoButton_Menu(&s_SpectateButton, Localize("Join red"), 0, &Button))
+			// TODO : Do this nicer
+			const char *aTextButtons[] = {"Join team 1", "Join team 2", "Join team 3", "Join team 4"};
+			for(int i = 0; i < NUM_TEAMS; i++)
+				if(m_pClient->m_Snap.m_pLocalInfo->m_Team != i)
 				{
-					m_pClient->SendSwitchTeam(TEAM_RED);
-					SetActive(false);
+					MainView.VSplitLeft(10.0f, &Button, &MainView);
+					MainView.VSplitLeft(120.0f, &Button, &MainView);
+					static int s_SpectateButton = 0;
+					
+					if(DoButton_Menu(&s_SpectateButton, Localize(aTextButtons[i]), 0, &Button))
+					{
+						m_pClient->SendSwitchTeam(i);
+						SetActive(false);
+					}
 				}
-			}
-
-			if(m_pClient->m_Snap.m_pLocalInfo->m_Team != TEAM_BLUE)
-			{
-				MainView.VSplitLeft(10.0f, &Button, &MainView);
-				MainView.VSplitLeft(120.0f, &Button, &MainView);
-				static int s_SpectateButton = 0;
-				if(DoButton_Menu(&s_SpectateButton, Localize("Join blue"), 0, &Button))
-				{
-					m_pClient->SendSwitchTeam(TEAM_BLUE);
-					SetActive(false);
-				}
-			}
 		}
 		else
 		{

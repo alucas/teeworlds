@@ -32,15 +32,14 @@ void CNamePlates::RenderNameplate(
 		const char *pName = m_pClient->m_aClients[pPlayerInfo->m_ClientID].m_aName;
 		float tw = TextRender()->TextWidth(0, FontSize, pName, -1);
 		
-		TextRender()->TextColor(1.0f, 1.0f, 1.0f, a);
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS)
 		{
-			if(pPlayerInfo->m_Team == TEAM_RED)
-				TextRender()->TextColor(1.0f, 0.5f, 0.5f, a);
-			else if(pPlayerInfo->m_Team == TEAM_BLUE)
-				TextRender()->TextColor(0.7f, 0.7f, 1.0f, a);
+			vec4 TeamColor = RenderTools()->GetTeamColor(pPlayerInfo->m_Team);
+			TextRender()->TextColor(TeamColor.r, TeamColor.g, TeamColor.b, a);
 		}
-		
+		else
+			TextRender()->TextColor(1.0f, 1.0f, 1.0f, a);
+
 		TextRender()->Text(0, Position.x-tw/2.0f, Position.y-FontSize-38.0f, FontSize, pName, -1);
 		
 		if(g_Config.m_Debug) // render client id when in debug aswell

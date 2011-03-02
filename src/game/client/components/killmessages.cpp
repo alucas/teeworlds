@@ -78,7 +78,6 @@ void CKillMessages::OnRender()
 
 				int TeamFlag = (m_aKillmsgs[r].m_ModeSpecial & 0xf) - 1;
 				vec4 TeeFlagColor = RenderTools()->GetTeamColor(TeamFlag);
-				dbg_msg("color", "killer team : %d", TeamFlag);
 				
 				RenderTools()->RenderFlag(&QuadItem, 0.0f, TeeFlagColor, 0);
 			}
@@ -109,7 +108,6 @@ void CKillMessages::OnRender()
 
 					int TeamFlag = ((m_aKillmsgs[r].m_ModeSpecial & 0xf0) - 1) >> 4;
 					vec4 FlagColor = RenderTools()->GetTeamColor(TeamFlag);
-					dbg_msg("color", "victim team : %d", TeamFlag);
 					
 					RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
 				}
