@@ -82,8 +82,8 @@ Objects = [
 		NetIntAny("m_X"),
 		NetIntAny("m_Y"),
 		
-		NetIntRange("m_Type", 0, 'max_int'),
-		NetIntRange("m_Subtype", 0, 'max_int'),
+		NetTick("m_Type"),
+		NetTick("m_Subtype"),
 	]),
 
 	NetObject("Flag", [
@@ -102,13 +102,13 @@ Objects = [
 		NetIntRange("m_SuddenDeath", 0, 1),
 		NetIntRange("m_Paused", 0, 1),
 		
-		NetIntRange("m_ScoreLimit", 0, 'max_int'),
-		NetIntRange("m_TimeLimit", 0, 'max_int'),
+		NetTick("m_ScoreLimit"),
+		NetTick("m_TimeLimit"),
 		
-		NetIntRange("m_Warmup", 0, 'max_int'),
+		NetTick("m_Warmup"),
 		
-		NetIntRange("m_RoundNum", 0, 'max_int'),
-		NetIntRange("m_RoundCurrent", 0, 'max_int'),
+		NetTick("m_RoundNum"),
+		NetTick("m_RoundCurrent"),
 
 		NetIntAny("m_TeamscoreRed"),
 		NetIntAny("m_TeamscoreBlue"),
@@ -142,7 +142,7 @@ Objects = [
 		NetIntRange("m_AmmoCount", 0, 10),
 		NetIntRange("m_Weapon", 0, 'NUM_WEAPONS-1'),
 		NetIntRange("m_Emote", 0, len(Emotes)),
-		NetIntRange("m_AttackTick", 0, 'max_int'),
+		NetTick("m_AttackTick"),
 	]),
 	
 	NetObject("PlayerInfo", [
