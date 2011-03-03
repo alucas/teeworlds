@@ -767,7 +767,8 @@ int IGameController::ClampTeam(int Team)
 {
 	if(Team < 0)
 		return TEAM_SPECTATORS;
-	if(IsTeamplay())
-		return Team&1;
+	if(IsTeamplay() && Team < NUM_TEAMS)
+		return Team;
+
 	return 0;
 }

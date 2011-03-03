@@ -53,14 +53,14 @@ void CMenus::RenderGame(CUIRect MainView)
 		{
 			// TODO : Do this nicer
 			const char *aTextButtons[] = {"Join team 1", "Join team 2", "Join team 3", "Join team 4"};
+			static int s_SpectateButton[NUM_TEAMS] = {0};
 			for(int i = 0; i < NUM_TEAMS; i++)
 				if(m_pClient->m_Snap.m_pLocalInfo->m_Team != i)
 				{
 					MainView.VSplitLeft(10.0f, &Button, &MainView);
 					MainView.VSplitLeft(120.0f, &Button, &MainView);
-					static int s_SpectateButton = 0;
 					
-					if(DoButton_Menu(&s_SpectateButton, Localize(aTextButtons[i]), 0, &Button))
+					if(DoButton_Menu(&s_SpectateButton[i], Localize(aTextButtons[i]), 0, &Button))
 					{
 						m_pClient->SendSwitchTeam(i);
 						SetActive(false);
