@@ -354,7 +354,11 @@ vec4 CRenderTools::GetTeamColor(int Team)
 		g_Config.m_TeamColor1,
 		g_Config.m_TeamColor2,
 		g_Config.m_TeamColor3,
-		g_Config.m_TeamColor4
+		g_Config.m_TeamColor4,
+		g_Config.m_TeamColor5,
+		g_Config.m_TeamColor6,
+		g_Config.m_TeamColor7,
+		g_Config.m_TeamColor8
 	};
 
 	return GetRgbColorV4(TeamColors[Team]);

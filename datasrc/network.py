@@ -20,7 +20,7 @@ enum
 enum
 {
 	TEAM_SPECTATORS=-1,
-	NUM_TEAMS=4
+	NUM_TEAMS=8
 };
 '''
 
