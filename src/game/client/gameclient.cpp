@@ -792,7 +792,7 @@ void CGameClient::OnNewSnapshot()
 				s_GameOver = m_Snap.m_pGameobj->m_GameOver;
 			}
 			else if(Item.m_Type == NETOBJTYPE_FLAG)
-				m_Snap.m_paFlags[Item.m_ID%2] = (const CNetObj_Flag *)pData;
+				m_Snap.m_paFlags[Item.m_ID%NUM_TEAMS] = (const CNetObj_Flag *)pData;
 		}
 	}
 	
