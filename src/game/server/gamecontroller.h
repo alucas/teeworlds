@@ -4,6 +4,7 @@
 #define GAME_SERVER_GAMECONTROLLER_H
 
 #include <base/vmath.h>
+#include <game/generated/protocol.h>
 
 /*
 	Class: Game Controller
@@ -51,7 +52,7 @@ protected:
 	int m_GameOverTick;
 	int m_SuddenDeath;
 	
-	int m_aTeamscore[2];
+	int m_aTeamscore[NUM_TEAMS];
 	
 	int m_Warmup;
 	int m_RoundCount;
@@ -68,9 +69,10 @@ public:
 	IGameController(class CGameContext *pGameServer);
 	virtual ~IGameController();
 
+	bool IsTeamFirst();
 	void DoTeamScoreWincheck();
 	void DoPlayerScoreWincheck();
-	
+
 	void DoWarmup(int Seconds);
 	
 	void StartRound();
