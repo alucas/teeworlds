@@ -7,9 +7,10 @@
 
 class CGameControllerCTF : public IGameController
 {
-public:
 	class CFlag *m_apFlags[NUM_TEAMS];
-	
+	int m_NumFlags;
+
+public:	
 	CGameControllerCTF(class CGameContext *pGameServer);
 	virtual bool CanBeMovedOnBalance(int ClientID);
 	virtual void Tick();
