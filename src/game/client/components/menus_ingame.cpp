@@ -21,16 +21,25 @@
 
 void CMenus::RenderGame(CUIRect MainView)
 {
+	int NumStrip = m_pClient->m_Snap.m_pGameobj->m_Flags & GAMEFLAG_TEAMS ? (NUM_TEAMS - 1)/4 + 1 : 1;
+	float StripHeight = 25.0f;
 	CUIRect Button;
+	CUIRect Strips[NumStrip];
+
 	//CUIRect votearea;
-	MainView.HSplitTop(45.0f, &MainView, 0);
+	MainView.HSplitTop(NumStrip * StripHeight + (NumStrip - 1) * 10.0f + 20.0f, &MainView, 0);
 	RenderTools()->DrawUIRect(&MainView, ms_ColorTabbarActive, CUI::CORNER_ALL, 10.0f);
 
-	MainView.HSplitTop(10.0f, 0, &MainView);
-	MainView.HSplitTop(25.0f, &MainView, 0);
+	MainView.HMargin(10.0f, &MainView);
 	MainView.VMargin(10.0f, &MainView);
+
+	for(int i = 0; i < NumStrip; i++)
+	{
+		MainView.HSplitTop(StripHeight, &Strips[i], &MainView);
+		MainView.HSplitTop(10.0f, 0, &MainView);
+	}
 	
-	MainView.VSplitRight(120.0f, &MainView, &Button);
+	Strips[0].VSplitRight(120.0f, &Strips[0], &Button);
 	static int s_DisconnectButton = 0;
 	if(DoButton_Menu(&s_DisconnectButton, Localize("Disconnect"), 0, &Button))
 		Client()->Disconnect();
@@ -39,8 +48,8 @@ void CMenus::RenderGame(CUIRect MainView)
 	{
 		if(m_pClient->m_Snap.m_pLocalInfo->m_Team != TEAM_SPECTATORS)
 		{
-			MainView.VSplitLeft(10.0f, &Button, &MainView);
-			MainView.VSplitLeft(120.0f, &Button, &MainView);
+			Strips[0].VSplitLeft(10.0f, &Button, &Strips[0]);
+			Strips[0].VSplitLeft(120.0f, &Button, &Strips[0]);
 			static int s_SpectateButton = 0;
 			if(DoButton_Menu(&s_SpectateButton, Localize("Spectate"), 0, &Button))
 			{
@@ -62,25 +71,28 @@ void CMenus::RenderGame(CUIRect MainView)
 				"Join team 7",
 				"Join team 8"};
 			static int s_SpectateButton[NUM_TEAMS] = {0};
+			int Position = 1;
 			for(int i = 0; i < NUM_TEAMS; i++)
 				if(m_pClient->m_Snap.m_pLocalInfo->m_Team != i)
 				{
-					MainView.VSplitLeft(10.0f, &Button, &MainView);
-					MainView.VSplitLeft(120.0f, &Button, &MainView);
+					Strips[Position%NumStrip].VSplitLeft(10.0f, &Button, &Strips[Position%NumStrip]);
+					Strips[Position%NumStrip].VSplitLeft(120.0f, &Button, &Strips[Position%NumStrip]);
 					
 					if(DoButton_Menu(&s_SpectateButton[i], Localize(aTextButtons[i]), 0, &Button))
 					{
 						m_pClient->SendSwitchTeam(i);
 						SetActive(false);
 					}
+
+					Position++;
 				}
 		}
 		else
 		{
 			if(m_pClient->m_Snap.m_pLocalInfo->m_Team != 0)
 			{
-				MainView.VSplitLeft(10.0f, &Button, &MainView);
-				MainView.VSplitLeft(120.0f, &Button, &MainView);
+				Strips[0].VSplitLeft(10.0f, &Button, &Strips[0]);
+				Strips[0].VSplitLeft(120.0f, &Button, &Strips[0]);
 				static int s_SpectateButton = 0;
 				if(DoButton_Menu(&s_SpectateButton, Localize("Join game"), 0, &Button))
 				{
@@ -91,8 +103,8 @@ void CMenus::RenderGame(CUIRect MainView)
 		}
 	}
 
-	MainView.VSplitLeft(100.0f, &Button, &MainView);
-	MainView.VSplitLeft(150.0f, &Button, &MainView);
+	Strips[0].VSplitLeft(100.0f, &Button, &Strips[0]);
+	Strips[0].VSplitLeft(150.0f, &Button, &Strips[0]);
 
 	static int s_DemoButton = 0;
 	bool Recording = DemoRecorder()->IsRecording();
