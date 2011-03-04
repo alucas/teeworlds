@@ -115,7 +115,7 @@ public:
 		
 		int m_LocalClientID;
 		int m_NumPlayers;
-		int m_aTeamSize[2];
+		int m_aTeamSize[NUM_TEAMS];
 		bool m_Spectate;
 		
 		//
