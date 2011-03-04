@@ -251,6 +251,12 @@ void CScoreboard::RenderRecordingNotification(float x)
 	TextRender()->Text(0, x+50.0f, 8.0f, 24.0f, Localize("REC"), -1);
 }
 
+
+const char* get_team_name(int num){ // NEW 
+  const char *team_names[8] = {"red","blue","yellow","green", "bla", "blo", "blu", "bli"};
+  return team_names[num];}
+
+
 void CScoreboard::OnRender()
 {
 	if(!Active())
@@ -263,38 +269,57 @@ void CScoreboard::OnRender()
 
 	float Width = 400*3.0f*Graphics()->ScreenAspect();
 	float Height = 400*3.0f;
-	
+
 	Graphics()->MapScreen(0, 0, Width, Height);
 
-	float w = 650.0f;
+	float w = 400.0f;
 
 	if(m_pClient->m_Snap.m_pGameobj && !(m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS))
 		RenderScoreboard(Width/2-w/2, 150.0f, w, 0, 0);
-	else
+	else //team game
 	{
-			
-		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
-		{
-			const char *pText;
-			if(m_pClient->m_Snap.m_pGameobj->m_Teamscore[0] > m_pClient->m_Snap.m_pGameobj->m_Teamscore[1])
-				pText = Localize("Red team wins!");
-			else if(m_pClient->m_Snap.m_pGameobj->m_Teamscore[1] > m_pClient->m_Snap.m_pGameobj->m_Teamscore[0])
-				pText = Localize("Blue team wins!");
-			else
-				pText = Localize("Draw!");
-				
-			float w = TextRender()->TextWidth(0, 86.0f, pText, -1);
-			TextRender()->Text(0, Width/2-w/2, 39, 86.0f, pText, -1);
+	  int i;		
+	  const char *pText;
+	  if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
+	    {
+	  
+	    
+	      int tmp_wining_team=0;
+	      int tmp_score_wining_team = m_pClient->m_Snap.m_pGameobj->m_Teamscore[0]; //not initialize =0 because of negativ team_score
+	      for(i = 0; i<NUM_TEAMS;i++){//which team win ?
+		if (tmp_score_wining_team < m_pClient->m_Snap.m_pGameobj->m_Teamscore[i]){//don't care about execo
+		  tmp_wining_team = i;
+		  tmp_score_wining_team = m_pClient->m_Snap.m_pGameobj->m_Teamscore[i];
 		}
-		
-		RenderScoreboard(Width/2-w-20, 150.0f, w, 0, Localize("Red team"));
-		RenderScoreboard(Width/2 + 20, 150.0f, w, 1, Localize("Blue team"));
+	      }
+	
+	      //objectif : afficher "team x wins !" 
+	      const char* winner = get_team_name(tmp_wining_team);
+	      const char* wins = " wins";
+	      size_t size = (str_length(wins)+str_length(winner) + 1 )*sizeof(char*);
+	      char* result = (char*) mem_alloc(size,0);
+	      str_format(result,size,"%s%s",winner,wins);
+	      pText= Localize(result);
+      
+	      float w = TextRender()->TextWidth(0, 86.0f, pText, -1);
+	      TextRender()->Text(0, Width/2-w/2, 39, 86.0f, pText, -1);
+	    }
+	
+	  int space =20;
+	  int nb_spaces = NUM_TEAMS - 1;//one space between 2 board => how many spaces ?
+	  int W = nb_spaces*space + NUM_TEAMS*w;
+	  for(i = 0; i<NUM_TEAMS;i++){
+	    RenderScoreboard(Width/2-W/2+i*(w+space), 150.0f, w, i, Localize(get_team_name(i))); 
+	  }
 	}
-
+	
 	RenderGoals(Width/2-w/2, 150+750+25, w);
 	RenderSpectators(Width/2-w/2, 150+750+25+50+25, w);
 	RenderRecordingNotification((Width/7)*4);
 }
+
+
+
 
 bool CScoreboard::Active()
 {
