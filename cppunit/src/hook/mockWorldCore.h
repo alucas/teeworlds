@@ -2,7 +2,7 @@
 #define MOCK_WORLDCORE_H
 
 #include <iostream>
-#include "gamecore.h"
+#include "game/gamecore.h"
 
 class MockWorldCore : public CWorldCore
 {

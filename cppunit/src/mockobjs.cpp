@@ -1,3 +1,5 @@
+#ifdef CONF_UNITTESTING
+
 #include "mockobjs.h"
 
 MockGameWorld::MockGameWorld(MockServer *ms):CGameWorld() {
@@ -12,3 +14,5 @@ void
 MockServer::setIngame(int index) {
   m_aClients[0].m_State = CClient::STATE_INGAME;
 }
+
+#endif /* CONF_UNITTESTING */

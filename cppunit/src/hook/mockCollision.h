@@ -1,7 +1,7 @@
 #ifndef MOCK_COLLISION_H
 #define MOCK_COLLISION_H
 
-#include <collision.h>
+#include <game/collision.h>
 
 class MockCollision: public CCollision
 {
