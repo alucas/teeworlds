@@ -591,17 +591,14 @@ int IGameController::GetAutoTeam(int NotThisID)
 	}
 
 	int Team = 0;
+	int NumplayerTeam = aNumplayers[0];
 	if(IsTeamplay())
-	{
-		Team = 0;
-		int NumplayerTeam = aNumplayers[Team];
 		for(int i = 1; i < NUM_TEAMS; i++)
 			if(aNumplayers[i] < NumplayerTeam)
 			{
 				NumplayerTeam = aNumplayers[i];
 				Team = i;
 			}
-	}
 		
 	if(CanJoinTeam(Team, NotThisID))
 		return Team;
@@ -678,9 +675,14 @@ bool IGameController::CanChangeTeam(CPlayer *pPlayer, int JoinTeam)
 	int OldTeam = pPlayer->GetTeam();
 	if (OldTeam != TEAM_SPECTATORS)
 		aNumTees[OldTeam]--;
-	
+
+	int MinimumTees = aNumTees[0];
+	for(int i = 1; i < NUM_TEAMS; i++)
+		if(aNumTees[i] < MinimumTees)
+			MinimumTees = aNumTees[i];
+
 	// there is a player-difference of at least 2
-	if (aNumTees[JoinTeam] - aNumTees[OldTeam] > 2)
+	if (aNumTees[JoinTeam] - MinimumTees > 2)
 		return false;
 	
 	return true;
