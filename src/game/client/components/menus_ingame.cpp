@@ -75,8 +75,8 @@ void CMenus::RenderGame(CUIRect MainView)
 			for(int i = 0; i < NUM_TEAMS; i++)
 				if(m_pClient->m_Snap.m_pLocalInfo->m_Team != i)
 				{
-					Strips[Position%NumStrip].VSplitLeft(10.0f, &Button, &Strips[Position%NumStrip]);
-					Strips[Position%NumStrip].VSplitLeft(120.0f, &Button, &Strips[Position%NumStrip]);
+					Strips[Position/4].VSplitLeft(10.0f, &Button, &Strips[Position/4]);
+					Strips[Position/4].VSplitLeft(120.0f, &Button, &Strips[Position/4]);
 					
 					if(DoButton_Menu(&s_SpectateButton[i], Localize(aTextButtons[i]), 0, &Button))
 					{
