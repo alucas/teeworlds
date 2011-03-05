@@ -17,7 +17,7 @@ LDLIBS= -lcppunit -lpthread
 
 
 OUTFILE= $(BINDIR)unittest
-TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(wildcard ../objs/base/*.o) $(wildcard ../objs/engine/external/*/*.o) $(wildcard ../objs/engine/shared/*.o) $(wildcard ../objs/game/*.o) $(wildcard ../objs/game/server/*.o)  $(wildcard ../objs/game/server/*/*.o) $(wildcard ../objs/engine/server/*.o)
+TWOBJS= ../objs/game/generated/server_data.o ../objs/game/generated/nethash.o ../objs/game/generated/protocol.o $(patsubst %_d.o,,$(wildcard ../objs/base/*.o)) $(patsubst %_d.o,,$(wildcard ../objs/engine/external/*/*.o)) $(patsubst %_d.o,,$(wildcard ../objs/engine/shared/*.o)) $(patsubst %_d.o,,$(wildcard ../objs/game/*.o)) $(patsubst %_d.o,,$(wildcard ../objs/game/server/*.o))  $(patsubst %_d.o,,$(wildcard ../objs/game/server/*/*.o)) $(patsubst %_d.o,,$(wildcard ../objs/engine/server/*.o))
 
 
 OBJS= $(OBJDIR)unittest.o $(OBJDIR)mockobjs.o $(TWOBJS) 
