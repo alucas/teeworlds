@@ -222,7 +222,7 @@ function build(settings)
 	-- build tools (TODO: fix this so we don't get double _d_d stuff)
 	tools_src = Collect("src/tools/*.cpp", "src/tools/*.c")
 
-	unittest = Compile(settings, Collect("cppunit/src/*.cpp"))
+	unittest = Compile(settings, Collect("src/unittest/*.cpp"))
 
 	client_osxlaunch = {}
 	server_osxlaunch = {}
