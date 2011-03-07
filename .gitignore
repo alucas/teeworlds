@@ -20,6 +20,8 @@ tileset_borderfix*
 versionsrv*
 unittest_t*
 
+Makefile
+
 Doxyfile
 html
 

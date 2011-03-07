@@ -17,7 +17,8 @@ using namespace std;
 
 
 static void 
-setUpMockInput(CNetObj_PlayerInput *input) {
+setUpMockInput(CNetObj_PlayerInput *input) 
+{
 	input->m_Direction = 1;
 	input->m_TargetX = 15;
 	input->m_TargetY = 15;
@@ -38,80 +39,76 @@ class Test : public CPPUNIT_NS::TestCase
 	CPPUNIT_TEST(testFireWeapon);
 	CPPUNIT_TEST_SUITE_END();
 
-	MockGameWorld *gw;
-	//CEntity *entity;
-	MockGameServer *mgs;
-	MockServer *ms;
+	MockGameWorld *m_pMockGameWorld;
+	MockGameServer *m_pMockGameServer;
+	MockServer *m_pMockServer;
     
     
 public:
-	void setUp(void) {
+	void setUp(void)
+	{
 	
-		ms = new MockServer();
-		gw = new MockGameWorld(ms);
-		mgs = new MockGameServer(ms);
-		//    g_Config = *CreateConfig();
-		mgs->m_pController = new MockController(mgs);
-		mgs->m_World.SetGameServer(mgs);
-		gw->SetGameServer(mgs);
+		m_pMockServer = new MockServer();
+		m_pMockGameWorld = new MockGameWorld(m_pMockServer);
+		m_pMockGameServer = new MockGameServer(m_pMockServer);
+		
+		m_pMockGameServer->m_pController = new MockController(m_pMockGameServer);
+		m_pMockGameServer->m_World.SetGameServer(m_pMockGameServer);
+		m_pMockGameWorld->SetGameServer(m_pMockGameServer);
 
 	}
 
 	void tearDown(void) {
-		//    delete gw->GameServer();
-
-		//delete mgs; 
-		//commente car cause un segfault dans le destructeur
-		// de la classe mere
-		delete ms;
-		delete gw;
+		//delete m_pMockGameServer; 
+		//commented because causes a segfault in the mother class
+		delete m_pMockServer;
+		delete m_pMockGameWorld;
 	} 
 
 protected:
 
-	void testFireWeapon(void) {
-		CCharacter *character = new (1) CCharacter(&mgs->m_World);//gw);
-		CPlayer *player = new (1) CPlayer(mgs,1,1);
-
-		vec2 spawnPos = vec2(10.f,10.f);
-		character->Spawn(player,vec2(10,10));
-		/*character->m_Pos.x = 10;
-		  character->m_Pos.y = 10;*/
+	void testFireWeapon(void) 
+	{
+		CCharacter *testCharacter = new (1) CCharacter(&m_pMockGameServer->m_World);
+		CPlayer *testPlayer = new (1) CPlayer(m_pMockGameServer,1,1);
 		CNetObj_PlayerInput mockInput;
+		vec2 spawnPos = vec2(10.f,10.f);
+
+		testCharacter->Spawn(testPlayer,vec2(10,10));
 		memset(&mockInput,0,sizeof(mockInput));
-  
 		setUpMockInput(&mockInput);
     
     
-		character->GiveWeapon(WEAPON_GRENADE,10);
-		character->SetWeapon(WEAPON_GRENADE);
+		testCharacter->GiveWeapon(WEAPON_GRENADE,10);
+		testCharacter->SetWeapon(WEAPON_GRENADE);
+		testCharacter->OnDirectInput(&mockInput);
 
-		character->OnDirectInput(&mockInput);
-
-		character->FireWeapon();
-		delete character;
+		testCharacter->FireWeapon();
+		delete testCharacter;
+		delete testPlayer;
 	}
 
 
-	void testSnap(void) {
+	void testSnap(void) 
+	{
 		int PosX = 20;
 		int PosY = 10;
 		int team = 1;
 
-		CFlag *flag = new CFlag(gw,1);
+		CFlag *flag = new CFlag(m_pMockGameWorld,1);
 		flag->m_Pos = vec2(PosX,PosY);
-		mgs->m_World.InsertEntity(flag);
+		m_pMockGameServer->m_World.InsertEntity(flag);
 
-		CEntity * entity = mgs->m_World.FindFirst(CGameWorld::ENTTYPE_FLAG);
+		CEntity * entity = m_pMockGameServer->m_World.FindFirst(CGameWorld::ENTTYPE_FLAG);
 		CPPUNIT_ASSERT(entity);
-		CServer::NewClientCallback(0,ms);
-		ms->setIngame(0);
+		
+		CServer::NewClientCallback(0,m_pMockServer);
+		m_pMockServer->setIngame(0);
 
-		ms->m_SnapshotBuilder.Init();
+		m_pMockServer->m_SnapshotBuilder.Init();
+		m_pMockGameServer->m_World.Snap(0);
 
-		mgs->m_World.Snap(0);
-
-		CNetObj_Flag  * netflag = (CNetObj_Flag *)ms->m_SnapshotBuilder.GetItem(0)->Data();
+		CNetObj_Flag  * netflag = (CNetObj_Flag *)m_pMockServer->m_SnapshotBuilder.GetItem(0)->Data();
 		CPPUNIT_ASSERT(netflag->m_X == PosX 
 			       && netflag->m_Y == PosY 
 			       && netflag->m_Team == team 
