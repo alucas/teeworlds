@@ -353,7 +353,7 @@ void CConsole::ExecuteFile(const char *pFilename)
 		char *pLine;
 		CLineReader lr;
 		
-		str_format(aBuf, sizeof(aBuf), "executing '%s'", pFilename);
+		str_format(aBuf, sizeof(aBuf), "I'm executing '%s'", pFilename);
 		Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
 		lr.Init(File);
 
