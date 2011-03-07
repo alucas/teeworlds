@@ -9,12 +9,14 @@
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 
-#include "mockobjs.h"
 #include <stdio.h>
 #include <string.h>
 
-using namespace std;
 
+#include "mockobjs.h"
+#include "hookTest.h"
+
+using namespace std;
 
 static void 
 setUpMockInput(CNetObj_PlayerInput *input) 
@@ -31,8 +33,7 @@ setUpMockInput(CNetObj_PlayerInput *input)
 	input->m_PrevWeapon = 0;
 }
 
-
-class Test : public CPPUNIT_NS::TestCase
+class Test : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Test);
 	CPPUNIT_TEST(testSnap);
