@@ -19,12 +19,14 @@
 #include "motd.h"
 #include "voting.h"
 
+#define MAX_STRIP ((NUM_TEAMS - 1)/4 + 1)
+
 void CMenus::RenderGame(CUIRect MainView)
 {
-	int NumStrip = m_pClient->m_Snap.m_pGameobj->m_Flags & GAMEFLAG_TEAMS ? (NUM_TEAMS - 1)/4 + 1 : 1;
+	int NumStrip = m_pClient->m_Snap.m_pGameobj->m_Flags & GAMEFLAG_TEAMS ? MAX_STRIP : 1;
 	float StripHeight = 25.0f;
 	CUIRect Button;
-	CUIRect Strips[NumStrip];
+	CUIRect Strips[MAX_STRIP];
 
 	//CUIRect votearea;
 	MainView.HSplitTop(NumStrip * StripHeight + (NumStrip - 1) * 10.0f + 20.0f, &MainView, 0);
@@ -46,6 +48,7 @@ void CMenus::RenderGame(CUIRect MainView)
 
 	if(m_pClient->m_Snap.m_pLocalInfo && m_pClient->m_Snap.m_pGameobj)
 	{
+		int Position = 1;
 		if(m_pClient->m_Snap.m_pLocalInfo->m_Team != TEAM_SPECTATORS)
 		{
 			Strips[0].VSplitLeft(10.0f, &Button, &Strips[0]);
@@ -56,6 +59,8 @@ void CMenus::RenderGame(CUIRect MainView)
 				m_pClient->SendSwitchTeam(TEAM_SPECTATORS);
 				SetActive(false);
 			}
+
+			Position++;
 		}
 		
 		if(m_pClient->m_Snap.m_pGameobj->m_Flags & GAMEFLAG_TEAMS)
@@ -71,7 +76,6 @@ void CMenus::RenderGame(CUIRect MainView)
 				"Join team 7",
 				"Join team 8"};
 			static int s_SpectateButton[NUM_TEAMS] = {0};
-			int Position = 1;
 			for(int i = 0; i < NUM_TEAMS; i++)
 				if(m_pClient->m_Snap.m_pLocalInfo->m_Team != i)
 				{
