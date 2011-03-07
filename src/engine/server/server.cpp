@@ -1579,5 +1579,4 @@ int main(int argc, const char **argv) // ignore_convention
 	delete pConfig;
 	return 0;
 }
-#endif
 */
