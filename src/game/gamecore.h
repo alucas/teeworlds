@@ -170,6 +170,9 @@ public:
 	
 	CTuningParams m_Tuning;
 	class CCharacterCore *m_apCharacters[MAX_CLIENTS];
+	
+	//Redefined in cppunit, please keep it.
+	virtual float GetHookLength();
 };
 
 class CCharacterCore
@@ -202,6 +205,19 @@ public:
 	void Read(const CNetObj_CharacterCore *pObjCore);
 	void Write(CNetObj_CharacterCore *pObjCore);
 	void Quantize();
+
+	int GetHookState(){
+	  return m_HookState;};
+
+	void setHookPosition(float x, float y){
+	  	m_HookPos = vec2(x,y);
+	};
+
+	void setHookDirection(float x, float y){
+	  	m_HookDir = vec2(x,y);
+	};
+	
+	
 };
 
 #endif

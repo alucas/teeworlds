@@ -18,6 +18,7 @@ teeworlds*
 teeworlds_srv*
 tileset_borderfix*
 versionsrv*
+unittest_t*
 
 Doxyfile
 html

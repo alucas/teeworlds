@@ -2,12 +2,16 @@
 #define MOCK_WORLDCORE_H
 
 #include <iostream>
-#include "gamecore.h"
+#include "game/gamecore.h"
 
 class MockWorldCore : public CWorldCore
 {
  public:
-  MockWorldCore(){ std::cout<<" constructeur mock world core " << std::endl; };  
+  MockWorldCore(){};  
+  
+  float GetHookLength(){
+    return 1; //Arbitrary value. Chosen to be low.
+  }
 };
 
 #endif

@@ -1,3 +1,5 @@
+#ifdef CONF_UNITTESTING
+
 #include <iostream>
 
 #include <cppunit/TestRunner.h>
@@ -14,18 +16,18 @@
 using namespace std;
 
 
-void 
+static void 
 setUpMockInput(CNetObj_PlayerInput *input) {
-	mockInput.m_Direction = 1;
-	mockInput.m_TargetX = 15;
-	mockInput.m_TargetY = 15;
-	mockInput.m_Jump = 0;
-	mockInput.m_Fire = 1;
-	mockInput.m_Hook = 0;
-	mockInput.m_PlayerState = PLAYERSTATE_PLAYING;
-	mockInput.m_WantedWeapon = 0;
-	mockInput.m_NextWeapon = 0;
-	mockInput.m_PrevWeapon = 0;
+	input->m_Direction = 1;
+	input->m_TargetX = 15;
+	input->m_TargetY = 15;
+	input->m_Jump = 0;
+	input->m_Fire = 1;
+	input->m_Hook = 0;
+	input->m_PlayerState = PLAYERSTATE_PLAYING;
+	input->m_WantedWeapon = 0;
+	input->m_NextWeapon = 0;
+	input->m_PrevWeapon = 0;
 }
 
 
@@ -78,7 +80,7 @@ protected:
 		CNetObj_PlayerInput mockInput;
 		memset(&mockInput,0,sizeof(mockInput));
   
-		setUpInput(&mockInput);
+		setUpMockInput(&mockInput);
     
     
 		character->GiveWeapon(WEAPON_GRENADE,10);
@@ -141,3 +143,5 @@ int main( int ac, char **av )
 
 	return result.wasSuccessful() ? 0 : 1;
 }
+
+#endif /* CONF_UNITTESTING */
