@@ -1,22 +1,28 @@
+#ifdef CONF_UNITTESTING
+
 #ifndef MOCK_OBJS_H
 #define MOCK_OBJS_H
 
 #include <iostream>
 
-#include "protocol.h"
-#include "network.h"
+#include "engine/shared/protocol.h"
+#include "engine/shared/network.h"
+#include "engine/shared/snapshot.h"
+#include "engine/shared/demo.h"
+#include "engine/shared/engine.h"
+
 #include "engine/masterserver.h"
 #include "engine/map.h"
-#include "snapshot.h"
-#include "demo.h"
-#include "engine.h"
-#include "engine/server/register.h"
 #include "engine/console.h"
 #include "engine/server.h"
-#include "engine/server/server.h"
-#include "flag.h"
 
-#include "player.h"
+#include "engine/server/server.h"
+#include "engine/server/register.h"
+
+#include "game/server/player.h"
+
+#include "game/server/entities/flag.h"
+
 
 class CGameContext;
 class IServer;
@@ -77,3 +83,4 @@ public:
 };
 
 #endif /* MOCK_OBJS_H */
+#endif /* CONF_UNITTESTING */

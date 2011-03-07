@@ -11,11 +11,11 @@
 
 
 //Tested file, that contains CCharacterCore class.
-#include "gamecore.h"
+#include "game/gamecore.h"
 
 #include "mockCollision.h"
 #include "mockWorldCore.h"
-#include "protocol.h"
+#include "engine/shared/protocol.h"
 
 using namespace std;
 

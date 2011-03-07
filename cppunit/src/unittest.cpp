@@ -1,3 +1,5 @@
+#ifdef CONF_UNITTESTING
+
 #include <iostream>
 
 #include <cppunit/TestRunner.h>
@@ -45,7 +47,7 @@ protected:
   void testSnap(void) {
     int PosX = 20;
     int PosY = 10;
-    int team = 1;
+    //int team = 1;
 
     CFlag *flag = new CFlag(gw,1);
     flag->m_Pos = vec2(PosX,PosY);
@@ -92,3 +94,5 @@ int main( int ac, char **av )
 
   return result.wasSuccessful() ? 0 : 1;
 }
+
+#endif /* CONF_UNITTESTING */

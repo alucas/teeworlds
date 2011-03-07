@@ -1498,7 +1498,7 @@ void CServer::SnapSetStaticsize(int ItemType, int Size)
 
 static CServer *CreateServer() { return new CServer(); }
 
-/*
+#ifndef CONF_UNITTESTING
 int main(int argc, const char **argv) // ignore_convention
 {
 #if defined(CONF_FAMILY_WINDOWS)
@@ -1590,5 +1590,4 @@ int main(int argc, const char **argv) // ignore_convention
 	delete pConfig;
 	return 0;
 }
-#endif
-*/
+#endif /* CONF_UNITTESTING */
