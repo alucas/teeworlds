@@ -1,3 +1,4 @@
+
 bam
 .bam
 config.lua
@@ -29,4 +30,10 @@ html
 
 bin/
 
+
+unittest_t
+cleaner.sh
+gdb.txt
+script.sh
+finder.sh
 *~

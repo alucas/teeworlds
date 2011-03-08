@@ -1,3 +1,4 @@
+
 CheckVersion("0.4")
 
 Import("configure.lua")
@@ -214,7 +215,7 @@ function build(settings)
 	
 	versionserver = Compile(settings, Collect("src/versionsrv/*.cpp"))
 	masterserver = Compile(settings, Collect("src/mastersrv/*.cpp"))
-	game_shared = Compile(settings, Collect("src/game/*.cpp"), nethash, network_source)
+	game_shared = Compile(settings, Collect("src/game/*.cpp", "src/game/hook/*.cpp" ), nethash, network_source)
 	game_client = Compile(settings, CollectRecursive("src/game/client/*.cpp"), client_content_source)
 	game_server = Compile(settings, CollectRecursive("src/game/server/*.cpp"), server_content_source)
 	game_editor = Compile(settings, Collect("src/game/editor/*.cpp"))
