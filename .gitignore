@@ -22,7 +22,8 @@ cleaner.sh
 finder.sh
 gdb.txt
 script.sh
-unittest_t
+unittest_t*
+Makefile
 Doxyfile
 html
 
