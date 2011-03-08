@@ -1512,16 +1512,6 @@ int main(int argc, const char **argv) // ignore_convention
 	}
 #endif
 
-	const char *win = "win";
-	char *equipe = "bleu";
-	char *result = (char*)mem_alloc( (str_length(win) + str_length(equipe) )* sizeof(char*),0 );
-	
-	str_append(result, win, str_length(win) + 1 ); 
-	str_append(result, equipe, str_length(equipe) + str_length(win) + 1 ); 	
-
-	printf("%s\n",result);
-
-
 	// init the engine
 	dbg_msg("server", "starting...");
 	CServer *pServer = CreateServer();

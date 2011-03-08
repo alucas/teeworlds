@@ -11,8 +11,6 @@
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
 
-#include "hook/hook.h"
- 
 class CTuneParam
 {
 	int m_Value;
