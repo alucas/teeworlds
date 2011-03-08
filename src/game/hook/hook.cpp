@@ -1,22 +1,24 @@
 #include "hook.h"
+#include "state.h"
 
+CHook::CHook(CCharacterCore *character) {
+  owner = character;
+  //m_pCurrentState = CHookIdle::getInstance();
+    
+}
 
 void CHook::Reset()
 {
-
 	m_HookPos = vec2(0,0);
 	m_HookDir = vec2(0,0);
 	m_HookTick = 0;
 	m_HookState = HOOK_IDLE;
-
 }
 
 void CHook::HookTick(bool useInput)
 {
 
 	vec2 TargetDirection = normalize(vec2(owner->m_Input.m_TargetX, owner->m_Input.m_TargetY));
-
-
 
 	if(useInput)
 	{
