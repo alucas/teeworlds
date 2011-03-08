@@ -15,8 +15,10 @@ public:
 	virtual void Reset();
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
+
+	virtual int OnPickup(CCharacter *pChr) {return -1;}
 	
-private:
+protected:
 	int m_Type;
 	int m_Subtype;
 	int m_SpawnTick;

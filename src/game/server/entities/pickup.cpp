@@ -65,7 +65,7 @@ void CPickup::Tick()
 				break;
 
 			case POWERUP_WEAPON:
-				if(m_Subtype >= 0 && m_Subtype < NUM_WEAPONS)
+				/*if(m_Subtype >= 0 && m_Subtype < NUM_WEAPONS)
 				{
 					if(pChr->GiveWeapon(m_Subtype, 10))
 					{
@@ -81,7 +81,9 @@ void CPickup::Tick()
 						if(pChr->GetPlayer())
 							GameServer()->SendWeaponPickup(pChr->GetPlayer()->GetCID(), m_Subtype);
 					}
-				}
+					}*/
+
+				RespawnTime = OnPickup(pChr);
 				break;
 				
 			case POWERUP_NINJA:
