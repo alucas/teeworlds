@@ -18,7 +18,11 @@ teeworlds*
 teeworlds_srv*
 tileset_borderfix*
 versionsrv*
-
+cleaner.sh
+finder.sh
+gdb.txt
+script.sh
+unittest_t
 Doxyfile
 html
 
