@@ -19,14 +19,14 @@
 #include "motd.h"
 #include "voting.h"
 
-#define MAX_STRIP ((m_pClient->m_Snap.m_pGameobj->m_NumberTeams - 1)/4 + 1)
+#define NUM_STRIP ((int)ceil(m_pClient->m_Snap.m_pGameobj->m_NumberTeams/4.0f))
 
 void CMenus::RenderGame(CUIRect MainView)
 {
-	int NumStrip = m_pClient->m_Snap.m_pGameobj->m_Flags & GAMEFLAG_TEAMS ? MAX_STRIP : 1;
+	int NumStrip = m_pClient->m_Snap.m_pGameobj->m_Flags & GAMEFLAG_TEAMS ? NUM_STRIP : 1;
 	float StripHeight = 25.0f;
 	CUIRect Button;
-	CUIRect Strips[MAX_STRIP];
+	CUIRect Strips[NUM_TEAMS/4 + 1];
 
 	//CUIRect votearea;
 	MainView.HSplitTop(NumStrip * StripHeight + (NumStrip - 1) * 10.0f + 20.0f, &MainView, 0);
@@ -48,7 +48,7 @@ void CMenus::RenderGame(CUIRect MainView)
 
 	if(m_pClient->m_Snap.m_pLocalInfo && m_pClient->m_Snap.m_pGameobj)
 	{
-		int Position = 1;
+		int Position = 0;
 		if(m_pClient->m_Snap.m_pLocalInfo->m_Team != TEAM_SPECTATORS)
 		{
 			Strips[0].VSplitLeft(10.0f, &Button, &Strips[0]);

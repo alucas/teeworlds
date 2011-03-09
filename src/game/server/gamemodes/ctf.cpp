@@ -23,9 +23,12 @@ bool CGameControllerCTF::OnEntity(int Index, vec2 Pos)
 {
 	if(IGameController::OnEntity(Index, Pos))
 		return true;
-	
-	int Team = -1;
+	// else : Flag entity
 
+	if(m_NumFlags >= m_NumTeams)
+		return false;
+
+	int Team = -1;
 	if(Index >= ENTITY_FLAGSTAND && Index < ENTITY_FLAGSTAND + 8)
 		Team = Index - ENTITY_FLAGSTAND;
 
