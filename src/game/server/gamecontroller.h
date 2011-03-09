@@ -13,8 +13,8 @@
 */
 class IGameController
 {
-	vec2 m_aaSpawnPoints[8 + 1][64];
-	int m_aNumSpawnPoints[8 + 1];
+	vec2 m_aaSpawnPoints[NUM_TEAMS + 1][64];
+	int m_aNumSpawnPoints[NUM_TEAMS + 1];
 	
 	class CGameContext *m_pGameServer;
 	class IServer *m_pServer;
