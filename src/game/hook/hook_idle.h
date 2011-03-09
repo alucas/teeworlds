@@ -3,17 +3,17 @@
 
 #include "state.h"
 
+
 class CHookIdle: public CState{
+  //  class CHookIdle{
 
  public:
-    void Execute(CHook*hook);
+  void Execute(CHook*hook, bool UseInput);
     ~CHookIdle();
     static CHookIdle* getInstance();
 
-    static CHookIdle* m_pSingleton();
-
  private:
-    CHookIdle(){};
+    CHookIdle();
     CHookIdle(const CHookIdle &);
     CHookIdle& operator=(const CHookIdle &);
 };

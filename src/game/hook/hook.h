@@ -1,10 +1,9 @@
 #ifndef HOOK_H
 #define HOOK_H
 
+#include "state.h"
 #include "../gamecore.h"
-#include "hook_idle.h"
-
-class CState;
+//#include "hook_idle.h"
 
 class CHook{
 
@@ -18,6 +17,7 @@ class CHook{
 
   vec2 m_HookPos;
   vec2 m_HookDir;
+  vec2 m_TargetDirection;
   int m_HookTick;
   //Need to disapear;
   int m_HookState;

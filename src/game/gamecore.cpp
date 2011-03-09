@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "gamecore.h"
 #include "hook/hook.h"
+
 const char *CTuningParams::m_apNames[] =
 {
 	#define MACRO_TUNING_PARAM(Name,ScriptName,Value) #ScriptName,

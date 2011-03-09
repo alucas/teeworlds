@@ -1,18 +1,17 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include "hook.h"
+class CHook;
 
 //A state in a finite deterministic automaton.
-
 class CState
 {
 public:
-  virtual void Execute(CHook*)=0;
-  virtual ~CState()=0;
+  virtual void Execute(CHook*, bool UseInput)=0;
+  ~CState(){}
 
-
-  CState();
+ protected:
+  CState(){}
 
  private:
 

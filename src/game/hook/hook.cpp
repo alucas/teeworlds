@@ -1,25 +1,35 @@
-#include "hook.h"
 #include "state.h"
+#include "hook.h"
+#include "hook_idle.h"
+
 
 CHook::CHook(CCharacterCore *character) {
   owner = character;
-  //m_pCurrentState = CHookIdle::getInstance();
+  m_pCurrentState = CHookIdle::getInstance();
+  m_HookState = 0;
+  m_HookPos         = vec2(0,0);
+  m_HookDir         = vec2(0,0);
+  m_TargetDirection = vec2(0,0);
+  
+  m_HookTick = 0;
     
 }
 
 void CHook::Reset()
 {
-	m_HookPos = vec2(0,0);
-	m_HookDir = vec2(0,0);
-	m_HookTick = 0;
-	m_HookState = HOOK_IDLE;
+  m_HookPos         = vec2(0,0);
+  m_HookDir         = vec2(0,0);
+  m_TargetDirection = vec2(0,0);
+  
+  m_HookTick = 0;
+  m_pCurrentState = CHookIdle::getInstance();
+  m_HookState = 0;
 }
 
 void CHook::HookTick(bool useInput)
 {
 
-	vec2 TargetDirection = normalize(vec2(owner->m_Input.m_TargetX, owner->m_Input.m_TargetY));
-
+	m_TargetDirection = normalize(vec2(owner->m_Input.m_TargetX, owner->m_Input.m_TargetY));
 	if(useInput)
 	{
 		if(owner->m_Input.m_Hook)
@@ -27,8 +37,8 @@ void CHook::HookTick(bool useInput)
 			if(m_HookState == HOOK_IDLE)
 			{
 				m_HookState = HOOK_FLYING;
-				m_HookPos = owner->m_Pos + TargetDirection* owner->PhysSize*1.5f;
-				m_HookDir = TargetDirection;
+				m_HookPos = owner->m_Pos + m_TargetDirection* owner->PhysSize*1.5f;
+				m_HookDir = m_TargetDirection;
 				owner->m_HookedPlayer = -1;
 				m_HookTick = 0;
 				owner->m_TriggeredEvents |= COREEVENT_HOOK_LAUNCH;
@@ -43,14 +53,16 @@ void CHook::HookTick(bool useInput)
 	}
 
 	if(m_HookState == HOOK_IDLE)
-	{
-		owner->m_HookedPlayer = -1;
-		m_HookState = HOOK_IDLE;
-		m_HookPos = owner->m_Pos;
-	}
+	  {
+	    if(m_pCurrentState == NULL)
+	      {
+	      }
+	    m_pCurrentState->Execute(this,false);
+	  }
+	
 	else if(m_HookState >= HOOK_RETRACT_START && m_HookState < HOOK_RETRACT_END)
 	{
-		m_HookState++;
+	  m_HookState++;
 	}
 	else if(m_HookState == HOOK_RETRACT_END)
 	{
@@ -125,7 +137,7 @@ void CHook::HookTick(bool useInput)
 			m_HookPos = NewPos;
 		}
 	}
-	
+
 	if(m_HookState == HOOK_GRABBED)
 	{
 		if(owner->m_HookedPlayer != -1)
