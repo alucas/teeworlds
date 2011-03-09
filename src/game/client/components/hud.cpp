@@ -85,7 +85,7 @@ void CHud::RenderScoreHud()
 			char aScoreTeam[NUM_TEAMS][32];
 			float aScoreTeamWidth[NUM_TEAMS];
 			float ScoreWidthMax = TextRender()->TextWidth(0, 14.0f, "100", -1);
-			for(int i = 0; i < NUM_TEAMS; i++)
+			for(int i = 0; i < m_pClient->m_Snap.m_pGameobj->m_NumberTeams; i++)
 			{
 				str_format(aScoreTeam[i], sizeof(aScoreTeam)/2, "%d", m_pClient->m_Snap.m_pGameobj->m_Teamscore[i]);
 				aScoreTeamWidth[i] = TextRender()->TextWidth(0, 14.0f, aScoreTeam[i], -1);
@@ -97,7 +97,7 @@ void CHud::RenderScoreHud()
 			float Split = 3.0f;
 			float ImageSize = GameFlags&GAMEFLAG_FLAGS ? 16.0f : Split;
 		
-			for(int t = 0; t < NUM_TEAMS; t++)
+			for(int t = 0; t < m_pClient->m_Snap.m_pGameobj->m_NumberTeams; t++)
 			{
 				// draw box
 				Graphics()->BlendNormal();

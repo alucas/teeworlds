@@ -4,16 +4,18 @@
 #define GAME_SERVER_GAMEMODES_CTF_H
 #include <game/server/gamecontroller.h>
 #include <game/server/entity.h>
+#include <game/server/entities/flag.h>
 
 class CGameControllerCTF : public IGameController
 {
-	class CFlag *m_apFlags[NUM_TEAMS];
 	int m_NumFlags;
+	CFlag *m_apFlags[NUM_TEAMS];
 
 public:	
 	CGameControllerCTF(class CGameContext *pGameServer);
 	virtual bool CanBeMovedOnBalance(int ClientID);
 	virtual void Tick();
+	virtual void Snap(int SnappingClient);
 	
 	virtual bool OnEntity(int Index, vec2 Pos);
 	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);

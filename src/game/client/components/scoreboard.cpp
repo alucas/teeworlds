@@ -209,7 +209,7 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 		TextRender()->Text(0, x+w-35.0f-Width, y+(FontSize-FontSizeResize)/2, FontSizeResize, aBuf, -1);
 
 		// render avatar
-		for(int i = 0; i < NUM_TEAMS; i++)
+		for(int i = 0; i < m_pClient->m_Snap.m_pGameobj->m_NumberTeams; i++)
 			if(m_pClient->m_Snap.m_paFlags[i] && m_pClient->m_Snap.m_paFlags[i]->m_CarriedBy == pInfo->m_ClientID)
 			{
 				IGraphics::CQuadItem QuadItem(x+55, y-15, 64.0f/2, 64.0f);
@@ -278,39 +278,41 @@ void CScoreboard::OnRender()
 		RenderScoreboard(Width/2-w/2, 150.0f, w, 0, 0);
 	else //team game
 	{
-	  int i;		
-	  const char *pText;
-	  if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
-	    {
-	  
-	    
-	      int tmp_wining_team=0;
-	      int tmp_score_wining_team = m_pClient->m_Snap.m_pGameobj->m_Teamscore[0]; //not initialize =0 because of negativ team_score
-	      for(i = 0; i<NUM_TEAMS;i++){//which team win ?
-		if (tmp_score_wining_team < m_pClient->m_Snap.m_pGameobj->m_Teamscore[i]){//don't care about execo
-		  tmp_wining_team = i;
-		  tmp_score_wining_team = m_pClient->m_Snap.m_pGameobj->m_Teamscore[i];
-		}
-	      }
-	
-	      //objectif : afficher "team x wins !" 
-	      const char* winner = get_team_name(tmp_wining_team);
-	      const char* wins = " wins";
-	      size_t size = (str_length(wins)+str_length(winner) + 1 )*sizeof(char*);
-	      char* result = (char*) mem_alloc(size,0);
-	      str_format(result,size,"%s%s",winner,wins);
-	      pText= Localize(result);
+		int i;
+		const char *pText;
+		int NumTeams = m_pClient->m_Snap.m_pGameobj->m_NumberTeams;
+		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
+		{
+			int tmp_wining_team=0;
+			int tmp_score_wining_team = m_pClient->m_Snap.m_pGameobj->m_Teamscore[0]; //not initialize =0 because of negativ team_score
+			for(i = 0; i<NumTeams;i++) //which team win ?
+			{
+				if (tmp_score_wining_team < m_pClient->m_Snap.m_pGameobj->m_Teamscore[i])//don't care about execo
+				{
+					tmp_wining_team = i;
+					tmp_score_wining_team = m_pClient->m_Snap.m_pGameobj->m_Teamscore[i];
+				}
+			}
+
+			//objectif : afficher "team x wins !"
+			const char* winner = get_team_name(tmp_wining_team);
+			const char* wins = " wins";
+			size_t size = (str_length(wins)+str_length(winner) + 1 )*sizeof(char*);
+			char* result = (char*) mem_alloc(size,0);
+			str_format(result,size,"%s%s",winner,wins);
+			pText= Localize(result);
       
-	      float w = TextRender()->TextWidth(0, 86.0f, pText, -1);
-	      TextRender()->Text(0, Width/2-w/2, 39, 86.0f, pText, -1);
-	    }
+			float w = TextRender()->TextWidth(0, 86.0f, pText, -1);
+			TextRender()->Text(0, Width/2-w/2, 39, 86.0f, pText, -1);
+		}
 	
-	  int space =20;
-	  int nb_spaces = NUM_TEAMS - 1;//one space between 2 board => how many spaces ?
-	  int W = nb_spaces*space + NUM_TEAMS*w;
-	  for(i = 0; i<NUM_TEAMS;i++){
-	    RenderScoreboard(Width/2-W/2+i*(w+space), 150.0f, w, i, Localize(get_team_name(i))); 
-	  }
+		int space = 20;
+		int nb_spaces = NumTeams - 1;//one space between 2 board => how many spaces ?
+		int W = nb_spaces*space + NumTeams*w;
+		for(i = 0; i<m_pClient->m_Snap.m_pGameobj->m_NumberTeams;i++)
+		{
+			RenderScoreboard(Width/2-W/2+i*(w+space), 150.0f, w, i, Localize(get_team_name(i)));
+		}
 	}
 	
 	RenderGoals(Width/2-w/2, 150+750+25, w);

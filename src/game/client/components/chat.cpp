@@ -350,7 +350,7 @@ void CChat::OnRender()
 			TextRender()->TextColor(0.45f, 0.9f, 0.45f, Blend); // team message
 		else if(m_aLines[r].m_NameColor == TEAM_SPECTATORS)
 			TextRender()->TextColor(0.75f, 0.5f, 0.75f, Blend); // spectator
-		else if(m_aLines[r].m_NameColor >= 0 && m_aLines[r].m_NameColor < NUM_TEAMS)
+		else if(m_aLines[r].m_NameColor >= 0 && m_aLines[r].m_NameColor < m_pClient->m_Snap.m_pGameobj->m_NumberTeams)
 		{
 			vec4 TeamColor = RenderTools()->GetTeamColor(m_aLines[r].m_NameColor);
 			TextRender()->TextColor(TeamColor.r, TeamColor.g, TeamColor.b, Blend);

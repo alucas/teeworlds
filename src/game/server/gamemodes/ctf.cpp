@@ -6,14 +6,15 @@
 #include <game/server/player.h>
 #include <game/server/gamecontext.h>
 #include "ctf.h"
+#include "engine/shared/config.h"
 
 CGameControllerCTF::CGameControllerCTF(class CGameContext *pGameServer)
 : IGameController(pGameServer)
 {
-	for(int i = 0; i < NUM_TEAMS; i++)
+	m_NumFlags = 0;
+	for(int i = 0; i < m_NumTeams; i++)
 		m_apFlags[i] = 0;
 
-	m_NumFlags = 0;
 	m_pGameType = "CTF";
 	m_GameFlags = GAMEFLAG_TEAMS|GAMEFLAG_FLAGS;
 }
@@ -222,4 +223,12 @@ void CGameControllerCTF::Tick()
 			}
 		}
 	}
+}
+
+void CGameControllerCTF::Snap(int SnappingClient)
+{
+	if(m_NumFlags < m_NumTeams && m_NumTeams != 2)
+		m_NumTeams = max(m_NumFlags, 2);
+
+	IGameController::Snap(SnappingClient);
 }

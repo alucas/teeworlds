@@ -51,7 +51,8 @@ protected:
 	int m_RoundStartTick;
 	int m_GameOverTick;
 	int m_SuddenDeath;
-	
+
+	int m_NumTeams;
 	int m_aTeamscore[NUM_TEAMS];
 	
 	int m_Warmup;

@@ -109,7 +109,7 @@ Objects = [
 		NetTick("m_RoundNum"),
 		NetTick("m_RoundCurrent"),
 
-
+		NetIntRange("m_NumberTeams", 2, 'NUM_TEAMS'),
 		NetArrayIntAny("m_Teamscore", 'NUM_TEAMS')
 	]),
 

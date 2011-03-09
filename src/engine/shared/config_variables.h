@@ -38,6 +38,7 @@ MACRO_CONFIG_INT(PlayerColorBody, player_color_body, 65408, 0, 0xFFFFFF, CFGFLAG
 MACRO_CONFIG_INT(PlayerColorFeet, player_color_feet, 65408, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Player feet color")
 MACRO_CONFIG_STR(PlayerSkin, player_skin, 24, "default", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Player skin")
 
+// 8 team's color (see NUM_TEAMS in datasrc/network.py)
 MACRO_CONFIG_INT(TeamColor1, team_color_1, 65387, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "First team color")
 MACRO_CONFIG_INT(TeamColor2, team_color_2, 10223467, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Second team color")
 MACRO_CONFIG_INT(TeamColor3, team_color_3, 5684736, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Third team color")
@@ -69,6 +70,7 @@ MACRO_CONFIG_INT(SvPowerups, sv_powerups, 1, 0, 1, CFGFLAG_SERVER, "Allow poweru
 MACRO_CONFIG_INT(SvScorelimit, sv_scorelimit, 20, 0, 1000, CFGFLAG_SERVER, "Score limit (0 disables)")
 MACRO_CONFIG_INT(SvTimelimit, sv_timelimit, 0, 0, 1000, CFGFLAG_SERVER, "Time limit in minutes (0 disables)")
 MACRO_CONFIG_STR(SvGametype, sv_gametype, 32, "dm", CFGFLAG_SERVER, "Game type (dm, tdm, ctf)")
+MACRO_CONFIG_INT(SvNumTeams, sv_number_teams, 2, 2, 32, CFGFLAG_SERVER, "Number of teams supported by the game mode")
 MACRO_CONFIG_INT(SvTournamentMode, sv_tournament_mode, 0, 0, 1, CFGFLAG_SERVER, "Tournament mode. When enabled, players joins the server as spectator")
 MACRO_CONFIG_INT(SvSpamprotection, sv_spamprotection, 1, 0, 1, CFGFLAG_SERVER, "Spam protection")
 

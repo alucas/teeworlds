@@ -19,7 +19,7 @@
 #include "motd.h"
 #include "voting.h"
 
-#define MAX_STRIP ((NUM_TEAMS - 1)/4 + 1)
+#define MAX_STRIP ((m_pClient->m_Snap.m_pGameobj->m_NumberTeams - 1)/4 + 1)
 
 void CMenus::RenderGame(CUIRect MainView)
 {
@@ -76,7 +76,7 @@ void CMenus::RenderGame(CUIRect MainView)
 				"Join team 7",
 				"Join team 8"};
 			static int s_SpectateButton[NUM_TEAMS] = {0};
-			for(int i = 0; i < NUM_TEAMS; i++)
+			for(int i = 0; i < m_pClient->m_Snap.m_pGameobj->m_NumberTeams; i++)
 				if(m_pClient->m_Snap.m_pLocalInfo->m_Team != i)
 				{
 					Strips[Position/4].VSplitLeft(10.0f, &Button, &Strips[Position/4]);

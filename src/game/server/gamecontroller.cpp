@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <engine/shared/config.h>
 #include <game/mapitems.h>
+#include <base/math.h>
 
 #include "entities/pickup.h"
 #include "gamecontroller.h"
@@ -22,7 +23,10 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_RoundCount = 0;
 	m_GameFlags = 0;
 
-	for(int i = 0; i < NUM_TEAMS; i++)
+	// TODO : update config_variable.h to set Maximum value to m_SvNumTeams at NUM_TEAMS
+	m_NumTeams = min<int>(g_Config.m_SvNumTeams, NUM_TEAMS);
+
+	for(int i = 0; i < m_NumTeams; i++)
 		m_aTeamscore[i] = 0;
 
 	m_aMapWish[0] = 0;
@@ -200,7 +204,7 @@ void IGameController::StartRound()
 	m_GameOverTick = -1;
 	GameServer()->m_World.m_Paused = false;
 
-	for(int i = 0; i < NUM_TEAMS; i++)
+	for(int i = 0; i < m_NumTeams; i++)
 		m_aTeamscore[i] = 0;
 
 	m_ForceBalanced = false;
@@ -306,7 +310,7 @@ void IGameController::OnPlayerInfoChange(class CPlayer *pP)
 	const int aTeamColors[2] = {65387, 10223467};
 	if(IsTeamplay())
 	{
-		if(pP->GetTeam() >= 0 && pP->GetTeam() < NUM_TEAMS)
+		if(pP->GetTeam() >= 0 && pP->GetTeam() < m_NumTeams)
 		{
 			pP->m_TeeInfos.m_UseCustomColor = 1;
 			pP->m_TeeInfos.m_ColorBody = aTeamColors[pP->GetTeam()];
@@ -510,7 +514,7 @@ void IGameController::Tick()
 	{
 		if(IsTeamplay())
 		{
-			for(int i = 0; i < NUM_TEAMS; i++)
+			for(int i = 0; i < m_NumTeams; i++)
 				Prog = max(Prog, (m_aTeamscore[i]*100)/g_Config.m_SvScorelimit);
 		}
 		else
@@ -549,6 +553,7 @@ void IGameController::Snap(int SnappingClient)
 	pGameObj->m_TimeLimit = g_Config.m_SvTimelimit;
 	pGameObj->m_RoundStartTick = m_RoundStartTick;
 	pGameObj->m_Flags = m_GameFlags;
+	pGameObj->m_NumberTeams = m_NumTeams;
 	
 	pGameObj->m_Warmup = m_Warmup;
 	
@@ -559,13 +564,13 @@ void IGameController::Snap(int SnappingClient)
 	if(SnappingClient == -1)
 	{
 		// we are recording a demo, just set the scores
-		for(int i = 0; i < NUM_TEAMS; i++)
+		for(int i = 0; i < m_NumTeams; i++)
 			pGameObj->m_Teamscore[i] = m_aTeamscore[i];
 	}
 	else
 	{
 		// TODO: this little hack should be removed
-		for(int i = 0; i < NUM_TEAMS; i++){
+		for(int i = 0; i < m_NumTeams; i++){
 			if(i == 0)
 				pGameObj->m_Teamscore[i] = IsTeamplay() ? m_aTeamscore[i] : GameServer()->m_apPlayers[SnappingClient]->m_Score;
 			else
@@ -585,7 +590,7 @@ int IGameController::GetAutoTeam(int NotThisID)
 	{
 		if(GameServer()->m_apPlayers[i] && i != NotThisID)
 		{
-			if(GameServer()->m_apPlayers[i]->GetTeam() >= 0 && GameServer()->m_apPlayers[i]->GetTeam() < NUM_TEAMS)
+			if(GameServer()->m_apPlayers[i]->GetTeam() >= 0 && GameServer()->m_apPlayers[i]->GetTeam() < m_NumTeams)
 				aNumplayers[GameServer()->m_apPlayers[i]->GetTeam()]++;
 		}
 	}
@@ -593,7 +598,7 @@ int IGameController::GetAutoTeam(int NotThisID)
 	int Team = 0;
 	int NumplayerTeam = aNumplayers[0];
 	if(IsTeamplay())
-		for(int i = 1; i < NUM_TEAMS; i++)
+		for(int i = 1; i < m_NumTeams; i++)
 			if(aNumplayers[i] < NumplayerTeam)
 			{
 				NumplayerTeam = aNumplayers[i];
@@ -616,7 +621,7 @@ bool IGameController::CanJoinTeam(int Team, int NotThisID)
 	{
 		if(GameServer()->m_apPlayers[i] && i != NotThisID)
 		{
-			if(GameServer()->m_apPlayers[i]->GetTeam() >= 0 && GameServer()->m_apPlayers[i]->GetTeam() < NUM_TEAMS)
+			if(GameServer()->m_apPlayers[i]->GetTeam() >= 0 && GameServer()->m_apPlayers[i]->GetTeam() < m_NumTeams)
 				aNumplayers[GameServer()->m_apPlayers[i]->GetTeam()]++;
 		}
 	}
@@ -677,7 +682,7 @@ bool IGameController::CanChangeTeam(CPlayer *pPlayer, int JoinTeam)
 		aNumTees[OldTeam]--;
 
 	int MinimumTees = aNumTees[0];
-	for(int i = 1; i < NUM_TEAMS; i++)
+	for(int i = 1; i < m_NumTeams; i++)
 		if(aNumTees[i] < MinimumTees)
 			MinimumTees = aNumTees[i];
 
@@ -726,7 +731,7 @@ bool IGameController::IsTeamFirst()
 	bool IsWinner = true;
 	int WinScore = m_aTeamscore[0];
 
-	for(int i = 1; i < NUM_TEAMS; i++)
+	for(int i = 1; i < m_NumTeams; i++)
 	{
 		if(m_aTeamscore[i] > WinScore)
 		{
@@ -746,7 +751,7 @@ void IGameController::DoTeamScoreWincheck()
 	{
 		// check score win condition
 		if(g_Config.m_SvScorelimit > 0)
-			for(int i = 0; i < NUM_TEAMS; i++)
+			for(int i = 0; i < m_NumTeams; i++)
 				if(m_aTeamscore[i]  >= g_Config.m_SvScorelimit)
 				{
 					if(IsTeamFirst())
@@ -769,7 +774,7 @@ int IGameController::ClampTeam(int Team)
 {
 	if(Team < 0)
 		return TEAM_SPECTATORS;
-	if(IsTeamplay() && Team < NUM_TEAMS)
+	if(IsTeamplay() && Team < m_NumTeams)
 		return Team;
 
 	return 0;
