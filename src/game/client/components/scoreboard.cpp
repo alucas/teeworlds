@@ -252,9 +252,11 @@ void CScoreboard::RenderRecordingNotification(float x)
 }
 
 
-const char* get_team_name(int num){ // NEW 
-  const char *team_names[8] = {"red","blue","yellow","green", "bla", "blo", "blu", "bli"};
-  return team_names[num];}
+static const char *GetTeamName(int num){
+	static const char *team_names[] = {"team 1","team 2","team 3","team 4", "Team 5", "Team 6", "Team 7", "Team 8"};
+	
+	return team_names[num % NUM_TEAMS];
+}
 
 
 void CScoreboard::OnRender()
@@ -283,35 +285,32 @@ void CScoreboard::OnRender()
 		int NumTeams = m_pClient->m_Snap.m_pGameobj->m_NumberTeams;
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
 		{
-			int tmp_wining_team=0;
-			int tmp_score_wining_team = m_pClient->m_Snap.m_pGameobj->m_Teamscore[0]; //not initialize =0 because of negativ team_score
-			for(i = 0; i<NumTeams;i++) //which team win ?
+			int WiningTeam = 0;
+			int WiningTeamScore = m_pClient->m_Snap.m_pGameobj->m_Teamscore[0];
+			for(i = 0; i<NumTeams;i++)
 			{
-				if (tmp_score_wining_team < m_pClient->m_Snap.m_pGameobj->m_Teamscore[i])//don't care about execo
+				if (WiningTeamScore < m_pClient->m_Snap.m_pGameobj->m_Teamscore[i])//don't care about execo
 				{
-					tmp_wining_team = i;
-					tmp_score_wining_team = m_pClient->m_Snap.m_pGameobj->m_Teamscore[i];
+					WiningTeam = i;
+					WiningTeamScore = m_pClient->m_Snap.m_pGameobj->m_Teamscore[i];
 				}
 			}
 
-			//objectif : afficher "team x wins !"
-			const char* winner = get_team_name(tmp_wining_team);
-			const char* wins = " wins";
-			size_t size = (str_length(wins)+str_length(winner) + 1 )*sizeof(char*);
-			char* result = (char*) mem_alloc(size,0);
-			str_format(result,size,"%s%s",winner,wins);
-			pText= Localize(result);
+			char aBuffer[128];
+			str_format(aBuffer, 128, "%s wins", GetTeamName(WiningTeam));
+
+			pText= Localize(aBuffer);
       
 			float w = TextRender()->TextWidth(0, 86.0f, pText, -1);
 			TextRender()->Text(0, Width/2-w/2, 39, 86.0f, pText, -1);
 		}
 	
-		int space = 20;
-		int nb_spaces = NumTeams - 1;//one space between 2 board => how many spaces ?
-		int W = nb_spaces*space + NumTeams*w;
+		int Space = 20;
+		int NbSpaces = NumTeams - 1; //one space between 2 board => how many spaces ?
+		int W = NbSpaces*Space + NumTeams*w;
 		for(i = 0; i<m_pClient->m_Snap.m_pGameobj->m_NumberTeams;i++)
 		{
-			RenderScoreboard(Width/2-W/2+i*(w+space), 150.0f, w, i, Localize(get_team_name(i)));
+			RenderScoreboard(Width/2-W/2+i*(w+Space), 150.0f, w, i, Localize(GetTeamName(i)));
 		}
 	}
 	
@@ -319,9 +318,6 @@ void CScoreboard::OnRender()
 	RenderSpectators(Width/2-w/2, 150+750+25+50+25, w);
 	RenderRecordingNotification((Width/7)*4);
 }
-
-
-
 
 bool CScoreboard::Active()
 {
