@@ -191,7 +191,7 @@ void CCharacterCore::Tick(bool UseInput)
 		if(distance(m_Pos, NewPos) > m_pWorld->m_Tuning.m_HookLength)
 		{
 			m_HookState = HOOK_RETRACT_START;
-			NewPos = m_Pos + normalize(NewPos-m_Pos) * m_pWorld->m_Tuning.m_HookLength;
+			NewPos = m_Pos + normalize(NewPos-m_Pos) * m_pWorld->GetHookLength();
 		}
 		
 		// make sure that the hook doesn't go though the ground
@@ -409,3 +409,7 @@ void CCharacterCore::Quantize()
 	Read(&Core);
 }
 
+float CWorldCore::GetHookLength()
+{
+	return m_Tuning.m_HookLength;
+}

@@ -37,8 +37,8 @@ private:
 	class IServer *m_pServer;
 
 public:
-	class CGameContext *GameServer() { return m_pGameServer; }
-	class IServer *Server() { return m_pServer; }
+	virtual class CGameContext *GameServer() { return m_pGameServer; }
+	virtual class IServer *Server() { return m_pServer; }
 
 	bool m_ResetRequested;
 	bool m_Paused;
