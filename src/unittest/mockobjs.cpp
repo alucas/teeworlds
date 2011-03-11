@@ -9,6 +9,41 @@
 
 #include "mockobjs.h"
 
+int
+MockServer::Tick()
+{
+	return 1;
+}
+
+MockGameWorld::MockGameWorld(MockServer *mockServ):CGameWorld()
+{
+	m_pMockGameServer = new MockGameServer(mockServ);
+	m_pServer = mockServ;
+}
+
+
+MockController::MockController(CGameContext *gc) : IGameController (gc)
+{
+}
+
+MockGameServer::MockGameServer(MockServer *mockServ) : CGameContext()
+{
+	m_pMockServer = mockServ;
+};
+
+void
+MockServer::setIngame(int index)
+{
+	m_aClients[0].m_State = CClient::STATE_INGAME;
+}
+
+int
+MockController::ClampTeam(int team)
+{
+	return team;
+}
+
+
 bool 
 MockCollision::CheckPoint(float x, float y)
 { 

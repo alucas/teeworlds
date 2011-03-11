@@ -63,7 +63,7 @@ class CGameContext : public IGameServer
 
 	bool m_Resetting;
 public:
-	IServer *Server() const { return m_pServer; }
+	virtual IServer *Server() const { return m_pServer; }
 	class IConsole *Console() { return m_pConsole; }
 	CCollision *Collision() { return &m_Collision; }
 	CTuningParams *Tuning() { return &m_Tuning; }
