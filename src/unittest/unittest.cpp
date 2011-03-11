@@ -10,16 +10,34 @@
 #include "mockobjs.h"
 #include "hookTest.h"
 
+using namespace std;
+
+static void
+setUpMockInput(CNetObj_PlayerInput *input)
+{
+	input->m_Direction = 1;
+	input->m_TargetX = 15;
+	input->m_TargetY = 15;
+	input->m_Jump = 0;
+	input->m_Fire = 1;
+	input->m_Hook = 0;
+	input->m_PlayerState = PLAYERSTATE_PLAYING;
+	input->m_WantedWeapon = 0;
+	input->m_NextWeapon = 0;
+	input->m_PrevWeapon = 0;
+}
+
 class Test : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Test);
 	CPPUNIT_TEST(testSnap);
+	CPPUNIT_TEST(testFireWeapon);
 	CPPUNIT_TEST_SUITE_END();
 
 	MockGameWorld *m_pMockGameWorld;
 	MockGameServer *m_pMockGameServer;
 	MockServer *m_pMockServer;
-    
+
 public:
 	void setUp(void)
 	{
@@ -68,6 +86,25 @@ protected:
 			       && netflag->m_CarriedBy);
 
 		delete flag;
+	}
+
+	void testFireWeapon(void)
+	{
+		CCharacter *testCharacter = new (1) CCharacter(&m_pMockGameServer->m_World);
+		CPlayer *testPlayer = new (1) CPlayer(m_pMockGameServer,1,1);
+		CNetObj_PlayerInput mockInput;
+		vec2 spawnPos = vec2(10.f,10.f);
+
+		testCharacter->Spawn(testPlayer,vec2(10,10));
+		setUpMockInput(&mockInput);
+
+		testCharacter->GiveWeapon(WEAPON_GRENADE,10);
+		testCharacter->SetWeapon(WEAPON_GRENADE);
+		testCharacter->OnDirectInput(&mockInput);
+
+		testCharacter->FireWeapon();
+		delete testCharacter;
+		delete testPlayer;
 	}
 };
 

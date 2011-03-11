@@ -35,6 +35,7 @@ public:
 	~MockServer(){}
 
 	virtual int Tick();
+	virtual int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID);
 	virtual void setIngame(int index);
 };
 
@@ -68,6 +69,7 @@ public:
 	MockController(CGameContext *gc);
 	~MockController(){}
 
+	virtual void OnCharacterSpawn(class CCharacter *pChr);
 	virtual int ClampTeam(int team);
 };
 

@@ -9,9 +9,28 @@
 
 #include "mockobjs.h"
 
+#define WANTED_SIZE 8
+
 int
 MockServer::Tick()
 {
+	return 1;
+}
+
+int
+MockServer::SendMsg(CMsgPacker *pMsg, int Flags, int ClientID)
+{
+	int i,size;
+	int wantedValues[WANTED_SIZE] = {7, 1, 24, 24, 70, 70, 3, 0};
+	int data[20];
+	size = CVariableInt::Decompress(pMsg->Data(),pMsg->Size(),data) / sizeof(int);
+
+	CPPUNIT_ASSERT (size == WANTED_SIZE);
+
+	for (i = 0; i < size; i++)
+	{
+		CPPUNIT_ASSERT(data[i] == wantedValues[i]);
+	}
 	return 1;
 }
 
@@ -35,6 +54,13 @@ void
 MockServer::setIngame(int index)
 {
 	m_aClients[0].m_State = CClient::STATE_INGAME;
+}
+
+
+void
+MockController::OnCharacterSpawn(class CCharacter *pChr)
+{
+	return;
 }
 
 int
