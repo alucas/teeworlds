@@ -181,6 +181,7 @@ function build(settings)
 	server_settings = engine_settings:Copy()
 	client_settings = engine_settings:Copy()
 	launcher_settings = engine_settings:Copy()
+	unittest_settings = engine_settings:Copy()
 
 	if family == "unix" then
    		if platform == "macosx" then
@@ -193,6 +194,7 @@ function build(settings)
 			client_settings.link.libs:Add("X11")
 			client_settings.link.libs:Add("GL")
 			client_settings.link.libs:Add("GLU")
+			unittest_settings.link.libs:Add("cppunit")
 		end
 		
 	elseif family == "windows" then
@@ -219,6 +221,8 @@ function build(settings)
 
 	-- build tools (TODO: fix this so we don't get double _d_d stuff)
 	tools_src = Collect("src/tools/*.cpp", "src/tools/*.c")
+
+	unittest = Compile(settings, Collect("src/unittest/*.cpp"))
 
 	client_osxlaunch = {}
 	server_osxlaunch = {}
@@ -252,6 +256,8 @@ function build(settings)
 	masterserver_exe = Link(server_settings, "mastersrv", masterserver,
 		engine, zlib)
 
+	unittest_exe = Link(unittest_settings, "unittest", unittest, engine, server, game_server, zlib, game_shared)
+
 	-- make targets
 	c = PseudoTarget("client".."_"..settings.config_name, client_exe, client_depends)
 	s = PseudoTarget("server".."_"..settings.config_name, server_exe, serverlaunch)
@@ -279,6 +285,11 @@ release_settings.config_ext = ""
 release_settings.debug = 0
 release_settings.optimize = 1
 release_settings.cc.defines:Add("CONF_RELEASE")
+
+test_settings = debug_settings:Copy()
+test_settings.config_name = "test"
+test_settings.config_ext = "_t"
+test_settings.cc.defines:Add("CONF_UNITTESTING")
 
 if platform == "macosx"  and arch == "ia32" then
 	debug_settings_ppc = debug_settings:Copy()
@@ -324,6 +335,7 @@ if platform == "macosx"  and arch == "ia32" then
 else
 	build(debug_settings)
 	build(release_settings)
+	build(test_settings)
 	DefaultTarget("game_debug")
 end
 
