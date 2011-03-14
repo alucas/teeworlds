@@ -2,15 +2,18 @@
 #define HOOK_IDLE_H
 
 #include "state.h"
-
+#include "hook_flying.h"
+#include <iostream>
 
 class CHookIdle: public CState{
-  //  class CHookIdle{
 
  public:
   void Execute(CHook*hook, bool UseInput);
     ~CHookIdle();
     static CHookIdle* getInstance();
+    virtual void printme(CHook * hook){ std::cout <<"Je suis Idle" << std::endl;       
+      std::cout << hook->m_HookState << std::endl; };
+
 
  private:
     CHookIdle();
