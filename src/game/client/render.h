@@ -78,7 +78,8 @@ public:
 	// helpers
 	void MapscreenToWorld(float CenterX, float CenterY, float ParallaxX, float ParallaxY,
 		float OffsetX, float OffsetY, float Aspect, float Zoom, float *pPoints);	
-	vec4 GetTeamColor(int Team);
+	int GetTeamColorHSL(int Team);
+	void SetTeamColorHSL(int Team, int Color);
 };
 
 #endif

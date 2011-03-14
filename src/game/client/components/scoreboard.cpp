@@ -12,6 +12,7 @@
 #include <game/client/components/motd.h>
 #include <game/localization.h>
 #include "scoreboard.h"
+#include "base/tl/color.h"
 
 
 CScoreboard::CScoreboard()
@@ -214,7 +215,7 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 			{
 				IGraphics::CQuadItem QuadItem(x+55, y-15, 64.0f/2, 64.0f);
 
-				vec4 FlagColor = RenderTools()->GetTeamColor(m_pClient->m_Snap.m_paFlags[i]->m_Team);
+				vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(m_pClient->m_Snap.m_paFlags[i]->m_Team));
 
 				RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
 			}

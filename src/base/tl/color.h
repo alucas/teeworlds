@@ -29,7 +29,7 @@ inline vec3 HslToRgb(vec3 HSL)
 	}
 }
 
-inline vec3 GetRgbColorV3(int HslColor)
+inline vec3 HslToRgb(int HslColor)
 {
 	vec3 r = vec3(
 		((HslColor>>16)&0xff)/255.0f,
@@ -39,9 +39,9 @@ inline vec3 GetRgbColorV3(int HslColor)
 	return HslToRgb(r);
 }
 
-inline vec4 GetRgbColorV4(int HslColor)
+inline vec4 HslToRgbV4(int HslColor)
 {
-	vec3 r = GetRgbColorV3(HslColor);
+	vec3 r = HslToRgb(HslColor);
 
 	return vec4(r.r, r.g, r.b, 1.0f);
 }

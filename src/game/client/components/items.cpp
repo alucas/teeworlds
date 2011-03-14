@@ -168,7 +168,7 @@ void CItems::RenderMainFlag(const CNetObj_Flag* pPrev, const CNetObj_Flag* pCurr
 	float Size = 42.0f;
 	IGraphics::CQuadItem QuadItem(Pos.x - Size/2, Pos.y - Size*0.75f - Size, Size, Size*2);
 
-	vec4 FlagColor = RenderTools()->GetTeamColor(pCurrent->m_Team);
+	vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(pCurrent->m_Team));
 
 	RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, 0);
 }

@@ -13,8 +13,6 @@ class CItems : public CComponent
 	
 public:
 	virtual void OnRender();
-
-	static void RenderFlag(class IGraphics *Graphics, class CRenderTools *RenderTools, IGraphics::CQuadItem *pQuadItem, float Angle, vec4 FlagColor);
 };
 
 #endif

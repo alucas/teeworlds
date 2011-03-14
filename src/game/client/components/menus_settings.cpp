@@ -128,8 +128,8 @@ void CMenus::RenderSettingsPlayer(CUIRect MainView)
 
             if(g_Config.m_PlayerUseCustomColor)
             {
-                OwnSkinInfo.m_ColorBody = GetRgbColorV4(g_Config.m_PlayerColorBody);
-                OwnSkinInfo.m_ColorFeet = GetRgbColorV4(g_Config.m_PlayerColorFeet);
+                OwnSkinInfo.m_ColorBody = HslToRgbV4(g_Config.m_PlayerColorBody);
+                OwnSkinInfo.m_ColorFeet = HslToRgbV4(g_Config.m_PlayerColorFeet);
                 OwnSkinInfo.m_Texture = pOwnSkin->m_ColorTexture;
             }
 
@@ -262,8 +262,8 @@ void CMenus::RenderSettingsPlayer(CUIRect MainView)
 
 				if(g_Config.m_PlayerUseCustomColor)
 				{
-					Info.m_ColorBody = GetRgbColorV4(g_Config.m_PlayerColorBody);
-					Info.m_ColorFeet = GetRgbColorV4(g_Config.m_PlayerColorFeet);
+					Info.m_ColorBody = HslToRgbV4(g_Config.m_PlayerColorBody);
+					Info.m_ColorFeet = HslToRgbV4(g_Config.m_PlayerColorFeet);
 					Info.m_Texture = s->m_ColorTexture;
 				}
 
@@ -273,7 +273,7 @@ void CMenus::RenderSettingsPlayer(CUIRect MainView)
 
 				if(g_Config.m_Debug)
 				{
-					vec3 BloodColor = g_Config.m_PlayerUseCustomColor ? GetRgbColorV3(g_Config.m_PlayerColorBody) : s->m_BloodColor;
+					vec3 BloodColor = g_Config.m_PlayerUseCustomColor ? HslToRgb(g_Config.m_PlayerColorBody) : s->m_BloodColor;
 					Graphics()->TextureSet(-1);
 					Graphics()->QuadsBegin();
 					Graphics()->SetColor(BloodColor.r, BloodColor.g, BloodColor.b, 1.0f);
@@ -821,10 +821,16 @@ public:
 
 void CMenus::RenderSettingsTeams(CUIRect MainView)
 {
-	CUIRect ListView, TeamView, ButtonView;
+	CUIRect GeneralView, ListView, TeamView, ButtonView;
+	MainView.HSplitTop(50.0f, &GeneralView, &MainView);
 	MainView.HSplitBottom(10.0f, &MainView, 0);
-	MainView.VSplitLeft(150.0f, &ListView, &TeamView);
+	MainView.VSplitLeft(200.0f, &ListView, &TeamView);
 	TeamView.VSplitLeft(10.0f, 0, &TeamView);
+
+	GeneralView.HSplitTop(20.0f, &ButtonView, &GeneralView);
+	static int s_CustomColors = 0;
+	if(DoButton_CheckBox(&s_CustomColors, Localize("Custom colors"), g_Config.m_TeamUseCustomColor, &ButtonView))
+		g_Config.m_TeamUseCustomColor = g_Config.m_TeamUseCustomColor?0:1;
 
 	static int s_TeamList  = 0;
 	static int s_SelectedTeam = 0;
@@ -842,37 +848,54 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 			}
 		}
 
-		UiDoListboxStart(&s_TeamList , &ListView, 24.0f, Localize("Team"), "", s_Teams.size(), 1, s_SelectedTeam, s_ScrollValue);
+		UiDoListboxStart(&s_TeamList, &ListView, 50.0f, Localize("Team"), "", s_Teams.size(), 1, s_SelectedTeam, s_ScrollValue);
 
+		int Team = 0;
 		for(sorted_array<CTeam>::range r = s_Teams.all(); !r.empty(); r.pop_front())
 		{
-			CListboxItem Item = UiDoListboxNextItem(&r.front());
+			const CSkins::CSkin *s = m_pClient->m_pSkins->Get(0);
 
+			CListboxItem Item = UiDoListboxNextItem(&r.front());
 			if(Item.m_Visible)
-				UI()->DoLabelScaled(&Item.m_Rect, r.front().m_Name, 16.0f, -1);
+			{
+				CTeeRenderInfo Info;
+
+				if(g_Config.m_TeamUseCustomColor)
+				{
+					Info.m_ColorBody = HslToRgbV4(RenderTools()->GetTeamColorHSL(Team));
+					Info.m_ColorFeet = Info.m_ColorBody;
+					Info.m_Texture = s->m_ColorTexture;
+				}
+				else
+				{
+					Info.m_ColorBody = vec4(1, 1, 1, 1);
+					Info.m_ColorFeet = vec4(1, 1, 1, 1);
+					Info.m_Texture = s->m_OrgTexture;
+				}
+
+				Info.m_Size = UI()->Scale()*50.0f;
+				RenderTools()->RenderTee(CAnimState::GetIdle(), &Info, 0, vec2(0, 0), vec2(Item.m_Rect.x + 25, Item.m_Rect.y+Item.m_Rect.h/2));
+				
+				CUIRect LabelView;
+				Item.m_Rect.HSplitTop(10.0f, 0, &LabelView);
+				LabelView.VSplitLeft(50.0f, 0, &LabelView);
+				UI()->DoLabelScaled(&LabelView, r.front().m_Name, 15.0f, -1);
+			}
+
+			Team++;
 		}
 
 		s_SelectedTeam = UiDoListboxEnd(&s_ScrollValue, 0);
 	}
 
-	static int *s_aTeamsColor[NUM_TEAMS] = {
-		&g_Config.m_TeamColor1,
-		&g_Config.m_TeamColor2,
-		&g_Config.m_TeamColor3,
-		&g_Config.m_TeamColor4,
-		&g_Config.m_TeamColor5,
-		&g_Config.m_TeamColor6,
-		&g_Config.m_TeamColor7,
-		&g_Config.m_TeamColor8,
-	};
-
 	TeamView.HSplitTop(20.0f, &ButtonView, &TeamView);
-	if(DoButton_CheckBox(s_aTeamsColor[s_SelectedTeam], Localize("Custom colors"), g_Config.m_PlayerUseCustomColor, &ButtonView))
-		g_Config.m_PlayerUseCustomColor = g_Config.m_PlayerUseCustomColor?0:1;
+	static int s_CustomColorsTeam[NUM_TEAMS] = {0};
+	if(DoButton_CheckBox(&s_CustomColorsTeam[s_SelectedTeam], Localize("Custom colors"), g_Config.m_TeamUseCustomColor, &ButtonView))
+		g_Config.m_TeamUseCustomColor = g_Config.m_TeamUseCustomColor?0:1;
 
-	if(g_Config.m_PlayerUseCustomColor)
+	if(g_Config.m_TeamUseCustomColor)
 	{
-		int *paColors = s_aTeamsColor[s_SelectedTeam];
+		int Colors = RenderTools()->GetTeamColorHSL(s_SelectedTeam);
 
 		const char *paLabels[] = {
 			Localize("Hue"),
@@ -880,7 +903,7 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 			Localize("Lht.")};
 		static int s_aColorSlider[3] = {0};
 
-		int PrevColor = *paColors;
+		int PrevColor = Colors;
 		int Color = 0;
 		for(int s = 0; s < 3; s++)
 		{
@@ -898,7 +921,7 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 			UI()->DoLabelScaled(&TextView, paLabels[s], 15.0f, -1);
 		}
 
-		*paColors = Color;
+		RenderTools()->SetTeamColorHSL(s_SelectedTeam, Color);
 		TeamView.HSplitTop(5.0f, 0, &TeamView);
 	}
 }

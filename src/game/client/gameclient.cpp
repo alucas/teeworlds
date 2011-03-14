@@ -719,8 +719,8 @@ void CGameClient::OnNewSnapshot()
 				if(m_aClients[ClientID].m_aSkinName[0] == 'x' || m_aClients[ClientID].m_aSkinName[1] == '_')
 					str_copy(m_aClients[ClientID].m_aSkinName, "default", 64);
 					
-				m_aClients[ClientID].m_SkinInfo.m_ColorBody = GetRgbColorV4(m_aClients[ClientID].m_ColorBody);
-				m_aClients[ClientID].m_SkinInfo.m_ColorFeet = GetRgbColorV4(m_aClients[ClientID].m_ColorFeet);
+				m_aClients[ClientID].m_SkinInfo.m_ColorBody = HslToRgbV4(m_aClients[ClientID].m_ColorBody);
+				m_aClients[ClientID].m_SkinInfo.m_ColorFeet = HslToRgbV4(m_aClients[ClientID].m_ColorFeet);
 				m_aClients[ClientID].m_SkinInfo.m_Size = 64;
 				
 				// find new skin
@@ -984,7 +984,7 @@ void CGameClient::CClientData::UpdateRenderInfo()
 	if(g_GameClient.m_Snap.m_pGameobj && g_GameClient.m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS)
 		if(m_Team >= 0 && m_Team < NUM_TEAMS)
 		{
-			vec4 TeamColor = g_GameClient.RenderTools()->GetTeamColor(m_Team);
+			vec4 TeamColor = HslToRgbV4(g_GameClient.RenderTools()->GetTeamColorHSL(m_Team));
 			m_RenderInfo.m_Texture = g_GameClient.m_pSkins->Get(m_SkinID)->m_ColorTexture;
 			m_RenderInfo.m_ColorBody = TeamColor;
 			m_RenderInfo.m_ColorFeet = TeamColor;

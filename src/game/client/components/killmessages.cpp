@@ -1,5 +1,8 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+
+#include <base/tl/color.h>
+
 #include <engine/graphics.h>
 #include <engine/textrender.h>
 #include <game/generated/protocol.h>
@@ -77,7 +80,7 @@ void CKillMessages::OnRender()
 				IGraphics::CQuadItem QuadItem(x, y-16, 56.0f/2, 56.0f);
 
 				int TeamFlag = (m_aKillmsgs[r].m_ModeSpecial & 0xf) - 1;
-				vec4 TeeFlagColor = RenderTools()->GetTeamColor(TeamFlag);
+				vec4 TeeFlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(TeamFlag));
 				
 				RenderTools()->RenderFlag(&QuadItem, 0.0f, TeeFlagColor, 0);
 			}
@@ -107,7 +110,7 @@ void CKillMessages::OnRender()
 					IGraphics::CQuadItem QuadItem(x-56, y-16, 56.0f/2, 56.0f);
 
 					int TeamFlag = ((m_aKillmsgs[r].m_ModeSpecial & 0xf0) - 1) >> 4;
-					vec4 FlagColor = RenderTools()->GetTeamColor(TeamFlag);
+					vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(TeamFlag));
 					
 					RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
 				}

@@ -347,19 +347,24 @@ void CRenderTools::RenderTilemapGenerateSkip(class CLayers *pLayers)
 	}
 }
 
-vec4 CRenderTools::GetTeamColor(int Team)
-{
-	const int TeamColors[] =
+static int *s_aTeamColors[] =
 	{
-		g_Config.m_TeamColor1,
-		g_Config.m_TeamColor2,
-		g_Config.m_TeamColor3,
-		g_Config.m_TeamColor4,
-		g_Config.m_TeamColor5,
-		g_Config.m_TeamColor6,
-		g_Config.m_TeamColor7,
-		g_Config.m_TeamColor8
+		&g_Config.m_TeamColor1,
+		&g_Config.m_TeamColor2,
+		&g_Config.m_TeamColor3,
+		&g_Config.m_TeamColor4,
+		&g_Config.m_TeamColor5,
+		&g_Config.m_TeamColor6,
+		&g_Config.m_TeamColor7,
+		&g_Config.m_TeamColor8
 	};
 
-	return GetRgbColorV4(TeamColors[Team]);
+int CRenderTools::GetTeamColorHSL(int Team)
+{
+	return *s_aTeamColors[Team % NUM_TEAMS];
+}
+
+void CRenderTools::SetTeamColorHSL(int Team, int Color)
+{
+	*s_aTeamColors[Team % NUM_TEAMS] = Color;
 }

@@ -38,6 +38,7 @@ MACRO_CONFIG_INT(PlayerColorBody, player_color_body, 65408, 0, 0xFFFFFF, CFGFLAG
 MACRO_CONFIG_INT(PlayerColorFeet, player_color_feet, 65408, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Player feet color")
 MACRO_CONFIG_STR(PlayerSkin, player_skin, 24, "default", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Player skin")
 
+MACRO_CONFIG_INT(TeamUseCustomColor, team_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom team's colors")
 // 8 team's color (see NUM_TEAMS in datasrc/network.py)
 MACRO_CONFIG_INT(TeamColor1, team_color_1, 65387, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "First team color")
 MACRO_CONFIG_INT(TeamColor2, team_color_2, 10223467, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Second team color")

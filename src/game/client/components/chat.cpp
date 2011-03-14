@@ -1,6 +1,8 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 
+#include <base/tl/color.h>
+
 #include <engine/graphics.h>
 #include <engine/textrender.h>
 #include <engine/keys.h>
@@ -352,7 +354,7 @@ void CChat::OnRender()
 			TextRender()->TextColor(0.75f, 0.5f, 0.75f, Blend); // spectator
 		else if(m_aLines[r].m_NameColor >= 0 && m_aLines[r].m_NameColor < m_pClient->m_Snap.m_pGameobj->m_NumberTeams)
 		{
-			vec4 TeamColor = RenderTools()->GetTeamColor(m_aLines[r].m_NameColor);
+			vec4 TeamColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(m_aLines[r].m_NameColor));
 			TextRender()->TextColor(TeamColor.r, TeamColor.g, TeamColor.b, Blend);
 		}
 		else

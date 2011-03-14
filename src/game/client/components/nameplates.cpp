@@ -9,6 +9,7 @@
 #include <game/client/animstate.h>
 #include "nameplates.h"
 #include "controls.h"
+#include "base/tl/color.h"
 
 void CNamePlates::RenderNameplate(
 	const CNetObj_Character *pPrevChar,
@@ -34,7 +35,7 @@ void CNamePlates::RenderNameplate(
 		
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS)
 		{
-			vec4 TeamColor = RenderTools()->GetTeamColor(pPlayerInfo->m_Team);
+			vec4 TeamColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(pPlayerInfo->m_Team));
 			TextRender()->TextColor(TeamColor.r, TeamColor.g, TeamColor.b, a);
 		}
 		else
