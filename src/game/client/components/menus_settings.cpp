@@ -807,6 +807,102 @@ void CMenus::RenderSettingsGeneral(CUIRect MainView)
 	RenderLanguageSelection(List);
 }
 
+class CTeam
+{
+public:
+	CTeam() {}
+	CTeam(const char *pName, int Id) : m_Name(pName), m_Id(Id) {}
+
+	string m_Name;
+	int m_Id;
+
+	bool operator<(const CTeam &Other) { return m_Name < Other.m_Name; }
+};
+
+void CMenus::RenderSettingsTeams(CUIRect MainView)
+{
+	CUIRect ListView, TeamView, ButtonView;
+	MainView.HSplitBottom(10.0f, &MainView, 0);
+	MainView.VSplitLeft(150.0f, &ListView, &TeamView);
+	TeamView.VSplitLeft(10.0f, 0, &TeamView);
+
+	static int s_TeamList  = 0;
+	static int s_SelectedTeam = 0;
+	static sorted_array<CTeam> s_Teams;
+	static float s_ScrollValue = 0;
+
+	{
+		if(s_Teams.size() == 0)
+		{
+			char aBuffer[128];
+			for(int i = 1; i <= NUM_TEAMS; i++)
+			{
+				str_format(aBuffer, 128, "Team %d", i);
+				s_Teams.add(CTeam(aBuffer, i));
+			}
+		}
+
+		UiDoListboxStart(&s_TeamList , &ListView, 24.0f, Localize("Team"), "", s_Teams.size(), 1, s_SelectedTeam, s_ScrollValue);
+
+		for(sorted_array<CTeam>::range r = s_Teams.all(); !r.empty(); r.pop_front())
+		{
+			CListboxItem Item = UiDoListboxNextItem(&r.front());
+
+			if(Item.m_Visible)
+				UI()->DoLabelScaled(&Item.m_Rect, r.front().m_Name, 16.0f, -1);
+		}
+
+		s_SelectedTeam = UiDoListboxEnd(&s_ScrollValue, 0);
+	}
+
+	static int *s_aTeamsColor[NUM_TEAMS] = {
+		&g_Config.m_TeamColor1,
+		&g_Config.m_TeamColor2,
+		&g_Config.m_TeamColor3,
+		&g_Config.m_TeamColor4,
+		&g_Config.m_TeamColor5,
+		&g_Config.m_TeamColor6,
+		&g_Config.m_TeamColor7,
+		&g_Config.m_TeamColor8,
+	};
+
+	TeamView.HSplitTop(20.0f, &ButtonView, &TeamView);
+	if(DoButton_CheckBox(s_aTeamsColor[s_SelectedTeam], Localize("Custom colors"), g_Config.m_PlayerUseCustomColor, &ButtonView))
+		g_Config.m_PlayerUseCustomColor = g_Config.m_PlayerUseCustomColor?0:1;
+
+	if(g_Config.m_PlayerUseCustomColor)
+	{
+		int *paColors = s_aTeamsColor[s_SelectedTeam];
+
+		const char *paLabels[] = {
+			Localize("Hue"),
+			Localize("Sat."),
+			Localize("Lht.")};
+		static int s_aColorSlider[3] = {0};
+
+		int PrevColor = *paColors;
+		int Color = 0;
+		for(int s = 0; s < 3; s++)
+		{
+			CUIRect TextView;
+			TeamView.HSplitTop(19.0f, &ButtonView, &TeamView);
+			ButtonView.VSplitLeft(30.0f, 0, &ButtonView);
+			ButtonView.VSplitLeft(70.0f, &TextView, &ButtonView);
+			ButtonView.VSplitRight(5.0f, &ButtonView, 0);
+			ButtonView.HSplitTop(4.0f, 0, &ButtonView);
+
+			float k = ((PrevColor>>((2-s)*8))&0xff)  / 255.0f;
+			k = DoScrollbarH(&s_aColorSlider[s], &ButtonView, k);
+			Color <<= 8;
+			Color += clamp((int)(k*255), 0, 255);
+			UI()->DoLabelScaled(&TextView, paLabels[s], 15.0f, -1);
+		}
+
+		*paColors = Color;
+		TeamView.HSplitTop(5.0f, 0, &TeamView);
+	}
+}
+
 void CMenus::RenderSettings(CUIRect MainView)
 {
 	static int s_SettingsPage = 0;
@@ -826,6 +922,7 @@ void CMenus::RenderSettings(CUIRect MainView)
 	const char *aTabs[] = {
 		Localize("General"),
 		Localize("Player"),
+		Localize("Teams"),
 		Localize("Controls"),
 		Localize("Graphics"),
 		Localize("Sound")};
@@ -847,10 +944,12 @@ void CMenus::RenderSettings(CUIRect MainView)
 	else if(s_SettingsPage == 1)
 		RenderSettingsPlayer(MainView);
 	else if(s_SettingsPage == 2)
-		RenderSettingsControls(MainView);
+		RenderSettingsTeams(MainView);
 	else if(s_SettingsPage == 3)
-		RenderSettingsGraphics(MainView);
+		RenderSettingsControls(MainView);
 	else if(s_SettingsPage == 4)
+		RenderSettingsGraphics(MainView);
+	else if(s_SettingsPage == 5)
 		RenderSettingsSound(MainView);
 
 	if(m_NeedRestartGraphics || m_NeedRestartSound)
