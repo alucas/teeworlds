@@ -11,7 +11,7 @@ class CHookGrabbed: public CState{
     static CHookGrabbed* getInstance();
     virtual void printme(CHook* hook){ std::cout <<"Je suis grabbed" << std::endl; 
          std::cout << hook->m_HookState << std::endl; };
- 
+  virtual int giveMeState(){ return HOOK_GRABBED; } 
 
  private:
     CHookGrabbed();

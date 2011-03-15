@@ -14,6 +14,8 @@ class CHookIdle: public CState{
     virtual void printme(CHook * hook){ std::cout <<"Je suis Idle" << std::endl;       
       std::cout << hook->m_HookState << std::endl; };
 
+  virtual int giveMeState(){ return HOOK_IDLE; }
+
 
  private:
     CHookIdle();

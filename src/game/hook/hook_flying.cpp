@@ -9,7 +9,7 @@ CHookFlying::CHookFlying(){
 }
 
 CHookFlying::~CHookFlying(){
-  std::cout <<"Chooflying NE DEVRAIT PAS ETRE APPELE" << std::endl;
+  
 }
 
 CHookFlying* 
@@ -23,19 +23,24 @@ CHookFlying::getInstance(){
 void
 CHookFlying::Execute(CHook*hook, bool UseInput){
 
-  
   vec2 NewPos = (hook->m_HookPos) +  (hook->m_HookDir) * (hook->owner->m_pWorld->m_Tuning.m_HookFireSpeed);
+
+    if(hook->m_pCurrentState->giveMeState() != HOOK_FLYING)
+      hook->m_pCurrentState->printme(hook);
+
+    //hook->m_HookState = HOOK_FLYING;
 
   if(distance(hook->owner->m_Pos, NewPos) > hook->owner->m_pWorld->m_Tuning.m_HookLength)
     {
 
-      hook->m_HookState = HOOK_RETRACTED;//_START;
+      hook->m_HookState = HOOK_RETRACTED;
       hook->m_pCurrentState = CHookRetracted::getInstance();
 
       //Mock object technique used for cppunit. Please keep it 
       float hookLength = hook->owner->m_pWorld->GetHookLength();
       //PLUS it clarifies this expression :)
       NewPos = hook->owner->m_Pos + normalize(NewPos- hook->owner->m_Pos) * hookLength;
+      return;
     }
 		
   // make sure that the hook doesn't go though the ground
@@ -45,8 +50,10 @@ CHookFlying::Execute(CHook*hook, bool UseInput){
   int Hit = hook->owner->m_pCollision->IntersectLine(hook->m_HookPos, NewPos, &NewPos, 0);
   if(Hit)
     {
-      if(Hit&CCollision::COLFLAG_NOHOOK)
+      if(Hit&CCollision::COLFLAG_NOHOOK){
+	std::cout <<"going to retract passe à true" << std::endl;
 	GoingToRetract = true;
+      }
       else
 	GoingToHitGround = true;
     }
@@ -89,15 +96,18 @@ CHookFlying::Execute(CHook*hook, bool UseInput){
       else if(GoingToRetract)
 	{
 	  hook->owner->m_TriggeredEvents |= COREEVENT_HOOK_HIT_NOHOOK;
+	  std::cout << "debut hook retracted"<< std::endl;
 	  hook->m_HookState = HOOK_RETRACTED;
 	  hook->m_pCurrentState = CHookRetracted::getInstance();
+	  std::cout << "debut hook retracted"<< std::endl;
 	}
 			
       hook->m_HookPos = NewPos;
     }
 
 
-
+  
+  //hook->m_pCurrentState->printme(hook);
 
 
 }

@@ -22,6 +22,12 @@ CHookRetracted::getInstance(){
 
 void
 CHookRetracted::Execute(CHook*hook, bool UseInput){
+
+  //std::cout << "c'est ca ?" << std::endl;
+   if(hook->m_pCurrentState->giveMeState() != HOOK_RETRACTED)
+     hook->m_pCurrentState->printme(hook);
+
+   //hook->m_HookState = HOOK_RETRACTED;
   hook->owner->m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
 
 }

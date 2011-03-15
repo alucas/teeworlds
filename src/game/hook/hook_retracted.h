@@ -11,7 +11,9 @@ class CHookRetracted: public CState{
     static CHookRetracted* getInstance();
     virtual void printme(CHook* hook){ std::cout <<"Je suis retracted" << std::endl;
       std::cout << hook->m_HookState << std::endl; };
-
+    virtual int giveMeState(){
+      return HOOK_RETRACTED;
+    }
  private:
     CHookRetracted();
     CHookRetracted(const CHookRetracted &);

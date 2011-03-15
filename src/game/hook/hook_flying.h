@@ -12,6 +12,8 @@ class CHookFlying: public CState{
     virtual void printme(CHook* hook){ std::cout <<"Je suis flying" << std::endl;
       std::cout << hook->m_HookState << std::endl; };
 
+    virtual int giveMeState(){ return HOOK_FLYING; }
+
  private:
     CHookFlying();
     CHookFlying(const CHookFlying &);

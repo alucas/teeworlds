@@ -1,3 +1,4 @@
+
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #ifndef GAME_TUNING_H
@@ -14,7 +15,7 @@ MACRO_TUNING_PARAM(AirControlSpeed, air_control_speed, 250.0f / TicksPerSecond)
 MACRO_TUNING_PARAM(AirControlAccel, air_control_accel, 1.5f)
 MACRO_TUNING_PARAM(AirFriction, air_friction, 0.95f)
 MACRO_TUNING_PARAM(HookLength, hook_length, 380.0f)
-MACRO_TUNING_PARAM(HookFireSpeed, hook_fire_speed, 80.0f)
+MACRO_TUNING_PARAM(HookFireSpeed, hook_fire_speed, 8.0f)
 MACRO_TUNING_PARAM(HookDragAccel, hook_drag_accel, 3.0f)
 MACRO_TUNING_PARAM(HookDragSpeed, hook_drag_speed, 15.0f)
 MACRO_TUNING_PARAM(Gravity, gravity, 0.5f)

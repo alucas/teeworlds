@@ -21,6 +21,11 @@ CHookIdle::getInstance(){
 void
 CHookIdle::Execute(CHook*hook, bool UseInput){
 
+   if(hook->m_pCurrentState->giveMeState() != HOOK_IDLE)
+     hook->m_pCurrentState->printme(hook);
+
+   //hook->m_HookState = HOOK_IDLE;
+
       if( UseInput && hook->owner->m_Input.m_Hook){
 
 	hook->m_HookState = HOOK_FLYING;
@@ -37,4 +42,6 @@ CHookIdle::Execute(CHook*hook, bool UseInput){
   else{
     hook->Reset();
   }
+
+     
 }

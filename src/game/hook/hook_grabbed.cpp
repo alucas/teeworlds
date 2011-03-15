@@ -1,6 +1,7 @@
 #include <iostream>
 #include "hook.h"
 #include "hook_grabbed.h"
+#include "hook_retracted.h"
 
 
 CHookGrabbed::CHookGrabbed(){
@@ -21,6 +22,12 @@ CHookGrabbed::getInstance(){
 
 void
 CHookGrabbed::Execute(CHook*hook, bool UseInput){
+
+  if(hook->m_pCurrentState->giveMeState() != HOOK_GRABBED)
+    hook->m_pCurrentState->printme(hook);
+
+  //hook->m_HookState = HOOK_GRABBED;
+
   if(hook->owner->m_HookedPlayer != -1)
     {
       CCharacterCore *p = hook->owner->m_pWorld->m_apCharacters[ hook->owner->m_HookedPlayer];
@@ -31,6 +38,7 @@ CHookGrabbed::Execute(CHook*hook, bool UseInput){
 	  // release hook
 	  hook->owner->m_HookedPlayer = -1;
 	  hook->m_HookState = HOOK_RETRACTED;
+	  hook->m_pCurrentState = CHookRetracted::getInstance();
 	  hook->m_HookPos = hook->owner->m_Pos;					
 	}
 			
@@ -65,10 +73,15 @@ CHookGrabbed::Execute(CHook*hook, bool UseInput){
 
   // release hook (max hook time is 1.25
   hook->m_HookTick++;
-  if(hook->owner->m_HookedPlayer != -1 && (hook->m_HookTick > SERVER_TICK_SPEED+SERVER_TICK_SPEED/5 || ! hook->owner->m_pWorld->m_apCharacters[hook->owner->m_HookedPlayer]))
+  if(hook->owner->m_HookedPlayer != -1 && 
+     (hook->m_HookTick > SERVER_TICK_SPEED+SERVER_TICK_SPEED/5 || ! hook->owner->m_pWorld->m_apCharacters[hook->owner->m_HookedPlayer]))
     {
       hook->owner->m_HookedPlayer = -1;
       hook->m_HookState = HOOK_RETRACTED;
+      hook->m_pCurrentState = CHookRetracted::getInstance();
+     
       hook->m_HookPos = hook->owner->m_Pos;			
     }
+  //hook->m_pCurrentState->printme(hook);
+
 }
