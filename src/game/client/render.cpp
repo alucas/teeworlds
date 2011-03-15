@@ -347,7 +347,7 @@ void CRenderTools::RenderTilemapGenerateSkip(class CLayers *pLayers)
 	}
 }
 
-static int *s_aTeamColors[] =
+static int *s_aTeamColors[8] =
 	{
 		&g_Config.m_TeamColor1,
 		&g_Config.m_TeamColor2,
@@ -359,9 +359,24 @@ static int *s_aTeamColors[] =
 		&g_Config.m_TeamColor8
 	};
 
+static int s_aTeamColorsDefault[8] =
+	{
+		65387,
+		10223467,
+		5684736,
+		1965824,
+		13017088,
+		7788800,
+		890112,
+		255
+	};
+
 int CRenderTools::GetTeamColorHSL(int Team)
 {
-	return *s_aTeamColors[Team % NUM_TEAMS];
+	if(g_Config.m_TeamUseCustomColor)
+		return *s_aTeamColors[Team % NUM_TEAMS];
+	else
+		return s_aTeamColorsDefault[Team % NUM_TEAMS];
 }
 
 void CRenderTools::SetTeamColorHSL(int Team, int Color)

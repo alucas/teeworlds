@@ -837,18 +837,9 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 			{
 				CTeeRenderInfo Info;
 
-				if(g_Config.m_TeamUseCustomColor)
-				{
-					Info.m_ColorBody = HslToRgbV4(RenderTools()->GetTeamColorHSL(i));
-					Info.m_ColorFeet = Info.m_ColorBody;
-					Info.m_Texture = s->m_ColorTexture;
-				}
-				else
-				{
-					Info.m_ColorBody = vec4(1, 1, 1, 1);
-					Info.m_ColorFeet = vec4(1, 1, 1, 1);
-					Info.m_Texture = s->m_OrgTexture;
-				}
+				Info.m_ColorBody = HslToRgbV4(RenderTools()->GetTeamColorHSL(i));
+				Info.m_ColorFeet = Info.m_ColorBody;
+				Info.m_Texture = s->m_ColorTexture;
 
 				Info.m_Size = UI()->Scale()*50.0f;
 				RenderTools()->RenderTee(CAnimState::GetIdle(), &Info, 0, vec2(0, 0), vec2(Item.m_Rect.x + 25, Item.m_Rect.y+Item.m_Rect.h/2));
