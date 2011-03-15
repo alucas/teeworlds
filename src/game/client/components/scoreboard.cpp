@@ -112,13 +112,10 @@ void CScoreboard::RenderSpectators(float x, float y, float w)
 	TextRender()->Text(0, x+10, y, 32, aBuffer, (int)w-20);
 }
 
-void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const char *pTitle)
+void CScoreboard::RenderScoreboard(float x, float y, float w, float h, int Team, const char *pTitle)
 {
 	if(Team == TEAM_SPECTATORS)
 		return;
-
-	//float ystart = y;
-	float h = 740.0f;
 
 	Graphics()->BlendNormal();
 	Graphics()->TextureSet(-1);
@@ -270,7 +267,7 @@ void CScoreboard::OnRender()
 		m_pClient->m_pMotd->Clear();
 	
 
-	float Width = 400*3.0f*Graphics()->ScreenAspect();
+	float Width = 370*3.0f*Graphics()->ScreenAspect();
 	float Height = 400*3.0f;
 
 	Graphics()->MapScreen(0, 0, Width, Height);
@@ -278,7 +275,7 @@ void CScoreboard::OnRender()
 	float w = 400.0f;
 
 	if(m_pClient->m_Snap.m_pGameobj && !(m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS))
-		RenderScoreboard(Width/2-w/2, 150.0f, w, 0, 0);
+		RenderScoreboard(Width/2-w/2, 150.0f, 750.0f, w, 0, 0);
 	else //team game
 	{
 		int i;
@@ -307,14 +304,29 @@ void CScoreboard::OnRender()
 		}
 	
 		int Space = 20;
-		int NbSpaces = NumTeams - 1; //one space between 2 board => how many spaces ?
-		int W = NbSpaces*Space + NumTeams*w;
-		for(i = 0; i<m_pClient->m_Snap.m_pGameobj->m_NumberTeams;i++)
+		int NbrScorboardPerLine = 4;
+		int NbSpaces = NumTeams - 1; //one space between 2 board
+		int W;
+		float h;
+
+		if(!(NumTeams>NbrScorboardPerLine))
 		{
-			RenderScoreboard(Width/2-W/2+i*(w+Space), 150.0f, w, i, Localize(GetTeamName(i)));
+			W = NbSpaces*Space + NumTeams*w;
+			h = 750.0f;
+			for(i=0;i<NumTeams;i++)
+				RenderScoreboard(Width/2-W/2+i*(w+Space),150.0f,w,h,i,Localize(GetTeamName(i)));
 		}
-	}
-	
+		else
+		{//display on 2 lines
+			h = 325.0f;
+			int W = NbSpaces*Space + NbrScorboardPerLine*w;
+			for(i=0;i<NbrScorboardPerLine;i++)
+				RenderScoreboard(Width/2-W/2+i*(w+Space),150.0f,w,h,i,Localize(GetTeamName(i)));
+			for(i=NbrScorboardPerLine;i<NumTeams;i++)
+				RenderScoreboard(Width/2-W/2+(i-NbrScorboardPerLine)*(w+Space),150.0f+ h + 10,w,h,i,Localize(GetTeamName(i)));
+		}
+	}//end "team_game"
+
 	RenderGoals(Width/2-w/2, 150+750+25, w);
 	RenderSpectators(Width/2-w/2, 150+750+25+50+25, w);
 	RenderRecordingNotification((Width/7)*4);
