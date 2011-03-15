@@ -807,18 +807,6 @@ void CMenus::RenderSettingsGeneral(CUIRect MainView)
 	RenderLanguageSelection(List);
 }
 
-class CTeam
-{
-public:
-	CTeam() {}
-	CTeam(const char *pName, int Id) : m_Name(pName), m_Id(Id) {}
-
-	string m_Name;
-	int m_Id;
-
-	bool operator<(const CTeam &Other) { return m_Name < Other.m_Name; }
-};
-
 void CMenus::RenderSettingsTeams(CUIRect MainView)
 {
 	CUIRect GeneralView, ListView, TeamView, ButtonView;
@@ -834,35 +822,24 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 
 	static int s_TeamList  = 0;
 	static int s_SelectedTeam = 0;
-	static sorted_array<CTeam> s_Teams;
 	static float s_ScrollValue = 0;
 
 	{
-		if(s_Teams.size() == 0)
-		{
-			char aBuffer[128];
-			for(int i = 1; i <= NUM_TEAMS; i++)
-			{
-				str_format(aBuffer, 128, "Team %d", i);
-				s_Teams.add(CTeam(aBuffer, i));
-			}
-		}
+		UiDoListboxStart(&s_TeamList, &ListView, 50.0f, Localize("Team"), "", NUM_TEAMS, 1, s_SelectedTeam, s_ScrollValue);
 
-		UiDoListboxStart(&s_TeamList, &ListView, 50.0f, Localize("Team"), "", s_Teams.size(), 1, s_SelectedTeam, s_ScrollValue);
-
-		int Team = 0;
-		for(sorted_array<CTeam>::range r = s_Teams.all(); !r.empty(); r.pop_front())
+		static int s_aTeams[NUM_TEAMS] = {0};
+		for(int i = 0; i < NUM_TEAMS; i++)
 		{
 			const CSkins::CSkin *s = m_pClient->m_pSkins->Get(0);
 
-			CListboxItem Item = UiDoListboxNextItem(&r.front());
+			CListboxItem Item = UiDoListboxNextItem(&s_aTeams[i]);
 			if(Item.m_Visible)
 			{
 				CTeeRenderInfo Info;
 
 				if(g_Config.m_TeamUseCustomColor)
 				{
-					Info.m_ColorBody = HslToRgbV4(RenderTools()->GetTeamColorHSL(Team));
+					Info.m_ColorBody = HslToRgbV4(RenderTools()->GetTeamColorHSL(i));
 					Info.m_ColorFeet = Info.m_ColorBody;
 					Info.m_Texture = s->m_ColorTexture;
 				}
@@ -879,10 +856,8 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 				CUIRect LabelView;
 				Item.m_Rect.HSplitTop(10.0f, 0, &LabelView);
 				LabelView.VSplitLeft(50.0f, 0, &LabelView);
-				UI()->DoLabelScaled(&LabelView, r.front().m_Name, 15.0f, -1);
+				UI()->DoLabelScaled(&LabelView, g_Config.m_TeamName1, 15.0f, -1);
 			}
-
-			Team++;
 		}
 
 		s_SelectedTeam = UiDoListboxEnd(&s_ScrollValue, 0);
