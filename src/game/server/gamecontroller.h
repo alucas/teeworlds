@@ -5,6 +5,7 @@
 
 #include <base/vmath.h>
 #include <game/generated/protocol.h>
+#include "entities/pickup.h"
 
 /*
 	Class: Game Controller
@@ -45,6 +46,7 @@ protected:
 	void CycleMap();
 	void ResetGame();
 	
+	void MooveAPlayerForBalancing(int src, int dest, float TeamScore[NUM_TEAMS], float PlayerScore[MAX_CLIENTS]);
 	char m_aMapWish[128];
 
 	
