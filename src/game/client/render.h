@@ -80,6 +80,10 @@ public:
 		float OffsetX, float OffsetY, float Aspect, float Zoom, float *pPoints);	
 	int GetTeamColorHSL(int Team);
 	void SetTeamColorHSL(int Team, int Color);
+	void ResetTeamColor(int Team);
+	bool GetTeamUseCustomColor(int Team);
+	void SetTeamUseCustomColor(int Team, bool UseCustomColor);
+	char *GetTeamName(int Team);
 };
 
 #endif

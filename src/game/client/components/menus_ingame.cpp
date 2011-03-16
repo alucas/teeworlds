@@ -65,16 +65,6 @@ void CMenus::RenderGame(CUIRect MainView)
 		
 		if(m_pClient->m_Snap.m_pGameobj->m_Flags & GAMEFLAG_TEAMS)
 		{
-			// TODO : Do this nicer
-			const char *aTextButtons[] = {
-				"Join team 1",
-				"Join team 2",
-				"Join team 3",
-				"Join team 4",
-				"Join team 5",
-				"Join team 6",
-				"Join team 7",
-				"Join team 8"};
 			static int s_SpectateButton[NUM_TEAMS] = {0};
 			for(int i = 0; i < m_pClient->m_Snap.m_pGameobj->m_NumberTeams; i++)
 				if(m_pClient->m_Snap.m_pLocalInfo->m_Team != i)
@@ -82,7 +72,7 @@ void CMenus::RenderGame(CUIRect MainView)
 					Strips[Position/4].VSplitLeft(10.0f, &Button, &Strips[Position/4]);
 					Strips[Position/4].VSplitLeft(120.0f, &Button, &Strips[Position/4]);
 					
-					if(DoButton_Menu(&s_SpectateButton[i], Localize(aTextButtons[i]), 0, &Button))
+					if(DoButton_Menu(&s_SpectateButton[i], RenderTools()->GetTeamName(i), 0, &Button))
 					{
 						m_pClient->SendSwitchTeam(i);
 						SetActive(false);

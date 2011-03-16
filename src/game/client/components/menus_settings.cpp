@@ -817,8 +817,8 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 
 	GeneralView.HSplitTop(20.0f, &ButtonView, &GeneralView);
 	static int s_CustomColors = 0;
-	if(DoButton_CheckBox(&s_CustomColors, Localize("Custom colors"), g_Config.m_TeamUseCustomColor, &ButtonView))
-		g_Config.m_TeamUseCustomColor = g_Config.m_TeamUseCustomColor?0:1;
+	if(DoButton_CheckBox(&s_CustomColors, Localize("Custom colors"), g_Config.m_TeamsUseCustomColor, &ButtonView))
+		g_Config.m_TeamsUseCustomColor = g_Config.m_TeamsUseCustomColor?0:1;
 
 	static int s_TeamList  = 0;
 	static int s_SelectedTeam = 0;
@@ -847,7 +847,7 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 				CUIRect LabelView;
 				Item.m_Rect.HSplitTop(10.0f, 0, &LabelView);
 				LabelView.VSplitLeft(50.0f, 0, &LabelView);
-				UI()->DoLabelScaled(&LabelView, g_Config.m_TeamName1, 15.0f, -1);
+				UI()->DoLabelScaled(&LabelView, RenderTools()->GetTeamName(i), 15.0f, -1);
 			}
 		}
 
@@ -855,40 +855,58 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 	}
 
 	TeamView.HSplitTop(20.0f, &ButtonView, &TeamView);
-	static int s_CustomColorsTeam[NUM_TEAMS] = {0};
-	if(DoButton_CheckBox(&s_CustomColorsTeam[s_SelectedTeam], Localize("Custom colors"), g_Config.m_TeamUseCustomColor, &ButtonView))
-		g_Config.m_TeamUseCustomColor = g_Config.m_TeamUseCustomColor?0:1;
 
-	if(g_Config.m_TeamUseCustomColor)
+	char aBuffer[128];
+	str_format(aBuffer, sizeof(aBuffer), "%s:", Localize("Team name"));
+	UI()->DoLabel(&ButtonView, aBuffer, 14.0, -1);
+	ButtonView.VSplitLeft(150.0f, 0, &ButtonView);
+	static float Offset = 0.0f;
+	DoEditBox(g_Config.m_TeamName1, &ButtonView, RenderTools()->GetTeamName(s_SelectedTeam), sizeof(g_Config.m_TeamName1), 14.0f, &Offset);
+
+	if(g_Config.m_TeamsUseCustomColor)
 	{
-		int Colors = RenderTools()->GetTeamColorHSL(s_SelectedTeam);
+		TeamView.HSplitTop(10.0f, 0, &TeamView);
+		TeamView.HSplitTop(20.0f, &ButtonView, &TeamView);
+		static int s_CustomColorsTeam[NUM_TEAMS] = {0};
+		if(DoButton_CheckBox(&s_CustomColorsTeam[s_SelectedTeam], Localize("Custom colors"), RenderTools()->GetTeamUseCustomColor(s_SelectedTeam), &ButtonView))
+			RenderTools()->SetTeamUseCustomColor(s_SelectedTeam, !RenderTools()->GetTeamUseCustomColor(s_SelectedTeam));
 
-		const char *paLabels[] = {
-			Localize("Hue"),
-			Localize("Sat."),
-			Localize("Lht.")};
-		static int s_aColorSlider[3] = {0};
-
-		int PrevColor = Colors;
-		int Color = 0;
-		for(int s = 0; s < 3; s++)
+		if(RenderTools()->GetTeamUseCustomColor(s_SelectedTeam))
 		{
-			CUIRect TextView;
-			TeamView.HSplitTop(19.0f, &ButtonView, &TeamView);
-			ButtonView.VSplitLeft(30.0f, 0, &ButtonView);
-			ButtonView.VSplitLeft(70.0f, &TextView, &ButtonView);
-			ButtonView.VSplitRight(5.0f, &ButtonView, 0);
-			ButtonView.HSplitTop(4.0f, 0, &ButtonView);
+			int Colors = RenderTools()->GetTeamColorHSL(s_SelectedTeam);
 
-			float k = ((PrevColor>>((2-s)*8))&0xff)  / 255.0f;
-			k = DoScrollbarH(&s_aColorSlider[s], &ButtonView, k);
-			Color <<= 8;
-			Color += clamp((int)(k*255), 0, 255);
-			UI()->DoLabelScaled(&TextView, paLabels[s], 15.0f, -1);
+			const char *paLabels[] = {
+				Localize("Hue"),
+				Localize("Sat."),
+				Localize("Lht.")};
+			static int s_aColorSlider[3] = {0};
+
+			int PrevColor = Colors;
+			int Color = 0;
+			for(int s = 0; s < 3; s++)
+			{
+				CUIRect TextView;
+				TeamView.HSplitTop(19.0f, &ButtonView, &TeamView);
+				ButtonView.VSplitLeft(30.0f, 0, &ButtonView);
+				ButtonView.VSplitLeft(70.0f, &TextView, &ButtonView);
+				ButtonView.VSplitRight(5.0f, &ButtonView, 0);
+				ButtonView.HSplitTop(4.0f, 0, &ButtonView);
+
+				float k = ((PrevColor>>((2-s)*8))&0xff)  / 255.0f;
+				k = DoScrollbarH(&s_aColorSlider[s], &ButtonView, k);
+				Color <<= 8;
+				Color += clamp((int)(k*255), 0, 255);
+				UI()->DoLabelScaled(&TextView, paLabels[s], 15.0f, -1);
+			}
+
+			RenderTools()->SetTeamColorHSL(s_SelectedTeam, Color);
+			TeamView.HSplitTop(5.0f, 0, &TeamView);
+			TeamView.HSplitTop(30.0f, &ButtonView, &TeamView);
+
+			static int s_DefaultButton = 0;
+			if(DoButton_Menu((void*)&s_DefaultButton, Localize("Reset to defaults"), 0, &ButtonView))
+				RenderTools()->ResetTeamColor(s_SelectedTeam);
 		}
-
-		RenderTools()->SetTeamColorHSL(s_SelectedTeam, Color);
-		TeamView.HSplitTop(5.0f, 0, &TeamView);
 	}
 }
 
