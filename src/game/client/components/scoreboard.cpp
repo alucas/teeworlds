@@ -249,14 +249,6 @@ void CScoreboard::RenderRecordingNotification(float x)
 	TextRender()->Text(0, x+50.0f, 8.0f, 24.0f, Localize("REC"), -1);
 }
 
-
-static const char *GetTeamName(int num){
-	static const char *team_names[] = {"team 1","team 2","team 3","team 4", "Team 5", "Team 6", "Team 7", "Team 8"};
-	
-	return team_names[num % NUM_TEAMS];
-}
-
-
 void CScoreboard::OnRender()
 {
 	if(!Active())
@@ -295,7 +287,7 @@ void CScoreboard::OnRender()
 			}
 
 			char aBuffer[128];
-			str_format(aBuffer, 128, "%s wins", GetTeamName(WiningTeam));
+			str_format(aBuffer, 128, "%s wins", RenderTools()->GetTeamName(WiningTeam));
 
 			pText= Localize(aBuffer);
       
@@ -314,16 +306,16 @@ void CScoreboard::OnRender()
 			W = NbSpaces*Space + NumTeams*w;
 			h = 750.0f;
 			for(i=0;i<NumTeams;i++)
-				RenderScoreboard(Width/2-W/2+i*(w+Space),150.0f,w,h,i,Localize(GetTeamName(i)));
+				RenderScoreboard(Width/2-W/2+i*(w+Space),150.0f,w,h,i,Localize(RenderTools()->GetTeamName(i)));
 		}
 		else
 		{//display on 2 lines
 			h = 325.0f;
 			int W = NbSpaces*Space + NbrScorboardPerLine*w;
 			for(i=0;i<NbrScorboardPerLine;i++)
-				RenderScoreboard(Width/2-W/2+i*(w+Space),150.0f,w,h,i,Localize(GetTeamName(i)));
+				RenderScoreboard(Width/2-W/2+i*(w+Space),150.0f,w,h,i,Localize(RenderTools()->GetTeamName(i)));
 			for(i=NbrScorboardPerLine;i<NumTeams;i++)
-				RenderScoreboard(Width/2-W/2+(i-NbrScorboardPerLine)*(w+Space),150.0f+ h + 10,w,h,i,Localize(GetTeamName(i)));
+				RenderScoreboard(Width/2-W/2+(i-NbrScorboardPerLine)*(w+Space),150.0f+ h + 10,w,h,i,Localize(RenderTools()->GetTeamName(i)));
 		}
 	}//end "team_game"
 
