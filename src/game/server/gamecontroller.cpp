@@ -711,7 +711,7 @@ bool IGameController::CanChangeTeam(CPlayer *pPlayer, int JoinTeam)
 			MinimumTees = aNumTees[i];
 
 	// there is a player-difference of at least 2
-	if (aNumTees[JoinTeam] - MinimumTees > 2)
+	if (aNumTees[JoinTeam] - MinimumTees >= 2)
 		return false;
 	
 	return true;
