@@ -120,7 +120,12 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	if(Index == ENTITY_SPAWN)
 		m_aaSpawnPoints[0][m_aNumSpawnPoints[0]++] = Pos;
 	else if(Index >= ENTITY_SPAWN_TEAM && Index < ENTITY_SPAWN_TEAM + NUM_TEAMS)
+	{
+		if(Index >= ENTITY_SPAWN_TEAM + m_NumTeams) // don't add theses spawn points to the game
+			return true;
+
 		m_aaSpawnPoints[Index - ENTITY_SPAWN_TEAM][m_aNumSpawnPoints[Index - ENTITY_SPAWN_TEAM]++] = Pos;
+	}
 	else if(Index == ENTITY_ARMOR_1)
 		Type = POWERUP_ARMOR;
 	else if(Index == ENTITY_HEALTH_1)
