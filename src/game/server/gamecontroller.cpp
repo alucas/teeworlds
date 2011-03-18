@@ -386,16 +386,18 @@ bool IGameController::IsForceBalanced()
 		return false;
 }
 
-bool IGameController::CanBeMovedOnBalance(int ClientID)
-{
+bool IGameController::CanBeMovedOnBalance(int ClientID)//a modifier. estce que ce client porte un drapeau... etc.
+{//ajouter le '!canbemoovedonbalance' comme condition pour le continue de MooveAPlayerForBalancing.
 	return true;
 }
 
 void IGameController::MooveAPlayerForBalancing(int src, int dest, float TeamScore[NUM_TEAMS], float PlayerScore[MAX_CLIENTS]){
-	//détermine le joueur à bouger de la team src vers la team dest et l'y met
+ //moove a player from team src to team dest, to have the lowest score difference beetween those 2 teams
+	int chosedPlayer=-1;
+	int i;
 	CPlayer *pP = 0;
 	float PD = TeamScore[src];
-	for(int i = 0; i < MAX_CLIENTS; i++)
+	for(i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(!GameServer()->m_apPlayers[i] || !CanBeMovedOnBalance(i))
 			continue;
@@ -404,8 +406,11 @@ void IGameController::MooveAPlayerForBalancing(int src, int dest, float TeamScor
 		{
 			pP = GameServer()->m_apPlayers[i];
 			PD = absolute((TeamScore[dest]+PlayerScore[i]) - (TeamScore[src]-PlayerScore[i]));
+			chosedPlayer=i;
+			break;
 		}
 	}
+
 	int Temp = pP->m_LastActionTick;
 	pP->SetTeam(dest);
 	pP->m_LastActionTick = Temp;
@@ -436,7 +441,7 @@ void IGameController::Tick()
 		}
 	}
 	
-	// do team-balancing
+	// do team-balancing (if teams are still unbalanced after m_SvTeambalanceTime minutes)
 	if (IsTeamplay() && m_UnbalancedTick != -1 && Server()->Tick() > m_UnbalancedTick+g_Config.m_SvTeambalanceTime*Server()->TickSpeed()*60)
 	{
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", "Balancing teams");
@@ -453,39 +458,40 @@ void IGameController::Tick()
 				TeamScore[GameServer()->m_apPlayers[i]->GetTeam()] += aPScore[i];
 			}
 		}
-		
+
 		// are teams unbalanced?
 
 		int NbPlayerPerTeamWanted, NbMaxPlayerPerTeam;
 		int NbrPlayer =0;
-		int bigestTeam =0;
 		for (i=0;i<NUM_TEAMS;i++){
 			NbrPlayer+=NbPlayersInTeam[i];}
-		NbPlayerPerTeamWanted = NbrPlayer/NUM_TEAMS;
+		NbPlayerPerTeamWanted = NbrPlayer/m_NumTeams;
 		NbMaxPlayerPerTeam = NbPlayerPerTeamWanted +1;
 
-		for(i=0;i<NUM_TEAMS;i++)//verify team balance
+		for(i=0;i<m_NumTeams;i++)//verify team balance
 		{
 			if(NbPlayersInTeam[i]<NbPlayerPerTeamWanted) //Team i disavantaged
 			{
-				bigestTeam =0;
-				for(j=0;j<NUM_TEAMS;j++)
+				int bigestTeam =0;
+				for(j=0;j<m_NumTeams;j++)
 				{
-					if (NbPlayersInTeam[j]>bigestTeam)
+					if (NbPlayersInTeam[j]>NbPlayersInTeam[bigestTeam])
 						bigestTeam = j;
-					MooveAPlayerForBalancing(bigestTeam, i, TeamScore, aPScore);
 				}
+				MooveAPlayerForBalancing(bigestTeam, i, TeamScore, aPScore);
+				break;
 			}
 			else{
 				if(NbPlayersInTeam[i]>NbMaxPlayerPerTeam)
 				{
 					int smallestTeam = 0;
-					for(j=0;j<NUM_TEAMS;j++)
+					for(j=0;j<m_NumTeams;j++)
 					{
-						if (NbPlayersInTeam[j]<smallestTeam)
+						if (NbPlayersInTeam[j]<NbPlayersInTeam[smallestTeam])
 							smallestTeam = j;
-						MooveAPlayerForBalancing(i,smallestTeam, TeamScore, aPScore);
 					}
+				       MooveAPlayerForBalancing(i,smallestTeam, TeamScore, aPScore);
+				break;
 				}
 			}
 		}//end verify team balance
@@ -636,7 +642,7 @@ int IGameController::GetAutoTeam(int NotThisID)
 
 	if(CanJoinTeam(Team, NotThisID))
 		return Team;
-	
+
 	return -1;
 }
 
@@ -645,48 +651,71 @@ bool IGameController::CanJoinTeam(int Team, int NotThisID)
 	if(Team == TEAM_SPECTATORS || (GameServer()->m_apPlayers[NotThisID] && GameServer()->m_apPlayers[NotThisID]->GetTeam() != TEAM_SPECTATORS))
 		return true;
 
+	if(Team > m_NumTeams)
+	  return false;
 	int aNumplayers[NUM_TEAMS]={0};
+	int NbrPlayers =0;
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(GameServer()->m_apPlayers[i] && i != NotThisID)
 		{
 			if(GameServer()->m_apPlayers[i]->GetTeam() >= 0 && GameServer()->m_apPlayers[i]->GetTeam() < m_NumTeams)
+			  {
 				aNumplayers[GameServer()->m_apPlayers[i]->GetTeam()]++;
+				NbrPlayers++;
+			  }
 		}
 	}
-	
-	return (aNumplayers[0] + aNumplayers[1]) < g_Config.m_SvMaxClients-g_Config.m_SvSpectatorSlots;
+	return (NbrPlayers < g_Config.m_SvMaxClients-g_Config.m_SvSpectatorSlots);
 }
 
 bool IGameController::CheckTeamBalance()
 {
 	if(!IsTeamplay() || !g_Config.m_SvTeambalanceTime)
 		return true;
-	
-	int aT[2] = {0, 0};
+
+	int aNumplayers[NUM_TEAMS]={0};
+	int NbrPlayer =0;
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		CPlayer *pP = GameServer()->m_apPlayers[i];
-		if(pP && pP->GetTeam() != TEAM_SPECTATORS)
-			aT[pP->GetTeam()]++;
+		if(GameServer()->m_apPlayers[i])
+		{
+			if(GameServer()->m_apPlayers[i]->GetTeam() >= 0 && GameServer()->m_apPlayers[i]->GetTeam() <= m_NumTeams)
+			  {
+				aNumplayers[GameServer()->m_apPlayers[i]->GetTeam()]++;
+				NbrPlayer++;
+			  }
+		}
 	}
+	int NbPlayerPerTeamWanted = NbrPlayer/m_NumTeams;
+	int NbMaxPlayerPerTeam = NbPlayerPerTeamWanted +1;
+
 	
 	char aBuf[256];
-	if(absolute(aT[0]-aT[1]) >= 2)
-	{
-		str_format(aBuf, sizeof(aBuf), "Teams are NOT balanced (red=%d blue=%d)", aT[0], aT[1]);
+	for(int i=0;i<m_NumTeams;i++){
+	  if(aNumplayers[i]<NbPlayerPerTeamWanted){//team i disavantaged
+	    str_format(aBuf, sizeof(aBuf), "Teams are NOT balanced (min %d player per team wanted)", NbPlayerPerTeamWanted);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 		if(GameServer()->m_pController->m_UnbalancedTick == -1)
 			GameServer()->m_pController->m_UnbalancedTick = Server()->Tick();
 		return false;
-	}
-	else
-	{
-		str_format(aBuf, sizeof(aBuf), "Teams are balanced (red=%d blue=%d)", aT[0], aT[1]);
+	  }
+	  else
+	  {
+	    if(aNumplayers[i]>NbMaxPlayerPerTeam)
+	      str_format(aBuf, sizeof(aBuf), "Teams are NOT balanced (max %d player per team)", NbMaxPlayerPerTeam);
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-		GameServer()->m_pController->m_UnbalancedTick = -1;
-		return true;
-	}
+		if(GameServer()->m_pController->m_UnbalancedTick == -1)
+			GameServer()->m_pController->m_UnbalancedTick = Server()->Tick();
+		return false;
+	  }
+	}//end for
+	//everything OK
+	str_format(aBuf, sizeof(aBuf), "Teams are balanced with at least %d player each", NbPlayerPerTeamWanted);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	GameServer()->m_pController->m_UnbalancedTick = -1;
+	return true;
+
 }
 
 bool IGameController::CanChangeTeam(CPlayer *pPlayer, int JoinTeam)
