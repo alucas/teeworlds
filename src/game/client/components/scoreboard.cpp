@@ -259,25 +259,35 @@ void CScoreboard::OnRender()
 		m_pClient->m_pMotd->Clear();
 	
 
-	float Width = 370*3.0f*Graphics()->ScreenAspect();
+	float Width = 400*3.0f*Graphics()->ScreenAspect();
 	float Height = 400*3.0f;
 
 	Graphics()->MapScreen(0, 0, Width, Height);
 
-	float w = 400.0f;
+	float w = 650.0f;
 
 	if(m_pClient->m_Snap.m_pGameobj && !(m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS))
-		RenderScoreboard(Width/2-w/2, 150.0f, 750.0f, w, 0, 0);
+		RenderScoreboard(Width/2 - w/2, 150.0f, 750.0f, w, 0, 0);
 	else //team game
 	{
-		int i;
-		const char *pText;
-		int NumTeams = m_pClient->m_Snap.m_pGameobj->m_NumberTeams;
+		int NbrTeams = m_pClient->m_Snap.m_pGameobj->m_NumberTeams;
+		int Space = 20;
+		int NbrScorboardPerStrip = 4;
+		int NbrColumn = (NbrTeams >= NbrScorboardPerStrip ? NbrScorboardPerStrip : NbrTeams);
+
+		int NbrSpacesPerStrip = NbrColumn - 1; // spaces between 2 board
+		int NbrStrips = ((int)ceil((float)NbrTeams/NbrScorboardPerStrip));
+
+		float W = 1400.0f;
+		float H = 750.0f;
+
+		float w = (W - NbrSpacesPerStrip * Space) / NbrColumn;
+		float h = (H - (NbrStrips - 1) * Space)/ NbrStrips;
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
 		{
 			int WiningTeam = 0;
 			int WiningTeamScore = m_pClient->m_Snap.m_pGameobj->m_Teamscore[0];
-			for(i = 0; i<NumTeams;i++)
+			for(int i = 0; i<NbrTeams; i++)
 			{
 				if (WiningTeamScore < m_pClient->m_Snap.m_pGameobj->m_Teamscore[i])//don't care about execo
 				{
@@ -287,37 +297,26 @@ void CScoreboard::OnRender()
 			}
 
 			char aBuffer[128];
-			str_format(aBuffer, 128, "%s wins", RenderTools()->GetTeamName(WiningTeam));
+			str_format(aBuffer, 128, "%s\"%s\"", Localize("Victory : "), RenderTools()->GetTeamName(WiningTeam));
 
-			pText= Localize(aBuffer);
-      
-			float w = TextRender()->TextWidth(0, 86.0f, pText, -1);
-			TextRender()->Text(0, Width/2-w/2, 39, 86.0f, pText, -1);
+			float w = TextRender()->TextWidth(0, 86.0f, aBuffer, -1);
+			TextRender()->Text(0, Width/2-w/2, 39, 86.0f, aBuffer, -1);
 		}
-	
-		int Space = 20;
-		int NbrScorboardPerLine = 4;
-		int NbSpaces = NumTeams - 1; //one space between 2 board
-		int W;
-		float h;
 
-		if(!(NumTeams>NbrScorboardPerLine))
-		{
-			W = NbSpaces*Space + NumTeams*w;
-			h = 750.0f;
-			for(i=0;i<NumTeams;i++)
-				RenderScoreboard(Width/2-W/2+i*(w+Space),150.0f,w,h,i,Localize(RenderTools()->GetTeamName(i)));
-		}
-		else
-		{//display on 2 lines
-			h = 325.0f;
-			int W = NbSpaces*Space + NbrScorboardPerLine*w;
-			for(i=0;i<NbrScorboardPerLine;i++)
-				RenderScoreboard(Width/2-W/2+i*(w+Space),150.0f,w,h,i,Localize(RenderTools()->GetTeamName(i)));
-			for(i=NbrScorboardPerLine;i<NumTeams;i++)
-				RenderScoreboard(Width/2-W/2+(i-NbrScorboardPerLine)*(w+Space),150.0f+ h + 10,w,h,i,Localize(RenderTools()->GetTeamName(i)));
-		}
-	}//end "team_game"
+		int Team = 0;
+		for(int i=0; i<NbrStrips; i++)
+			for(int j=0; j<NbrScorboardPerStrip; j++)
+			{
+				if(Team >= NbrTeams)
+					break;
+
+				RenderScoreboard(
+					Width/2 - W/2 + j*(w+Space),
+					150.0f + i*(h+Space),
+					w, h, Team, Localize(RenderTools()->GetTeamName(Team)));
+				Team++;
+			}
+	}
 
 	RenderGoals(Width/2-w/2, 150+750+25, w);
 	RenderSpectators(Width/2-w/2, 150+750+25+50+25, w);
