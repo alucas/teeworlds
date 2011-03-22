@@ -270,14 +270,27 @@ void CHud::RenderConnectionWarning()
 	}
 }
 
+bool CHud::CheckTeamBalance(){
+	int biggest = 0;
+	int smallest = 0;
+	int i;
+	for(i = 0;i<m_pClient->m_Snap.m_pGameobj->m_NumberTeams;i++){
+	  if(m_pClient->m_Snap.m_aTeamSize[i]> m_pClient->m_Snap.m_aTeamSize[biggest])
+	    biggest = i;
+	  if(m_pClient->m_Snap.m_aTeamSize[i]< m_pClient->m_Snap.m_aTeamSize[smallest])
+	    smallest = i;
+	}
+	return (m_pClient->m_Snap.m_aTeamSize[biggest]-m_pClient->m_Snap.m_aTeamSize[smallest]<2);
+}
+
+
 void CHud::RenderTeambalanceWarning()
 {
 	// render prompt about team-balance
 	bool Flash = time_get()/(time_freq()/2)%2 == 0;
 	if (m_pClient->m_Snap.m_pGameobj && (m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS) != 0)
 	{	
-		int TeamDiff = m_pClient->m_Snap.m_aTeamSize[0]-m_pClient->m_Snap.m_aTeamSize[1];
-		if (g_Config.m_ClWarningTeambalance && (TeamDiff >= 2 || TeamDiff <= -2))
+	  if(g_Config.m_ClWarningTeambalance && !CheckTeamBalance())
 		{
 			const char *pText = Localize("Please balance teams!");
 			if(Flash)
