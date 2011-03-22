@@ -392,29 +392,27 @@ bool IGameController::CanBeMovedOnBalance(int ClientID)
 	return true;
 }
 
-void IGameController::MooveAPlayerForBalancing(int src, int dest, float TeamScore[NUM_TEAMS], float PlayerScore[MAX_CLIENTS]){
- //moove a player from team src to team dest, to have the lowest score difference beetween those 2 teams
-	int chosedPlayer=-1;
-	int i;
+void IGameController::MooveAPlayerForBalancing(int src, int dest, float TeamScore[NUM_TEAMS], float PlayerScore[MAX_CLIENTS])
+{
 	CPlayer *pP = 0;
-	float PD = TeamScore[src];
-	for(i = 0; i < MAX_CLIENTS; i++)
+	float SmallestDiff = TeamScore[src];
+	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(!GameServer()->m_apPlayers[i] || !CanBeMovedOnBalance(i))
 			continue;
+
 		// remember the player who would cause lowest score-difference
-		if(GameServer()->m_apPlayers[i]->GetTeam() == src && (!pP || absolute((TeamScore[dest]+PlayerScore[i]) - (TeamScore[src]-PlayerScore[i])) < PD))
+		if(GameServer()->m_apPlayers[i]->GetTeam() == src && (!pP || absolute((TeamScore[dest]+PlayerScore[i]) - (TeamScore[src]-PlayerScore[i])) < SmallestDiff))
 		{
 			pP = GameServer()->m_apPlayers[i];
-			PD = absolute((TeamScore[dest]+PlayerScore[i]) - (TeamScore[src]-PlayerScore[i]));
-			chosedPlayer=i;
-			break;
+			SmallestDiff = absolute((TeamScore[dest]+PlayerScore[i]) - (TeamScore[src]-PlayerScore[i]));
 		}
 	}
 
 	int Temp = pP->m_LastActionTick;
 	pP->SetTeam(dest);
 	pP->m_LastActionTick = Temp;
+
 	pP->Respawn();
 	pP->m_ForceBalanced = true;
 }
@@ -470,9 +468,9 @@ void IGameController::Tick()
 		NbPlayerPerTeamWanted = NbrPlayer/m_NumTeams;
 		NbMaxPlayerPerTeam = NbPlayerPerTeamWanted +1;
 
-		for(int i=0; i<m_NumTeams; i++)//verify team balance
+		for(int i=0; i<m_NumTeams; i++)
 		{
-			if(aNbPlayersInTeam[i] < NbPlayerPerTeamWanted) //Team i disavantaged
+			if(aNbPlayersInTeam[i] < NbPlayerPerTeamWanted)
 			{
 				int bigestTeam =0;
 				for(int j=0; j<m_NumTeams; j++)
@@ -484,22 +482,19 @@ void IGameController::Tick()
 				MooveAPlayerForBalancing(bigestTeam, i, aTeamScore, aPScore);
 				break;
 			}
-			else
+			else if(aNbPlayersInTeam[i]>NbMaxPlayerPerTeam)
 			{
-				if(aNbPlayersInTeam[i]>NbMaxPlayerPerTeam)
+				int smallestTeam = 0;
+				for(int j=0;j<m_NumTeams;j++)
 				{
-					int smallestTeam = 0;
-					for(int j=0;j<m_NumTeams;j++)
-					{
-						if (aNbPlayersInTeam[j] < aNbPlayersInTeam[smallestTeam])
-							smallestTeam = j;
-					}
-
-					MooveAPlayerForBalancing(i,smallestTeam, aTeamScore, aPScore);
-					break;
+					if (aNbPlayersInTeam[j] < aNbPlayersInTeam[smallestTeam])
+						smallestTeam = j;
 				}
+				
+				MooveAPlayerForBalancing(i,smallestTeam, aTeamScore, aPScore);
+				break;
 			}
-		}//end verify team balance
+		}
 		m_UnbalancedTick = -1;
 	}
 

@@ -272,7 +272,7 @@ void CScoreboard::OnRender()
 	{
 		int NbrTeams = m_pClient->m_Snap.m_pGameobj->m_NumberTeams;
 		int Space = 20;
-		int NbrScorboardPerStrip = 4;
+		int NbrScorboardPerStrip = 3;
 		int NbrColumn = (NbrTeams >= NbrScorboardPerStrip ? NbrScorboardPerStrip : NbrTeams);
 
 		int NbrSpacesPerStrip = NbrColumn - 1; // spaces between 2 board
