@@ -1,12 +1,10 @@
 import sys
 
 GlobalIdCounter = 0
-def GetID():
+def GetUniqueID():
 	global GlobalIdCounter
 	GlobalIdCounter += 1
 	return GlobalIdCounter
-def GetUID():
-	return "x%d"%GetID()
 
 def FixCasing(Str):
 	NewStr = ""
@@ -33,7 +31,7 @@ class BaseType:
 	def __init__(self, type_name):
 		self._type_name = type_name
 		self._target_name = "INVALID"
-		self._id = GetID() # this is used to remember what order the members have in structures etc
+		self._id = GetUniqueID() # this is used to remember what order the members have in structures etc
 	
 	def Identifyer(self): return "x"+str(self._id)
 	def TargetName(self): return self._target_name
@@ -56,6 +54,7 @@ class MemberType:
 class Struct(BaseType):
 	def __init__(self, type_name):
 		BaseType.__init__(self, type_name)
+
 	def Members(self):
 		def sorter(a):
 			return a.var.ID()
@@ -87,6 +86,7 @@ class Struct(BaseType):
 		for member in self.Members():
 			lines += member.var.EmitPreDefinition(target_name+"."+member.name)
 		return lines
+
 	def EmitDefinition(self, name):
 		lines = ["/* %s */ {" % self.TargetName()]
 		for member in self.Members():
@@ -99,13 +99,16 @@ class Array(BaseType):
 		BaseType.__init__(self, type.TypeName())
 		self.type = type
 		self.items = []
+
 	def Add(self, instance):
 		if instance.TypeName() != self.type.TypeName():
 			error("bah")
 		self.items += [instance]
+
 	def EmitDeclaration(self, name):
 		return ["int m_Num%s;"%(FixCasing(name)),
 			"%s *%s;"%(self.TypeName(), FormatName("[]", name))]
+
 	def EmitPreDefinition(self, target_name):
 		BaseType.EmitPreDefinition(self, target_name)
 
@@ -125,6 +128,7 @@ class Array(BaseType):
 			lines += ["static %s *%s = 0;"%(self.TypeName(), self.Identifyer())]
 			
 		return lines
+
 	def EmitDefinition(self, name):
 		return [str(len(self.items))+","+self.Identifyer()]
 
@@ -208,6 +212,7 @@ class NetObject:
 		self.struct_name = "CNetObj_%s" % self.name
 		self.enum_name = "NETOBJTYPE_%s" % self.name.upper()
 		self.variables = variables
+
 	def emit_declaration(self):
 		if self.base:
 			lines = ["struct %s : public %s"%(self.struct_name,self.base_struct_name), "{"]
@@ -217,6 +222,7 @@ class NetObject:
 			lines += ["\t"+line for line in v.emit_declaration()]
 		lines += ["};"]
 		return lines
+
 	def emit_validate(self):
 		lines = ["case %s:" % self.enum_name]
 		lines += ["{"]
@@ -242,6 +248,7 @@ class NetMessage(NetObject):
 		self.base_struct_name = "CNetMsg_%s" % self.base
 		self.struct_name = "CNetMsg_%s" % self.name
 		self.enum_name = "NETMSGTYPE_%s" % self.name.upper()
+
 	def emit_unpack(self):
 		lines = []
 		lines += ["case %s:" % self.enum_name]
@@ -254,6 +261,7 @@ class NetMessage(NetObject):
 			lines += ["\t"+line for line in v.emit_unpack_check()]
 		lines += ["} break;"]
 		return lines
+
 	def emit_declaration(self):
 		extra = []
 		extra += ["\tint MsgID() const { return %s; }" % self.enum_name]
