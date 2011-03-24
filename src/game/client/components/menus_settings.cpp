@@ -808,6 +808,109 @@ void CMenus::RenderSettingsGeneral(CUIRect MainView)
 	RenderLanguageSelection(List);
 }
 
+void CMenus::RenderSettingsTeams(CUIRect MainView)
+{
+	CUIRect GeneralView, ListView, TeamView, ButtonView;
+	MainView.HSplitTop(50.0f, &GeneralView, &MainView);
+	MainView.HSplitBottom(10.0f, &MainView, 0);
+	MainView.VSplitLeft(200.0f, &ListView, &TeamView);
+	TeamView.VSplitLeft(10.0f, 0, &TeamView);
+
+	GeneralView.HSplitTop(20.0f, &ButtonView, &GeneralView);
+	static int s_CustomColors = 0;
+	if(DoButton_CheckBox(&s_CustomColors, Localize("Custom colors"), g_Config.m_TeamsUseCustomColor, &ButtonView))
+		g_Config.m_TeamsUseCustomColor = g_Config.m_TeamsUseCustomColor?0:1;
+
+	static int s_TeamList  = 0;
+	static int s_SelectedTeam = 0;
+	static float s_ScrollValue = 0;
+
+	{
+		UiDoListboxStart(&s_TeamList, &ListView, 50.0f, Localize("Team"), "", 2, 1, s_SelectedTeam, s_ScrollValue);
+
+		static int s_aTeams[2] = {0};
+		for(int i = 0; i < 2; i++)
+		{
+			const CSkins::CSkin *s = m_pClient->m_pSkins->Get(0);
+
+			CListboxItem Item = UiDoListboxNextItem(&s_aTeams[i]);
+			if(Item.m_Visible)
+			{
+				CTeeRenderInfo Info;
+
+				Info.m_ColorBody = HslToRgbV4(RenderTools()->GetTeamColorHSL(i));
+				Info.m_ColorFeet = Info.m_ColorBody;
+				Info.m_Texture = s->m_ColorTexture;
+
+				Info.m_Size = UI()->Scale()*50.0f;
+				RenderTools()->RenderTee(CAnimState::GetIdle(), &Info, 0, vec2(0, 0), vec2(Item.m_Rect.x + 25, Item.m_Rect.y+Item.m_Rect.h/2));
+
+				CUIRect LabelView;
+				Item.m_Rect.HSplitTop(10.0f, 0, &LabelView);
+				LabelView.VSplitLeft(50.0f, 0, &LabelView);
+				UI()->DoLabelScaled(&LabelView, RenderTools()->GetTeamName(i), 15.0f, -1);
+			}
+		}
+
+		s_SelectedTeam = UiDoListboxEnd(&s_ScrollValue, 0);
+	}
+
+	TeamView.HSplitTop(20.0f, &ButtonView, &TeamView);
+
+	char aBuffer[128];
+	str_format(aBuffer, sizeof(aBuffer), "%s:", Localize("Team name"));
+	UI()->DoLabel(&ButtonView, aBuffer, 14.0, -1);
+	ButtonView.VSplitLeft(150.0f, 0, &ButtonView);
+	static float Offset = 0.0f;
+	DoEditBox(g_Config.m_TeamName1, &ButtonView, RenderTools()->GetTeamName(s_SelectedTeam), sizeof(g_Config.m_TeamName1), 14.0f, &Offset);
+
+	if(g_Config.m_TeamsUseCustomColor)
+	{
+		TeamView.HSplitTop(10.0f, 0, &TeamView);
+		TeamView.HSplitTop(20.0f, &ButtonView, &TeamView);
+		static int s_CustomColorsTeam[2] = {0};
+		if(DoButton_CheckBox(&s_CustomColorsTeam[s_SelectedTeam], Localize("Custom colors"), RenderTools()->GetTeamUseCustomColor(s_SelectedTeam), &ButtonView))
+			RenderTools()->SetTeamUseCustomColor(s_SelectedTeam, !RenderTools()->GetTeamUseCustomColor(s_SelectedTeam));
+
+		if(RenderTools()->GetTeamUseCustomColor(s_SelectedTeam))
+		{
+			int Colors = RenderTools()->GetTeamColorHSL(s_SelectedTeam);
+
+			const char *paLabels[] = {
+				Localize("Hue"),
+				Localize("Sat."),
+				Localize("Lht.")};
+			static int s_aColorSlider[3] = {0};
+
+			int PrevColor = Colors;
+			int Color = 0;
+			for(int s = 0; s < 3; s++)
+			{
+				CUIRect TextView;
+				TeamView.HSplitTop(19.0f, &ButtonView, &TeamView);
+				ButtonView.VSplitLeft(30.0f, 0, &ButtonView);
+				ButtonView.VSplitLeft(70.0f, &TextView, &ButtonView);
+				ButtonView.VSplitRight(5.0f, &ButtonView, 0);
+				ButtonView.HSplitTop(4.0f, 0, &ButtonView);
+
+				float k = ((PrevColor>>((2-s)*8))&0xff)  / 255.0f;
+				k = DoScrollbarH(&s_aColorSlider[s], &ButtonView, k);
+				Color <<= 8;
+				Color += clamp((int)(k*255), 0, 255);
+				UI()->DoLabelScaled(&TextView, paLabels[s], 15.0f, -1);
+			}
+
+			RenderTools()->SetTeamColorHSL(s_SelectedTeam, Color);
+			TeamView.HSplitTop(5.0f, 0, &TeamView);
+			TeamView.HSplitTop(30.0f, &ButtonView, &TeamView);
+
+			static int s_DefaultButton = 0;
+			if(DoButton_Menu((void*)&s_DefaultButton, Localize("Reset to defaults"), 0, &ButtonView))
+				RenderTools()->ResetTeamColor(s_SelectedTeam);
+		}
+	}
+}
+
 void CMenus::RenderSettings(CUIRect MainView)
 {
 	static int s_SettingsPage = 0;
@@ -827,6 +930,7 @@ void CMenus::RenderSettings(CUIRect MainView)
 	const char *aTabs[] = {
 		Localize("General"),
 		Localize("Player"),
+		Localize("Teams"),
 		Localize("Controls"),
 		Localize("Graphics"),
 		Localize("Sound")};
@@ -848,10 +952,12 @@ void CMenus::RenderSettings(CUIRect MainView)
 	else if(s_SettingsPage == 1)
 		RenderSettingsPlayer(MainView);
 	else if(s_SettingsPage == 2)
-		RenderSettingsControls(MainView);
+		RenderSettingsTeams(MainView);
 	else if(s_SettingsPage == 3)
-		RenderSettingsGraphics(MainView);
+		RenderSettingsControls(MainView);
 	else if(s_SettingsPage == 4)
+		RenderSettingsGraphics(MainView);
+	else if(s_SettingsPage == 5)
 		RenderSettingsSound(MainView);
 
 	if(m_NeedRestartGraphics || m_NeedRestartSound)
