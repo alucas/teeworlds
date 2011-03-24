@@ -5,8 +5,10 @@
 
 #include <game/generated/protocol.h>
 
-#include "entities/pickup.h"
-#include "entities/weapon.h"
+#include "entities/pickupweapon.h"
+#include "entities/heart.h"
+#include "entities/armor.h"
+
 #include "gamecontroller.h"
 #include "gamecontext.h"
 
@@ -109,9 +111,8 @@ bool IGameController::CanSpawn(CPlayer *pPlayer, vec2 *pOutPos)
 
 bool IGameController::OnEntity(int Index, vec2 Pos)
 {
-	int Type = -1;
-	int SubType = 0;
-	
+	CPickup *pPickup = NULL;
+	CGameWorld *pWorld = &GameServer()->m_World;
 	if(Index == ENTITY_SPAWN)
 		m_aaSpawnPoints[0][m_aNumSpawnPoints[0]++] = Pos;
 	else if(Index == ENTITY_SPAWN_RED)
@@ -119,63 +120,20 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	else if(Index == ENTITY_SPAWN_BLUE)
 		m_aaSpawnPoints[2][m_aNumSpawnPoints[2]++] = Pos;
 	else if(Index == ENTITY_ARMOR_1)
-		Type = POWERUP_ARMOR;
+		pPickup = new CArmor(pWorld);
 	else if(Index == ENTITY_HEALTH_1)
-		Type = POWERUP_HEALTH;
-	
+		pPickup = new CHeart(pWorld);
 	else if(Index == ENTITY_POWERUP_NINJA && g_Config.m_SvPowerups)
 	{
-		Type = POWERUP_NINJA;
-		SubType = WEAPON_NINJA;
-	}
-	/*else if(Index == ENTITY_WEAPON_SHOTGUN)
-	{
-		Type = POWERUP_WEAPON;
-		SubType = WEAPON_SHOTGUN;
-	}
+//		Type = POWERUP_NINJA;
+		//SubType = WEAPON_NINJA;
+		pPickup = new CPickupNinja(pWorld);
+	} else if(Index == ENTITY_WEAPON_SHOTGUN)
+		pPickup = new CPickupShotgun(pWorld);
 	else if(Index == ENTITY_WEAPON_GRENADE)
-	{
-		Type = POWERUP_WEAPON;
-		SubType = WEAPON_GRENADE;
-	}
+		pPickup = new CPickupGrenade(pWorld);
 	else if(Index == ENTITY_WEAPON_RIFLE)
-	{
-		Type = POWERUP_WEAPON;
-		SubType = WEAPON_RIFLE;
-	}
-	else if(Index == ENTITY_POWERUP_NINJA && g_Config.m_SvPowerups)
-	{
-		Type = POWERUP_NINJA;
-		SubType = WEAPON_NINJA;
-		}*/
-	
-	
-	CPickup *pPickup = NULL;
-	if(Type != -1)
-	{
-		pPickup = new CPickup(&GameServer()->m_World, Type, SubType);
-		//
-		//return true;
-	}
-
-	if(Index == ENTITY_WEAPON_SHOTGUN)
-	{
-		pPickup = new CWeapon(&GameServer()->m_World,WEAPON_SHOTGUN);
-		//Type = POWERUP_WEAPON;
-		//SubType = WEAPON_SHOTGUN;
-	}
-	else if(Index == ENTITY_WEAPON_GRENADE)
-	{
-		pPickup = new CWeapon(&GameServer()->m_World,WEAPON_GRENADE);
-		//Type = POWERUP_WEAPON;
-		//SubType = WEAPON_GRENADE;
-	}
-	else if(Index == ENTITY_WEAPON_RIFLE)
-	{
-		pPickup = new CWeapon(&GameServer()->m_World,WEAPON_RIFLE);
-		//Type = POWERUP_WEAPON;
-		//SubType = WEAPON_RIFLE;
-	}
+		pPickup = new CPickupLaser(pWorld);
 	
 	if (!pPickup)
 		return false;
