@@ -1,5 +1,8 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+
+#include <base/tl/color.h>
+
 #include <engine/graphics.h>
 #include <engine/textrender.h>
 #include <game/generated/protocol.h>
@@ -74,11 +77,12 @@ void CKillMessages::OnRender()
 		{
 			if(m_aKillmsgs[r].m_ModeSpecial&1)
 			{
-				vec4 FlagColor;
+				int TeamFlag;
 				if(m_aKillmsgs[r].m_VictimTeam == TEAM_RED)
-					FlagColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+					TeamFlag = TEAM_BLUE;
 				else
-					FlagColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+					TeamFlag = TEAM_RED;
+				vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(TeamFlag));
 				
 				float Size = 56.0f;
 				IGraphics::CQuadItem QuadItem(x, y-16, Size/2, Size);
@@ -108,11 +112,12 @@ void CKillMessages::OnRender()
 			{
 				if(m_aKillmsgs[r].m_ModeSpecial&2)
 				{
-					vec4 FlagColor;
+					int TeamFlag;
 					if(m_aKillmsgs[r].m_KillerTeam == TEAM_RED)
-						FlagColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+						TeamFlag = TEAM_BLUE;
 					else
-						FlagColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+						TeamFlag = TEAM_RED;
+					vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(TeamFlag));
 					
 					float Size = 56.0f;
 					IGraphics::CQuadItem QuadItem(x-56, y-16, Size/2, Size);

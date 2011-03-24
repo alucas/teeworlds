@@ -16,6 +16,7 @@
 #include "hud.h"
 #include "voting.h"
 #include "binds.h"
+#include "base/tl/color.h"
 
 CHud::CHud()
 {
@@ -96,11 +97,12 @@ void CHud::RenderScoreHud()
 				Graphics()->BlendNormal();
 				Graphics()->TextureSet(-1);
 				Graphics()->QuadsBegin();
-				if(t == 0)
-					Graphics()->SetColor(1.0f, 0.0f, 0.0f, 0.25f);
-				else
-					Graphics()->SetColor(0.0f, 0.0f, 1.0f, 0.25f);
+
+				vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(t));
+				Graphics()->SetColor(FlagColor.r, FlagColor.g, FlagColor.b, 0.25f);
+
 				RenderTools()->DrawRoundRectExt(Whole-ScoreWidthMax-ImageSize-2*Split, 245.0f+t*20, ScoreWidthMax+ImageSize+2*Split, 18.0f, 5.0f, CUI::CORNER_L);
+
 				Graphics()->QuadsEnd();
 
 				// draw score
@@ -113,11 +115,7 @@ void CHud::RenderScoreHud()
 						// draw flag
 						IGraphics::CQuadItem QuadItem(Whole-ScoreWidthMax-ImageSize, 246.0f+t*20, ImageSize/2, ImageSize);
 
-						vec4 FlagColor;
-						if(t == 0)
-							FlagColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-						else
-							FlagColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+						vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(t));
 
 						RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, 0);
 					}

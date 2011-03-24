@@ -982,12 +982,12 @@ void CGameClient::CClientData::UpdateRenderInfo()
 	// force team colors
 	if(g_GameClient.m_Snap.m_pGameobj && g_GameClient.m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS)
 	{
-		const int TeamColors[2] = {65387, 10223467};
 		if(m_Team >= TEAM_RED && m_Team <= TEAM_BLUE)
 		{
+			vec4 TeamColor = HslToRgbV4(g_GameClient.RenderTools()->GetTeamColorHSL(m_Team));
 			m_RenderInfo.m_Texture = g_GameClient.m_pSkins->Get(m_SkinID)->m_ColorTexture;
-			m_RenderInfo.m_ColorBody = HslToRgbV4(TeamColors[m_Team]);
-			m_RenderInfo.m_ColorFeet = HslToRgbV4(TeamColors[m_Team]);
+			m_RenderInfo.m_ColorBody = TeamColor;
+			m_RenderInfo.m_ColorFeet = TeamColor;
 		}
 	}		
 }

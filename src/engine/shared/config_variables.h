@@ -7,6 +7,16 @@
 // TODO: remove this
 #include "././game/variables.h"
 
+MACRO_CONFIG_INT(TeamsUseCustomColor, teams_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom team's colors")
+
+MACRO_CONFIG_INT(TeamUseCustomColor1, team1_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the first team")
+MACRO_CONFIG_INT(TeamUseCustomColor2, team2_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the second team")
+
+MACRO_CONFIG_INT(TeamColor1, team1_color, 65387, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "First team color")
+MACRO_CONFIG_INT(TeamColor2, team2_color, 10223467, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Second team color")
+
+MACRO_CONFIG_STR(TeamName1, team1_name, 24, "Team 1", CFGFLAG_CLIENT|CFGFLAG_SAVE, "First team name")
+MACRO_CONFIG_STR(TeamName2, team2_name, 24, "Team 2", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Second team name")
 
 MACRO_CONFIG_STR(PlayerName, player_name, 24, "nameless tee", CFGFLAG_SAVE|CFGFLAG_CLIENT, "Name of the player")
 MACRO_CONFIG_STR(ClanName, clan_name, 32, "", CFGFLAG_SAVE|CFGFLAG_CLIENT, "(not used)")

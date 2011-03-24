@@ -56,7 +56,7 @@ void CMenus::RenderGame(CUIRect MainView)
 				MainView.VSplitLeft(10.0f, &Button, &MainView);
 				MainView.VSplitLeft(120.0f, &Button, &MainView);
 				static int s_SpectateButton = 0;
-				if(DoButton_Menu(&s_SpectateButton, Localize("Join red"), 0, &Button))
+				if(DoButton_Menu(&s_SpectateButton, RenderTools()->GetTeamName(TEAM_RED), 0, &Button))
 				{
 					m_pClient->SendSwitchTeam(TEAM_RED);
 					SetActive(false);
@@ -68,7 +68,7 @@ void CMenus::RenderGame(CUIRect MainView)
 				MainView.VSplitLeft(10.0f, &Button, &MainView);
 				MainView.VSplitLeft(120.0f, &Button, &MainView);
 				static int s_SpectateButton = 0;
-				if(DoButton_Menu(&s_SpectateButton, Localize("Join blue"), 0, &Button))
+				if(DoButton_Menu(&s_SpectateButton, RenderTools()->GetTeamName(TEAM_BLUE), 0, &Button))
 				{
 					m_pClient->SendSwitchTeam(TEAM_BLUE);
 					SetActive(false);

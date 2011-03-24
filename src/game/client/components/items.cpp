@@ -1,5 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include <base/tl/color.h>
 #include <engine/graphics.h>
 #include <engine/demo.h>
 #include <game/generated/protocol.h>
@@ -156,11 +157,7 @@ void CItems::RenderMainFlag(const CNetObj_Flag* pPrev, const CNetObj_Flag* pCurr
 {
 	float Size = 42.0f;
 
-	vec4 FlagColor;
-	if(pCurrent->m_Team == TEAM_RED)
-		FlagColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	else
-		FlagColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+	vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(pCurrent->m_Team));
 
 	vec2 Pos = mix(vec2(pPrev->m_X, pPrev->m_Y), vec2(pCurrent->m_X, pCurrent->m_Y), Client()->IntraGameTick());
 	

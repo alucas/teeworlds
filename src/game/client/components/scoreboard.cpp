@@ -12,6 +12,7 @@
 #include <game/client/components/motd.h>
 #include <game/localization.h>
 #include "scoreboard.h"
+#include "base/tl/color.h"
 
 
 CScoreboard::CScoreboard()
@@ -212,11 +213,12 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 		if((m_pClient->m_Snap.m_paFlags[0] && m_pClient->m_Snap.m_paFlags[0]->m_CarriedBy == pInfo->m_ClientID) ||
 			(m_pClient->m_Snap.m_paFlags[1] && m_pClient->m_Snap.m_paFlags[1]->m_CarriedBy == pInfo->m_ClientID))
 		{
-			vec4 FlagColor;
+			int TeamFlag;
 			if(pInfo->m_Team == TEAM_RED)
-				FlagColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+				TeamFlag = TEAM_BLUE;
 			else
-				FlagColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+				TeamFlag = TEAM_RED;
+			vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(TeamFlag));
 
 			float size = 64.0f;
 			IGraphics::CQuadItem QuadItem(x+55, y-15, size/2, size);
@@ -280,18 +282,20 @@ void CScoreboard::OnRender()
 			
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
 		{
-			const char *pText = Localize("Draw!");
+			char aBuffer[128];
 			if(m_pClient->m_Snap.m_pGameobj->m_TeamscoreRed > m_pClient->m_Snap.m_pGameobj->m_TeamscoreBlue)
-				pText = Localize("Red team wins!");
+				str_format(aBuffer, 128, "%s\"%s\"", Localize("Victory : "), RenderTools()->GetTeamName(TEAM_RED));
 			else if(m_pClient->m_Snap.m_pGameobj->m_TeamscoreBlue > m_pClient->m_Snap.m_pGameobj->m_TeamscoreRed)
-				pText = Localize("Blue team wins!");
-				
-			float w = TextRender()->TextWidth(0, 86.0f, pText, -1);
-			TextRender()->Text(0, Width/2-w/2, 39, 86.0f, pText, -1);
+				str_format(aBuffer, 128, "%s\"%s\"", Localize("Victory : "), RenderTools()->GetTeamName(TEAM_BLUE));
+			else
+				str_format(aBuffer, 128, "%s", Localize("Draw!"));
+
+			float w = TextRender()->TextWidth(0, 86.0f, aBuffer, -1);
+			TextRender()->Text(0, Width/2-w/2, 39, 86.0f, aBuffer, -1);
 		}
 		
-		RenderScoreboard(Width/2-w-20, 150.0f, w, TEAM_RED, Localize("Red team"));
-		RenderScoreboard(Width/2 + 20, 150.0f, w, TEAM_BLUE, Localize("Blue team"));
+		RenderScoreboard(Width/2-w-20, 150.0f, w, TEAM_RED, RenderTools()->GetTeamName(TEAM_RED));
+		RenderScoreboard(Width/2 + 20, 150.0f, w, TEAM_BLUE, RenderTools()->GetTeamName(TEAM_BLUE));
 	}
 
 	RenderGoals(Width/2-w/2, 150+750+25, w);

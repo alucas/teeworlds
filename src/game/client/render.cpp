@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include <base/math.h>
+#include <base/tl/color.h>
 
 #include <engine/shared/config.h>
 #include <engine/graphics.h>
@@ -344,4 +345,62 @@ void CRenderTools::RenderTilemapGenerateSkip(class CLayers *pLayers)
 			}
 		}
 	}
+}
+
+static int *s_aTeamsColor[2] =
+	{
+		&g_Config.m_TeamColor1,
+		&g_Config.m_TeamColor2
+	};
+
+static int s_aTeamsColorDefault[2] =
+	{
+		65387,
+		10223467
+	};
+
+static int *s_aTeamsUseCustomColor[2] =
+	{
+		&g_Config.m_TeamUseCustomColor1,
+		&g_Config.m_TeamUseCustomColor2
+	};
+
+
+static char *s_aTeamsName[2] =
+	{
+		g_Config.m_TeamName1,
+		g_Config.m_TeamName2
+	};
+
+int CRenderTools::GetTeamColorHSL(int Team)
+{
+	if(g_Config.m_TeamsUseCustomColor && GetTeamUseCustomColor(Team))
+		return *s_aTeamsColor[Team % 2];
+	else
+		return s_aTeamsColorDefault[Team % 2];
+}
+
+void CRenderTools::SetTeamColorHSL(int Team, int Color)
+{
+	*s_aTeamsColor[Team % 2] = Color;
+}
+
+void CRenderTools::ResetTeamColor(int Team)
+{
+	SetTeamColorHSL(Team, s_aTeamsColorDefault[Team % 2]);
+}
+
+bool CRenderTools::GetTeamUseCustomColor(int Team)
+{
+	return *s_aTeamsUseCustomColor[Team % 2] == 1;
+}
+
+void CRenderTools::SetTeamUseCustomColor(int Team, bool UseCustomColor)
+{
+	*s_aTeamsUseCustomColor[Team % 2] = UseCustomColor ? 1 : 0;
+}
+
+char *CRenderTools::GetTeamName(int Team)
+{
+	return s_aTeamsName[Team % 2];
 }
