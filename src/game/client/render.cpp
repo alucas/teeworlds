@@ -255,8 +255,26 @@ void CRenderTools::RenderTee(CAnimState *pAnim, CTeeRenderInfo *pInfo, int Emote
 	}
 
 	Graphics()->QuadsEnd();
-	
-	
+}
+
+void CRenderTools::RenderFlag(IGraphics::CQuadItem *pQuadItem, float Angle, vec4 FlagColor, int Flags)
+{
+	Graphics()->BlendNormal();
+	Graphics()->TextureSet(g_pData->m_aImages[IMAGE_FLAG].m_Id);
+	Graphics()->QuadsBegin();
+
+	SelectSprite(SPRITE_FLAG_OUTLINE, Flags);
+
+	Graphics()->QuadsSetRotation(Angle);
+	Graphics()->QuadsDrawTL(pQuadItem, 1);
+
+	SelectSprite(SPRITE_FLAG, Flags);
+
+	Graphics()->SetColor(FlagColor.r, FlagColor.g, FlagColor.b, FlagColor.a);
+	Graphics()->QuadsSetRotation(Angle);
+	Graphics()->QuadsDrawTL(pQuadItem, 1);
+
+	Graphics()->QuadsEnd();
 }
 
 static void CalcScreenParams(float Amount, float WMax, float HMax, float Aspect, float *w, float *h)

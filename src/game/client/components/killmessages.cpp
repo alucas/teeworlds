@@ -74,19 +74,16 @@ void CKillMessages::OnRender()
 		{
 			if(m_aKillmsgs[r].m_ModeSpecial&1)
 			{
-				Graphics()->BlendNormal();
-				Graphics()->TextureSet(g_pData->m_aImages[IMAGE_GAME].m_Id);
-				Graphics()->QuadsBegin();
-
+				vec4 FlagColor;
 				if(m_aKillmsgs[r].m_VictimTeam == TEAM_RED)
-					RenderTools()->SelectSprite(SPRITE_FLAG_BLUE);
+					FlagColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
 				else
-					RenderTools()->SelectSprite(SPRITE_FLAG_RED);
+					FlagColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 				
 				float Size = 56.0f;
 				IGraphics::CQuadItem QuadItem(x, y-16, Size/2, Size);
-				Graphics()->QuadsDrawTL(&QuadItem, 1);
-				Graphics()->QuadsEnd();					
+
+				RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, 0);
 			}
 		}
 		
@@ -111,19 +108,16 @@ void CKillMessages::OnRender()
 			{
 				if(m_aKillmsgs[r].m_ModeSpecial&2)
 				{
-					Graphics()->BlendNormal();
-					Graphics()->TextureSet(g_pData->m_aImages[IMAGE_GAME].m_Id);
-					Graphics()->QuadsBegin();
-
+					vec4 FlagColor;
 					if(m_aKillmsgs[r].m_KillerTeam == TEAM_RED)
-						RenderTools()->SelectSprite(SPRITE_FLAG_BLUE, SPRITE_FLAG_FLIP_X);
+						FlagColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
 					else
-						RenderTools()->SelectSprite(SPRITE_FLAG_RED, SPRITE_FLAG_FLIP_X);
+						FlagColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 					
 					float Size = 56.0f;
 					IGraphics::CQuadItem QuadItem(x-56, y-16, Size/2, Size);
-					Graphics()->QuadsDrawTL(&QuadItem, 1);
-					Graphics()->QuadsEnd();				
+
+					RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
 				}
 			}				
 			

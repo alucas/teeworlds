@@ -152,21 +152,15 @@ void CItems::RenderPickup(const CNetObj_Pickup *pPrev, const CNetObj_Pickup *pCu
 	Graphics()->QuadsEnd();
 }
 
-void CItems::RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent)
+void CItems::RenderMainFlag(const CNetObj_Flag* pPrev, const CNetObj_Flag* pCurrent)
 {
-	float Angle = 0.0f;
 	float Size = 42.0f;
 
-	Graphics()->BlendNormal();
-	Graphics()->TextureSet(g_pData->m_aImages[IMAGE_GAME].m_Id);
-	Graphics()->QuadsBegin();
-
+	vec4 FlagColor;
 	if(pCurrent->m_Team == TEAM_RED)
-		RenderTools()->SelectSprite(SPRITE_FLAG_RED);
+		FlagColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	else
-		RenderTools()->SelectSprite(SPRITE_FLAG_BLUE);
-
-	Graphics()->QuadsSetRotation(Angle);
+		FlagColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	vec2 Pos = mix(vec2(pPrev->m_X, pPrev->m_Y), vec2(pCurrent->m_X, pCurrent->m_Y), Client()->IntraGameTick());
 	
@@ -178,11 +172,10 @@ void CItems::RenderFlag(const CNetObj_Flag *pPrev, const CNetObj_Flag *pCurrent)
 	if(m_pClient->m_Snap.m_pLocalInfo && pCurrent->m_CarriedBy == m_pClient->m_Snap.m_pLocalInfo->m_ClientID)
 		Pos = m_pClient->m_LocalCharacterPos;
 
-	IGraphics::CQuadItem QuadItem(Pos.x, Pos.y-Size*0.75f, Size, Size*2);
-	Graphics()->QuadsDraw(&QuadItem, 1);
-	Graphics()->QuadsEnd();
-}
+	IGraphics::CQuadItem QuadItem(Pos.x - Size/2, Pos.y - Size*0.75f - Size, Size, Size*2);
 
+	RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, 0);
+}
 
 void CItems::RenderLaser(const struct CNetObj_Laser *pCurrent)
 {
@@ -286,7 +279,7 @@ void CItems::OnRender()
 		{
 			const void *pPrev = Client()->SnapFindItem(IClient::SNAP_PREV, Item.m_Type, Item.m_ID);
 			if (pPrev)
-				RenderFlag((const CNetObj_Flag *)pPrev, (const CNetObj_Flag *)pData);
+				RenderMainFlag((const CNetObj_Flag *)pPrev, (const CNetObj_Flag *)pData);
 		}
 	}
 

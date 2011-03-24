@@ -212,17 +212,16 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 		if((m_pClient->m_Snap.m_paFlags[0] && m_pClient->m_Snap.m_paFlags[0]->m_CarriedBy == pInfo->m_ClientID) ||
 			(m_pClient->m_Snap.m_paFlags[1] && m_pClient->m_Snap.m_paFlags[1]->m_CarriedBy == pInfo->m_ClientID))
 		{
-			Graphics()->BlendNormal();
-			Graphics()->TextureSet(g_pData->m_aImages[IMAGE_GAME].m_Id);
-			Graphics()->QuadsBegin();
+			vec4 FlagColor;
+			if(pInfo->m_Team == TEAM_RED)
+				FlagColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+			else
+				FlagColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
-			if(pInfo->m_Team == TEAM_RED) RenderTools()->SelectSprite(SPRITE_FLAG_BLUE, SPRITE_FLAG_FLIP_X);
-			else RenderTools()->SelectSprite(SPRITE_FLAG_RED, SPRITE_FLAG_FLIP_X);
-			
 			float size = 64.0f;
 			IGraphics::CQuadItem QuadItem(x+55, y-15, size/2, size);
-			Graphics()->QuadsDrawTL(&QuadItem, 1);
-			Graphics()->QuadsEnd();
+
+			RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
 		}
 		
 		CTeeRenderInfo TeeInfo = m_pClient->m_aClients[pInfo->m_ClientID].m_RenderInfo;
