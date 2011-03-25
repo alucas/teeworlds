@@ -6,8 +6,7 @@
 #include <game/generated/protocol.h>
 
 #include "entities/pickupweapon.h"
-#include "entities/heart.h"
-#include "entities/armor.h"
+#include "entities/powerup.h"
 
 #include "gamecontroller.h"
 #include "gamecontext.h"
@@ -19,7 +18,6 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_pServer = m_pGameServer->Server();
 	m_pGameType = "unknown";
 	
-	//
 	DoWarmup(g_Config.m_SvWarmup);
 	m_GameOverTick = -1;
 	m_SuddenDeath = 0;

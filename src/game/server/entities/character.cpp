@@ -9,7 +9,6 @@
 #include "projectile.h"
 #include "laser.h"
 
-#include <iostream>
 //input count
 struct CInputCount
 {
@@ -46,19 +45,20 @@ CCharacter::CCharacter(CGameWorld *pWorld)
 	m_ProximityRadius = ms_PhysSize;
 	m_Health = 0;
 	m_Armor = 0;
+	m_MaxHealth = 10;
+	m_MaxArmor = 10;
 	InitWeapons(pWorld);
-	
 }
 
 void
 CCharacter::InitWeapons(CGameWorld *pWorld) 
 {
-	m_aWeapons[WEAPON_HAMMER]  = new CHammer(pWorld,this);
-	m_aWeapons[WEAPON_GUN]     = new CGun(pWorld,this);
-	m_aWeapons[WEAPON_GRENADE] = new CGrenadeLauncher(pWorld,this);
-	m_aWeapons[WEAPON_SHOTGUN] = new CShotgun(pWorld,this);
-	m_aWeapons[WEAPON_RIFLE]   = new CLaserRifle(pWorld,this);
-	m_aWeapons[WEAPON_NINJA]   = new CNinja(pWorld,this);
+	m_apWeapons[WEAPON_HAMMER]  = new CHammer(pWorld,this);
+	m_apWeapons[WEAPON_GUN]     = new CGun(pWorld,this);
+	m_apWeapons[WEAPON_GRENADE] = new CGrenadeLauncher(pWorld,this);
+	m_apWeapons[WEAPON_SHOTGUN] = new CShotgun(pWorld,this);
+	m_apWeapons[WEAPON_RIFLE]   = new CLaserRifle(pWorld,this);
+	m_apWeapons[WEAPON_NINJA]   = new CNinja(pWorld,this);
 }
 
 
@@ -72,8 +72,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_PlayerState = PLAYERSTATE_UNKNOWN;
 	m_EmoteStop = -1;
 	m_LastAction = -1;
-	m_pActiveWeapon = m_aWeapons[WEAPON_GUN];
-	m_pLastWeapon = m_aWeapons[WEAPON_GUN];
+	m_pActiveWeapon = m_apWeapons[WEAPON_GUN];
+	m_pLastWeapon = m_apWeapons[WEAPON_GUN];
 	m_QueuedWeapon = -1;
 	
 	m_pPlayer = pPlayer;
@@ -101,7 +101,7 @@ void CCharacter::Destroy()
 	int i;
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	for (i = 0; i < NUM_WEAPONS; i++)
-		delete m_aWeapons[i];
+		delete m_apWeapons[i];
 	m_Alive = false;
 }
 
@@ -115,7 +115,7 @@ void CCharacter::SetWeapon(int Weapon)
 
 	if(Weapon < 0 || Weapon >= NUM_WEAPONS)
 		Weapon = 0;
-	m_pActiveWeapon = m_aWeapons[Weapon];
+	m_pActiveWeapon = m_apWeapons[Weapon];
 
 	GameServer()->CreateSound(m_Pos, SOUND_WEAPON_SWITCH);
 }
@@ -132,92 +132,14 @@ bool CCharacter::IsGrounded()
 
 void CCharacter::HandleNinja()
 {
-	if(m_pActiveWeapon->WeaponType() != WEAPON_NINJA)
-		return;
-	
-	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
-
-	if ((Server()->Tick() - m_Ninja.m_ActivationTick) > (g_pData->m_Weapons.m_Ninja.m_Duration * Server()->TickSpeed() / 1000))
-	{
-		// time's up, return
-		m_aWeapons[WEAPON_NINJA]->m_Got = false;
-		m_pActiveWeapon = m_pLastWeapon;
-		if(m_pActiveWeapon == m_aWeapons[WEAPON_NINJA])
-			m_pActiveWeapon = m_aWeapons[WEAPON_GUN];
-			
-		SetWeapon(m_pActiveWeapon->WeaponType());
-		return;
-	}
-	
-	// force ninja Weapon
-	SetWeapon(WEAPON_NINJA);
-
-	m_Ninja.m_CurrentMoveTime--;
-
-	if (m_Ninja.m_CurrentMoveTime == 0)
-	{
-		// reset velocity
-		m_Core.m_Vel *= 0.2f;
-	}
-
-	if (m_Ninja.m_CurrentMoveTime > 0)
-	{
-		// Set velocity
-		m_Core.m_Vel = m_Ninja.m_ActivationDir * g_pData->m_Weapons.m_Ninja.m_Velocity;
-		vec2 OldPos = m_Pos;
-		GameServer()->Collision()->MoveBox(&m_Core.m_Pos, &m_Core.m_Vel, vec2(m_ProximityRadius, m_ProximityRadius), 0.f);
-		
-		// reset velocity so the client doesn't predict stuff
-		m_Core.m_Vel = vec2(0.f, 0.f);
-
-		// check if we Hit anything along the way
-		{
-			CCharacter *aEnts[MAX_CLIENTS];
-			vec2 Dir = m_Pos - OldPos;
-			float Radius = m_ProximityRadius * 2.0f;
-			vec2 Center = OldPos + Dir * 0.5f;
-			int Num = GameServer()->m_World.FindEntities(Center, Radius, (CEntity**)aEnts, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
-
-			for (int i = 0; i < Num; ++i)
-			{
-				if (aEnts[i] == this)
-					continue;
-					
-				// make sure we haven't Hit this object before
-				bool bAlreadyHit = false;
-				for (int j = 0; j < m_NumObjectsHit; j++)
-				{
-					if (m_apHitObjects[j] == aEnts[i])
-						bAlreadyHit = true;
-				}
-				if (bAlreadyHit)
-					continue;
-
-				// check so we are sufficiently close
-				if (distance(aEnts[i]->m_Pos, m_Pos) > (m_ProximityRadius * 2.0f))
-					continue;
-
-				// Hit a player, give him damage and stuffs...
-				GameServer()->CreateSound(aEnts[i]->m_Pos, SOUND_NINJA_HIT);
-				// set his velocity to fast upward (for now)
-				if(m_NumObjectsHit < 10)
-					m_apHitObjects[m_NumObjectsHit++] = aEnts[i];
-					
-				aEnts[i]->TakeDamage(vec2(0, 10.0f), g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage, m_pPlayer->GetCID(), WEAPON_NINJA);
-			}
-		}
-		
-		return;
-	}
-
-	return;
+	m_apWeapons[WEAPON_NINJA]->Update();
 }
 
 
 void CCharacter::DoWeaponSwitch()
 {
 	// make sure we can switch
-	if(m_ReloadTimer != 0 || m_QueuedWeapon == -1 || m_aWeapons[WEAPON_NINJA]->m_Got)
+	if(m_ReloadTimer != 0 || m_QueuedWeapon == -1 || m_apWeapons[WEAPON_NINJA]->m_Got)
 		return;
 
 	// switch Weapon
@@ -239,7 +161,7 @@ void CCharacter::HandleWeaponSwitch()
 		while(Next) // Next Weapon selection
 		{
 			WantedWeapon = (WantedWeapon+1)%NUM_WEAPONS;
-			if(m_aWeapons[WantedWeapon]->m_Got)
+			if(m_apWeapons[WantedWeapon]->m_Got)
 				Next--;
 		}
 	}
@@ -249,7 +171,7 @@ void CCharacter::HandleWeaponSwitch()
 		while(Prev) // Prev Weapon selection
 		{
 			WantedWeapon = (WantedWeapon-1)<0?NUM_WEAPONS-1:WantedWeapon-1;
-			if(m_aWeapons[WantedWeapon]->m_Got)
+			if(m_apWeapons[WantedWeapon]->m_Got)
 				Prev--;
 		}
 	}
@@ -259,7 +181,7 @@ void CCharacter::HandleWeaponSwitch()
 		WantedWeapon = m_Input.m_WantedWeapon-1;
 
 	// check for insane values
-	if(WantedWeapon >= 0 && WantedWeapon < NUM_WEAPONS && WantedWeapon != m_pActiveWeapon->WeaponType() && m_aWeapons[WantedWeapon]->m_Got)
+	if(WantedWeapon >= 0 && WantedWeapon < NUM_WEAPONS && WantedWeapon != m_pActiveWeapon->WeaponType() && m_apWeapons[WantedWeapon]->m_Got)
 		m_QueuedWeapon = WantedWeapon;
 	
 	DoWeaponSwitch();
@@ -285,21 +207,7 @@ void CCharacter::FireWeapon()
 	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
 	vec2 ProjStartPos = m_Pos+Direction*m_ProximityRadius*0.75f;
 	
-	// reset Hit objects
-	m_NumObjectsHit = 0;
-
-	if (m_pActiveWeapon->WeaponType() == WEAPON_NINJA)
-	{
-		m_Ninja.m_ActivationDir = Direction;
-		m_Ninja.m_CurrentMoveTime = g_pData->m_Weapons.m_Ninja.m_Movetime * Server()->TickSpeed() / 1000;
-
-		GameServer()->CreateSound(m_Pos, SOUND_NINJA_FIRE);
-		m_ReloadTimer = g_pData->m_Weapons.m_aId[WEAPON_NINJA].m_Firedelay * Server()->TickSpeed() / 1000;
-	} 
-	else
-	{
-		m_ReloadTimer = m_pActiveWeapon->FireWeapon(ProjStartPos,Direction);
-	}
+	m_ReloadTimer = m_pActiveWeapon->FireWeapon(ProjStartPos,Direction);
 	m_AttackTick = Server()->Tick();
 }
 
@@ -308,8 +216,6 @@ void CCharacter::HandleWeapons()
 	//ninja
 	HandleNinja();
 	
-	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
-
 	// check reload timer
 	if(m_ReloadTimer)
 	{
@@ -333,24 +239,28 @@ void CCharacter::HandleWeapons()
 
 bool CCharacter::GiveWeapon(int Weapon, int Ammo)
 {
-	if(m_aWeapons[Weapon]->m_Ammo < m_aWeapons[Weapon]->m_Maxammo || !m_aWeapons[Weapon]->m_Got)
-	{	
-		m_aWeapons[Weapon]->m_Got = true;
-		m_aWeapons[Weapon]->m_Ammo = min(m_aWeapons[Weapon]->m_Maxammo, Ammo);
-		return true;
-	}
-	return false;
+	return m_apWeapons[Weapon]->GiveWeapon(Ammo);
 }
 
 void CCharacter::GiveNinja()
 {
-	m_Ninja.m_ActivationTick = Server()->Tick();
-	m_aWeapons[WEAPON_NINJA]->m_Got = true;
-	m_aWeapons[WEAPON_NINJA]->m_Ammo = -1;
+	m_apWeapons[WEAPON_NINJA]->GiveWeapon(-1);
+
 	m_pLastWeapon = m_pActiveWeapon;
-	m_pActiveWeapon = m_aWeapons[WEAPON_NINJA];
-	
+	m_pActiveWeapon = m_apWeapons[WEAPON_NINJA];
+
 	GameServer()->CreateSound(m_Pos, SOUND_PICKUP_NINJA);
+}
+
+void CCharacter::EndNinja()
+{
+	m_apWeapons[WEAPON_NINJA]->m_Got = false;
+	m_pActiveWeapon = m_pLastWeapon;
+
+	if(m_pActiveWeapon == m_apWeapons[WEAPON_NINJA])
+		m_pActiveWeapon = m_apWeapons[WEAPON_GUN];
+
+	SetWeapon(m_pActiveWeapon->WeaponType());
 }
 
 void CCharacter::SetEmote(int Emote, int Tick)
@@ -508,7 +418,7 @@ void CCharacter::TickDefered()
 
 bool CCharacter::IncreaseHealth(int Amount)
 {
-	if(m_Health >= 10)
+	if(m_Health >= m_MaxHealth)
 		return false;
 	m_Health = clamp(m_Health+Amount, 0, 10);
 	return true;
@@ -516,7 +426,7 @@ bool CCharacter::IncreaseHealth(int Amount)
 
 bool CCharacter::IncreaseArmor(int Amount)
 {
-	if(m_Armor >= 10)
+	if(m_Armor >= m_MaxArmor)
 		return false;
 	m_Armor = clamp(m_Armor+Amount, 0, 10);
 	return true;

@@ -5,12 +5,5 @@
 
 #include <game/server/entities/powerup.h>
 
-class CHeart : public IPowerup
-{
-public:
-	CHeart(CGameWorld *pGameWorld);
-	
-	virtual int OnPickup(CCharacter *pChr);
-};
 
 #endif

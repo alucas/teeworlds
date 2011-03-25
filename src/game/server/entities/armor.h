@@ -5,12 +5,6 @@
 
 #include <game/server/entities/powerup.h>
 
-class CArmor : public IPowerup
-{
-public:
-	CArmor(CGameWorld *pGameWorld);
-	
-	virtual int OnPickup(CCharacter *pChr);
-};
+
 
 #endif

@@ -10,8 +10,28 @@ class IPowerup : public CPickup
 {
 public:
 	IPowerup(CGameWorld *pGameWorld, int powerupType);
-	
+
 	virtual int OnPickup(CCharacter *pChr) = 0;
+};
+
+class CHeart : public IPowerup
+{
+public:
+	CHeart(CGameWorld *pGameWorld);
+
+	virtual int OnPickup(CCharacter *pChr);
+	
+	int m_Value;
+};
+
+class CArmor : public IPowerup
+{
+public:
+	CArmor(CGameWorld *pGameWorld);
+
+	virtual int OnPickup(CCharacter *pChr);
+
+	int m_Value;
 };
 
 #endif

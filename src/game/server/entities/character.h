@@ -20,7 +20,7 @@ enum
 class CCharacter : public CEntity
 {
 	MACRO_ALLOC_POOL_ID()
-	
+
 public:
 	//character's size
 	static const int ms_PhysSize = 28;
@@ -57,11 +57,13 @@ public:
 	
 	bool GiveWeapon(int Weapon, int Ammo);
 	void GiveNinja();
+	void EndNinja();
 	
 	void SetEmote(int Emote, int Tick);
 	
 	bool IsAlive() const { return m_Alive; }
-	class CPlayer *GetPlayer() { return m_pPlayer; }
+	class CPlayer *GetPlayer() {return m_pPlayer;}
+	CCharacterCore *GetCore() {return &m_Core;}
 
 	bool WillFire();
 	
@@ -71,11 +73,7 @@ private:
 	
 	bool m_Alive;
 
-	// weapon info
-	CEntity *m_apHitObjects[10];
-	int m_NumObjectsHit;
-	
-	IWeapon *m_aWeapons[NUM_WEAPONS];
+	IWeapon *m_apWeapons[NUM_WEAPONS];
 	IWeapon *m_pActiveWeapon;
 	IWeapon *m_pLastWeapon;
 	int m_QueuedWeapon;
@@ -106,16 +104,9 @@ private:
 	int m_DamageTakenTick;
 
 	int m_Health;
+	int m_MaxHealth;
 	int m_Armor;
-
-	// ninja
-	struct
-	{
-		vec2 m_ActivationDir;
-		int m_ActivationTick;
-		int m_CurrentMoveTime;
-		
-	} m_Ninja;
+	int m_MaxArmor;
 
 	int m_PlayerState;// if the client is chatting, accessing a menu or so
 
