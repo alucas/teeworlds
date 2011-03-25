@@ -107,7 +107,7 @@ public:
 		const CNetObj_Character *m_pLocalCharacter;
 		const CNetObj_Character *m_pLocalPrevCharacter;
 		const CNetObj_PlayerInfo *m_pLocalInfo;
-		const CNetObj_Flag *m_paFlags[2];
+		const CNetObj_Flag *m_paFlags[NUM_TEAMS];
 		const CNetObj_Game *m_pGameobj;
 
 		const CNetObj_PlayerInfo *m_paPlayerInfos[MAX_CLIENTS];
@@ -115,7 +115,7 @@ public:
 		
 		int m_LocalClientID;
 		int m_NumPlayers;
-		int m_aTeamSize[2];
+		int m_aTeamSize[NUM_TEAMS];
 		bool m_Spectate;
 		
 		//

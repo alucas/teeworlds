@@ -6,12 +6,15 @@
 #include <game/server/player.h>
 #include <game/server/gamecontext.h>
 #include "ctf.h"
+#include "engine/shared/config.h"
 
 CGameControllerCTF::CGameControllerCTF(class CGameContext *pGameServer)
 : IGameController(pGameServer)
 {
-	m_apFlags[0] = 0;
-	m_apFlags[1] = 0;
+	m_NumFlags = 0;
+	for(int i = 0; i < m_NumTeams; i++)
+		m_apFlags[i] = 0;
+
 	m_pGameType = "CTF";
 	m_GameFlags = GAMEFLAG_TEAMS|GAMEFLAG_FLAGS;
 }
@@ -21,17 +24,23 @@ bool CGameControllerCTF::OnEntity(int Index, vec2 Pos)
 	if(IGameController::OnEntity(Index, Pos))
 		return true;
 	
+	// else : Flag entity
 	int Team = -1;
-	if(Index == ENTITY_FLAGSTAND_RED) Team = TEAM_RED;
-	if(Index == ENTITY_FLAGSTAND_BLUE) Team = TEAM_BLUE;
+	if(Index >= ENTITY_FLAGSTAND && Index < ENTITY_FLAGSTAND + m_NumTeams)
+		Team = Index - ENTITY_FLAGSTAND;
+
 	if(Team == -1 || m_apFlags[Team])
 		return false;
 		
 	CFlag *F = new CFlag(&GameServer()->m_World, Team);
 	F->m_StandPos = Pos;
 	F->m_Pos = Pos;
+
 	m_apFlags[Team] = F;
+	m_NumFlags++;
+
 	GameServer()->m_World.InsertEntity(F);
+
 	return true;
 }
 
@@ -41,11 +50,12 @@ int CGameControllerCTF::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 	int HadFlag = 0;
 	
 	// drop flags
-	for(int i = 0; i < 2; i++)
+	for(int i = 0; i < m_NumFlags; i++)
 	{
 		CFlag *F = m_apFlags[i];
 		if(F && pKiller && pKiller->GetCharacter() && F->m_pCarryingCharacter == pKiller->GetCharacter())
-			HadFlag |= 2;
+			HadFlag |= ((i + 1) << 4);
+
 		if(F && F->m_pCarryingCharacter == pVictim)
 		{
 			GameServer()->CreateSoundGlobal(SOUND_CTF_DROP);
@@ -55,8 +65,7 @@ int CGameControllerCTF::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 			
 			if(pKiller && pKiller->GetTeam() != pVictim->GetPlayer()->GetTeam())
 				pKiller->m_Score++;
-				
-			HadFlag |= 1;
+			HadFlag |= (i + 1);
 		}
 	}
 	
@@ -68,7 +77,7 @@ bool CGameControllerCTF::CanBeMovedOnBalance(int ClientID)
 	CCharacter* Character = GameServer()->m_apPlayers[ClientID]->GetCharacter();
 	if(Character)
 	{
-		for(int fi = 0; fi < 2; fi++)
+		for(int fi = 0; fi < m_NumFlags; fi++)
 		{
 			CFlag *F = m_apFlags[fi];
 			if(F->m_pCarryingCharacter == Character)
@@ -84,7 +93,7 @@ void CGameControllerCTF::Tick()
 
 	DoTeamScoreWincheck();
 	
-	for(int fi = 0; fi < 2; fi++)
+	for(int fi = 0; fi < m_NumFlags; fi++)
 	{
 		CFlag *F = m_apFlags[fi];
 		
@@ -100,18 +109,18 @@ void CGameControllerCTF::Tick()
 			continue;
 		}
 		
-		//
 		if(F->m_pCarryingCharacter)
 		{
 			// update flag position
 			F->m_Pos = F->m_pCarryingCharacter->m_Pos;
 			
-			if(m_apFlags[fi^1] && m_apFlags[fi^1]->m_AtStand)
+			int Team = F->m_pCarryingCharacter->GetPlayer()->GetTeam();
+			if(m_apFlags[Team] && m_apFlags[Team]->m_AtStand)
 			{
-				if(distance(F->m_Pos, m_apFlags[fi^1]->m_Pos) < CFlag::ms_PhysSize + CCharacter::ms_PhysSize)
+				if(distance(F->m_Pos, m_apFlags[Team]->m_Pos) < CFlag::ms_PhysSize + CCharacter::ms_PhysSize)
 				{
 					// CAPTURE! \o/
-					m_aTeamscore[fi^1] += 100;
+					m_aTeamscore[Team] += 100;
 					F->m_pCarryingCharacter->GetPlayer()->m_Score += 5;
 
 					char aBuf[512];
@@ -130,7 +139,7 @@ void CGameControllerCTF::Tick()
 						str_format(aBuf, sizeof(aBuf), "The %s flag was captured by '%s'", fi ? "blue" : "red", Server()->ClientName(F->m_pCarryingCharacter->GetPlayer()->GetCID()));
 					}
 					GameServer()->SendChat(-1, -2, aBuf);
-					for(int i = 0; i < 2; i++)
+					for(int i = 0; i < m_NumFlags; i++)
 						m_apFlags[i]->Reset();
 					
 					GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
@@ -146,7 +155,8 @@ void CGameControllerCTF::Tick()
 				if(!apCloseCCharacters[i]->IsAlive() || apCloseCCharacters[i]->GetPlayer()->GetTeam() == TEAM_SPECTATORS || GameServer()->Collision()->IntersectLine(F->m_Pos, apCloseCCharacters[i]->m_Pos, NULL, NULL))
 					continue;
 				
-				if(apCloseCCharacters[i]->GetPlayer()->GetTeam() == F->m_Team)
+				int Team = apCloseCCharacters[i]->GetPlayer()->GetTeam();
+				if(Team == F->m_Team)
 				{
 					// return the flag
 					if(!F->m_AtStand)
@@ -169,7 +179,7 @@ void CGameControllerCTF::Tick()
 					// take the flag
 					if(F->m_AtStand)
 					{
-						m_aTeamscore[fi^1]++;
+						m_aTeamscore[Team]++;
 						F->m_GrabTick = Server()->Tick();
 					}
 					
@@ -212,4 +222,12 @@ void CGameControllerCTF::Tick()
 			}
 		}
 	}
+}
+
+void CGameControllerCTF::Snap(int SnappingClient)
+{
+	if(m_NumFlags < m_NumTeams && m_NumTeams != 2)
+		m_NumTeams = max(m_NumFlags, 2);
+
+	IGameController::Snap(SnappingClient);
 }

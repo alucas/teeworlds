@@ -310,6 +310,17 @@ class NetStringStrict(NetVariable):
 	def emit_pack(self):
 		return ["pPacker->AddString(%s, -1);" % self.name]
 
+class NetArrayIntAny(NetVariable):
+	def __init__(self, name, size):
+		NetVariable.__init__(self,name)
+		self.size = str(size)
+	def emit_declaration(self):
+		return ["int %s[%s];"%(self.name, self.size)]
+	def emit_unpack(self):
+		return ["for(int i = 0; i < "+self.size+"; i++)\n\tint pMsg->%s[i] = pUnpacker->GetInt();" % self.name]
+	def emit_pack(self):
+		return ["for(int i = 0; i < "+self.size+"; i++)\n\tpPacker->AddInt(%s[i]);" % self.name]
+
 class NetIntAny(NetVariable):
 	def emit_declaration(self):
 		return ["int %s;"%self.name]

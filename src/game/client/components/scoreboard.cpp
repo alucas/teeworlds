@@ -112,13 +112,10 @@ void CScoreboard::RenderSpectators(float x, float y, float w)
 	TextRender()->Text(0, x+10, y, 32, aBuffer, (int)w-20);
 }
 
-void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const char *pTitle)
+void CScoreboard::RenderScoreboard(float x, float y, float w, float h, int Team, const char *pTitle)
 {
 	if(Team == TEAM_SPECTATORS)
 		return;
-
-	//float ystart = y;
-	float h = 740.0f;
 
 	Graphics()->BlendNormal();
 	Graphics()->TextureSet(-1);
@@ -142,7 +139,7 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 	if(m_pClient->m_Snap.m_pGameobj)
 	{
 		char aBuf[128];
-		int Score = Team == TEAM_RED ? m_pClient->m_Snap.m_pGameobj->m_TeamscoreRed : m_pClient->m_Snap.m_pGameobj->m_TeamscoreBlue;
+		int Score = m_pClient->m_Snap.m_pGameobj->m_Teamscore[Team];
 		str_format(aBuf, sizeof(aBuf), "%d", Score);
 		tw = TextRender()->TextWidth(0, 48, aBuf, -1);
 		TextRender()->Text(0, x+w-tw-30, y, 48, aBuf, -1);
@@ -210,21 +207,15 @@ void CScoreboard::RenderScoreboard(float x, float y, float w, int Team, const ch
 		TextRender()->Text(0, x+w-35.0f-Width, y+(FontSize-FontSizeResize)/2, FontSizeResize, aBuf, -1);
 
 		// render avatar
-		if((m_pClient->m_Snap.m_paFlags[0] && m_pClient->m_Snap.m_paFlags[0]->m_CarriedBy == pInfo->m_ClientID) ||
-			(m_pClient->m_Snap.m_paFlags[1] && m_pClient->m_Snap.m_paFlags[1]->m_CarriedBy == pInfo->m_ClientID))
-		{
-			int TeamFlag;
-			if(pInfo->m_Team == TEAM_RED)
-				TeamFlag = TEAM_BLUE;
-			else
-				TeamFlag = TEAM_RED;
-			vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(TeamFlag));
+		for(int i = 0; i < m_pClient->m_Snap.m_pGameobj->m_NumberTeams; i++)
+			if(m_pClient->m_Snap.m_paFlags[i] && m_pClient->m_Snap.m_paFlags[i]->m_CarriedBy == pInfo->m_ClientID)
+			{
+				IGraphics::CQuadItem QuadItem(x+55, y-15, 64.0f/2, 64.0f);
 
-			float size = 64.0f;
-			IGraphics::CQuadItem QuadItem(x+55, y-15, size/2, size);
+				vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(m_pClient->m_Snap.m_paFlags[i]->m_Team));
 
-			RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
-		}
+				RenderTools()->RenderFlag(&QuadItem, 0.0f, FlagColor, SPRITE_FLAG_FLIP_X);
+			}
 		
 		CTeeRenderInfo TeeInfo = m_pClient->m_aClients[pInfo->m_ClientID].m_RenderInfo;
 		TeeInfo.m_Size *= TeeSizeMod;
@@ -270,32 +261,61 @@ void CScoreboard::OnRender()
 
 	float Width = 400*3.0f*Graphics()->ScreenAspect();
 	float Height = 400*3.0f;
-	
+
 	Graphics()->MapScreen(0, 0, Width, Height);
 
 	float w = 650.0f;
 
 	if(m_pClient->m_Snap.m_pGameobj && !(m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_TEAMS))
-		RenderScoreboard(Width/2-w/2, 150.0f, w, 0, 0);
+		RenderScoreboard(Width/2 - w/2, 150.0f, 750.0f, w, 0, 0);
 	else
 	{
-			
+		int NbrTeams = m_pClient->m_Snap.m_pGameobj->m_NumberTeams;
+		int Space = 20;
+		int NbrScorboardPerStrip = 3;
+		int NbrColumn = (NbrTeams >= NbrScorboardPerStrip ? NbrScorboardPerStrip : NbrTeams);
+
+		int NbrSpacesPerStrip = NbrColumn - 1; // spaces between 2 board
+		int NbrStrips = ((int)ceil((float)NbrTeams/NbrScorboardPerStrip));
+
+		float W = 1400.0f;
+		float H = 750.0f;
+
+		float w = (W - NbrSpacesPerStrip * Space) / NbrColumn;
+		float h = (H - (NbrStrips - 1) * Space)/ NbrStrips;
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_GameOver)
 		{
+			int WiningTeam = 0;
+			int WiningTeamScore = m_pClient->m_Snap.m_pGameobj->m_Teamscore[0];
+			for(int i = 0; i<NbrTeams; i++)
+			{
+				if (WiningTeamScore < m_pClient->m_Snap.m_pGameobj->m_Teamscore[i])//don't care about execo
+				{
+					WiningTeam = i;
+					WiningTeamScore = m_pClient->m_Snap.m_pGameobj->m_Teamscore[i];
+				}
+			}
+
 			char aBuffer[128];
-			if(m_pClient->m_Snap.m_pGameobj->m_TeamscoreRed > m_pClient->m_Snap.m_pGameobj->m_TeamscoreBlue)
-				str_format(aBuffer, 128, "%s\"%s\"", Localize("Victory : "), RenderTools()->GetTeamName(TEAM_RED));
-			else if(m_pClient->m_Snap.m_pGameobj->m_TeamscoreBlue > m_pClient->m_Snap.m_pGameobj->m_TeamscoreRed)
-				str_format(aBuffer, 128, "%s\"%s\"", Localize("Victory : "), RenderTools()->GetTeamName(TEAM_BLUE));
-			else
-				str_format(aBuffer, 128, "%s", Localize("Draw!"));
+			str_format(aBuffer, 128, "%s\"%s\"", Localize("Victory : "), RenderTools()->GetTeamName(WiningTeam));
 
 			float w = TextRender()->TextWidth(0, 86.0f, aBuffer, -1);
 			TextRender()->Text(0, Width/2-w/2, 39, 86.0f, aBuffer, -1);
 		}
-		
-		RenderScoreboard(Width/2-w-20, 150.0f, w, TEAM_RED, RenderTools()->GetTeamName(TEAM_RED));
-		RenderScoreboard(Width/2 + 20, 150.0f, w, TEAM_BLUE, RenderTools()->GetTeamName(TEAM_BLUE));
+
+		int Team = 0;
+		for(int i=0; i<NbrStrips; i++)
+			for(int j=0; j<NbrScorboardPerStrip; j++)
+			{
+				if(Team >= NbrTeams)
+					break;
+
+				RenderScoreboard(
+					Width/2 - W/2 + j*(w+Space),
+					150.0f + i*(h+Space),
+					w, h, Team, Localize(RenderTools()->GetTeamName(Team)));
+				Team++;
+			}
 	}
 
 	RenderGoals(Width/2-w/2, 150+750+25, w);

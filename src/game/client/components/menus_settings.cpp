@@ -826,10 +826,10 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 	static float s_ScrollValue = 0;
 
 	{
-		UiDoListboxStart(&s_TeamList, &ListView, 50.0f, Localize("Team"), "", 2, 1, s_SelectedTeam, s_ScrollValue);
+		UiDoListboxStart(&s_TeamList, &ListView, 50.0f, Localize("Team"), "", NUM_TEAMS, 1, s_SelectedTeam, s_ScrollValue);
 
-		static int s_aTeams[2] = {0};
-		for(int i = 0; i < 2; i++)
+		static int s_aTeams[NUM_TEAMS] = {0};
+		for(int i = 0; i < NUM_TEAMS; i++)
 		{
 			const CSkins::CSkin *s = m_pClient->m_pSkins->Get(0);
 
@@ -868,7 +868,7 @@ void CMenus::RenderSettingsTeams(CUIRect MainView)
 	{
 		TeamView.HSplitTop(10.0f, 0, &TeamView);
 		TeamView.HSplitTop(20.0f, &ButtonView, &TeamView);
-		static int s_CustomColorsTeam[2] = {0};
+		static int s_CustomColorsTeam[NUM_TEAMS] = {0};
 		if(DoButton_CheckBox(&s_CustomColorsTeam[s_SelectedTeam], Localize("Custom colors"), RenderTools()->GetTeamUseCustomColor(s_SelectedTeam), &ButtonView))
 			RenderTools()->SetTeamUseCustomColor(s_SelectedTeam, !RenderTools()->GetTeamUseCustomColor(s_SelectedTeam));
 

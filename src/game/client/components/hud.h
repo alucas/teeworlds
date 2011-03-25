@@ -13,6 +13,7 @@ class CHud : public CComponent
 	
 	void RenderFps();
 	void RenderConnectionWarning();
+	bool CheckTeamBalance();
 	void RenderTeambalanceWarning();
 	void RenderVoting();
 	void RenderHealthAndAmmo();

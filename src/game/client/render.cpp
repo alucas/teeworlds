@@ -347,60 +347,84 @@ void CRenderTools::RenderTilemapGenerateSkip(class CLayers *pLayers)
 	}
 }
 
-static int *s_aTeamsColor[2] =
+static int *s_aTeamsColor[NUM_TEAMS] =
 	{
 		&g_Config.m_TeamColor1,
-		&g_Config.m_TeamColor2
+		&g_Config.m_TeamColor2,
+		&g_Config.m_TeamColor3,
+		&g_Config.m_TeamColor4,
+		&g_Config.m_TeamColor5,
+		&g_Config.m_TeamColor6,
+		&g_Config.m_TeamColor7,
+		&g_Config.m_TeamColor8
 	};
 
-static int s_aTeamsColorDefault[2] =
+static int s_aTeamsColorDefault[NUM_TEAMS] =
 	{
 		65387,
-		10223467
+		10223467,
+		5684736,
+		1965824,
+		13017088,
+		7788800,
+		890112,
+		255
 	};
 
-static int *s_aTeamsUseCustomColor[2] =
+static int *s_aTeamsUseCustomColor[NUM_TEAMS] =
 	{
 		&g_Config.m_TeamUseCustomColor1,
-		&g_Config.m_TeamUseCustomColor2
+		&g_Config.m_TeamUseCustomColor2,
+		&g_Config.m_TeamUseCustomColor3,
+		&g_Config.m_TeamUseCustomColor4,
+		&g_Config.m_TeamUseCustomColor5,
+		&g_Config.m_TeamUseCustomColor6,
+		&g_Config.m_TeamUseCustomColor7,
+		&g_Config.m_TeamUseCustomColor8
 	};
 
 
-static char *s_aTeamsName[2] =
+static char *s_aTeamsName[NUM_TEAMS] =
 	{
 		g_Config.m_TeamName1,
-		g_Config.m_TeamName2
+		g_Config.m_TeamName2,
+		g_Config.m_TeamName3,
+		g_Config.m_TeamName4,
+		g_Config.m_TeamName5,
+		g_Config.m_TeamName6,
+		g_Config.m_TeamName7,
+		g_Config.m_TeamName8
 	};
 
 int CRenderTools::GetTeamColorHSL(int Team)
 {
 	if(g_Config.m_TeamsUseCustomColor && GetTeamUseCustomColor(Team))
-		return *s_aTeamsColor[Team % 2];
+		return *s_aTeamsColor[Team % NUM_TEAMS];
 	else
-		return s_aTeamsColorDefault[Team % 2];
+		return s_aTeamsColorDefault[Team % NUM_TEAMS];
 }
 
 void CRenderTools::SetTeamColorHSL(int Team, int Color)
 {
-	*s_aTeamsColor[Team % 2] = Color;
+	*s_aTeamsColor[Team % NUM_TEAMS] = Color;
 }
 
 void CRenderTools::ResetTeamColor(int Team)
 {
-	SetTeamColorHSL(Team, s_aTeamsColorDefault[Team % 2]);
+	SetTeamColorHSL(Team, s_aTeamsColorDefault[Team % NUM_TEAMS]);
 }
 
 bool CRenderTools::GetTeamUseCustomColor(int Team)
 {
-	return *s_aTeamsUseCustomColor[Team % 2] == 1;
+	return *s_aTeamsUseCustomColor[Team % NUM_TEAMS] == 1;
 }
 
 void CRenderTools::SetTeamUseCustomColor(int Team, bool UseCustomColor)
 {
-	*s_aTeamsUseCustomColor[Team % 2] = UseCustomColor ? 1 : 0;
+	*s_aTeamsUseCustomColor[Team % NUM_TEAMS] = UseCustomColor ? true : false;
 }
 
 char *CRenderTools::GetTeamName(int Team)
 {
-	return s_aTeamsName[Team % 2];
+	return s_aTeamsName[Team % NUM_TEAMS];
 }

@@ -75,13 +75,9 @@ void CKillMessages::OnRender()
 		
 		if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_FLAGS)
 		{
-			if(m_aKillmsgs[r].m_ModeSpecial&1)
+			if(m_aKillmsgs[r].m_ModeSpecial & 0xf)
 			{
-				int TeamFlag;
-				if(m_aKillmsgs[r].m_VictimTeam == TEAM_RED)
-					TeamFlag = TEAM_BLUE;
-				else
-					TeamFlag = TEAM_RED;
+				int TeamFlag = (m_aKillmsgs[r].m_ModeSpecial & 0xf) - 1;
 				vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(TeamFlag));
 				
 				float Size = 56.0f;
@@ -110,13 +106,9 @@ void CKillMessages::OnRender()
 		{
 			if(m_pClient->m_Snap.m_pGameobj && m_pClient->m_Snap.m_pGameobj->m_Flags&GAMEFLAG_FLAGS)
 			{
-				if(m_aKillmsgs[r].m_ModeSpecial&2)
+				if(m_aKillmsgs[r].m_ModeSpecial & 0xf0)
 				{
-					int TeamFlag;
-					if(m_aKillmsgs[r].m_KillerTeam == TEAM_RED)
-						TeamFlag = TEAM_BLUE;
-					else
-						TeamFlag = TEAM_RED;
+					int TeamFlag = ((m_aKillmsgs[r].m_ModeSpecial & 0xf0) - 1) >> 4;
 					vec4 FlagColor = HslToRgbV4(RenderTools()->GetTeamColorHSL(TeamFlag));
 					
 					float Size = 56.0f;

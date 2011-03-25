@@ -4,6 +4,7 @@
 #define GAME_SERVER_GAMECONTROLLER_H
 
 #include <base/vmath.h>
+#include <game/generated/protocol.h>
 
 /*
 	Class: Game Controller
@@ -12,8 +13,9 @@
 */
 class IGameController
 {
-	vec2 m_aaSpawnPoints[3][64];
-	int m_aNumSpawnPoints[3];
+	// +1 for when there is no teams
+	vec2 m_aaSpawnPoints[NUM_TEAMS + 1][64];
+	int m_aNumSpawnPoints[NUM_TEAMS + 1];
 	
 	class CGameContext *m_pGameServer;
 	class IServer *m_pServer;
@@ -44,6 +46,7 @@ protected:
 	void CycleMap();
 	void ResetGame();
 	
+	void MooveAPlayerForBalancing(int src, int dest, float TeamScore[], float PlayerScore[]);
 	char m_aMapWish[128];
 
 	
@@ -51,7 +54,8 @@ protected:
 	int m_GameOverTick;
 	int m_SuddenDeath;
 	
-	int m_aTeamscore[2];
+	int m_NumTeams;
+	int m_aTeamscore[NUM_TEAMS];
 	
 	int m_Warmup;
 	int m_RoundCount;
@@ -68,6 +72,7 @@ public:
 	IGameController(class CGameContext *pGameServer);
 	virtual ~IGameController();
 
+	bool IsTeamFirst();
 	void DoTeamScoreWincheck();
 	void DoPlayerScoreWincheck();
 	

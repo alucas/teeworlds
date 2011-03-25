@@ -7,16 +7,37 @@
 // TODO: remove this
 #include "././game/variables.h"
 
+MACRO_CONFIG_INT(SvNumTeams, sv_number_teams, 2, 2, 8, CFGFLAG_SERVER, "Number of teams supported by the game mode")
+
 MACRO_CONFIG_INT(TeamsUseCustomColor, teams_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom team's colors")
 
+// 8 teams (see NUM_TEAMS in datasrc/network.py)
 MACRO_CONFIG_INT(TeamUseCustomColor1, team1_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the first team")
 MACRO_CONFIG_INT(TeamUseCustomColor2, team2_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the second team")
+MACRO_CONFIG_INT(TeamUseCustomColor3, team3_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the third team")
+MACRO_CONFIG_INT(TeamUseCustomColor4, team4_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the fourth team")
+MACRO_CONFIG_INT(TeamUseCustomColor5, team5_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the fifth team")
+MACRO_CONFIG_INT(TeamUseCustomColor6, team6_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the sixth team")
+MACRO_CONFIG_INT(TeamUseCustomColor7, team7_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the seventh team")
+MACRO_CONFIG_INT(TeamUseCustomColor8, team8_use_custom_color, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toggles usage of custom colors for the eighth team")
 
 MACRO_CONFIG_INT(TeamColor1, team1_color, 65387, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "First team color")
 MACRO_CONFIG_INT(TeamColor2, team2_color, 10223467, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Second team color")
+MACRO_CONFIG_INT(TeamColor3, team3_color, 5684736, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Third team color")
+MACRO_CONFIG_INT(TeamColor4, team4_color, 1965824, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Fourth team color")
+MACRO_CONFIG_INT(TeamColor5, team5_color, 13017088, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Fifth team color")
+MACRO_CONFIG_INT(TeamColor6, team6_color, 7788800, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Sixth team color")
+MACRO_CONFIG_INT(TeamColor7, team7_color, 890112, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Seventh team color")
+MACRO_CONFIG_INT(TeamColor8, team8_color, 255, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Eighth team color")
 
 MACRO_CONFIG_STR(TeamName1, team1_name, 24, "Team 1", CFGFLAG_CLIENT|CFGFLAG_SAVE, "First team name")
 MACRO_CONFIG_STR(TeamName2, team2_name, 24, "Team 2", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Second team name")
+MACRO_CONFIG_STR(TeamName3, team3_name, 24, "Team 3", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Third team name")
+MACRO_CONFIG_STR(TeamName4, team4_name, 24, "Team 4", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Fourth team name")
+MACRO_CONFIG_STR(TeamName5, team5_name, 24, "Team 5", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Fifth team name")
+MACRO_CONFIG_STR(TeamName6, team6_name, 24, "Team 6", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Sixth team name")
+MACRO_CONFIG_STR(TeamName7, team7_name, 24, "Team 7", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Seventh team name")
+MACRO_CONFIG_STR(TeamName8, team8_name, 24, "Team 8", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Eighth team name")
 
 MACRO_CONFIG_STR(PlayerName, player_name, 24, "nameless tee", CFGFLAG_SAVE|CFGFLAG_CLIENT, "Name of the player")
 MACRO_CONFIG_STR(ClanName, clan_name, 32, "", CFGFLAG_SAVE|CFGFLAG_CLIENT, "(not used)")
