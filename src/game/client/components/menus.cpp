@@ -5,6 +5,7 @@
 #include <base/system.h>
 #include <base/math.h>
 #include <base/vmath.h>
+#include <base/tl/color.h>
 
 #include "menus.h"
 #include "skins.h"

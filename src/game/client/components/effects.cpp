@@ -1,5 +1,7 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include <base/tl/color.h>
+
 #include <engine/demo.h>
 #include <engine/shared/config.h>
 
@@ -155,7 +157,7 @@ void CEffects::PlayerDeath(vec2 Pos, int ClientID)
 	if(ClientID >= 0)	
 	{
 		if(m_pClient->m_aClients[ClientID].m_UseCustomColor)
-			BloodColor = m_pClient->m_pSkins->GetColorV3(m_pClient->m_aClients[ClientID].m_ColorBody);
+			BloodColor = HslToRgb(m_pClient->m_aClients[ClientID].m_ColorBody);
 		else
 		{
 			const CSkins::CSkin *s = m_pClient->m_pSkins->Get(m_pClient->m_aClients[ClientID].m_SkinID);
