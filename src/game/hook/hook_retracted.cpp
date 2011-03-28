@@ -1,10 +1,9 @@
 #include "hook.h"
-#include "hook_flying.h"
-#include "hook_grabbed.h"
 #include "hook_retracted.h"
 
 CHookRetracted::CHookRetracted()
 {
+	m_HookState = HOOK_RETRACTED;
 }
 
 CHookRetracted::~CHookRetracted()

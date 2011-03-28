@@ -224,7 +224,8 @@ void CCharacterCore::Write(CNetObj_CharacterCore *pObjCore)
 	
 	pObjCore->m_VelX = round(m_Vel.x*256.0f);
 	pObjCore->m_VelY = round(m_Vel.y*256.0f);
-	pObjCore->m_HookState = m_pHook-> m_HookState;
+	//pObjCore->m_HookState = m_pHook-> m_HookState;
+	pObjCore->m_HookState = m_pHook->GetHookState();
 	pObjCore->m_HookTick =  m_pHook-> m_HookTick;
 	pObjCore->m_HookX = round( m_pHook->m_HookPos.x);
 	pObjCore->m_HookY = round( m_pHook->m_HookPos.y);
@@ -242,7 +243,7 @@ void CCharacterCore::Read(const CNetObj_CharacterCore *pObjCore)
 	m_Pos.y = pObjCore->m_Y;
 	m_Vel.x = pObjCore->m_VelX/256.0f;
 	m_Vel.y = pObjCore->m_VelY/256.0f;
-	m_pHook->m_HookState = pObjCore->m_HookState;
+	m_pHook->SetHookState( pObjCore->m_HookState );
 	m_pHook->m_HookTick = pObjCore->m_HookTick;
 	m_pHook->m_HookPos.x = pObjCore->m_HookX;
 	m_pHook->m_HookPos.y = pObjCore->m_HookY;

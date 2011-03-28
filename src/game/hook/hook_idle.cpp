@@ -4,6 +4,7 @@
 
 CHookIdle::CHookIdle()
 {
+	m_HookState = HOOK_IDLE;
 }
 
 CHookIdle::~CHookIdle()
@@ -21,7 +22,6 @@ void CHookIdle::Execute(CHook*hook, bool UseInput)
 {
 	if( UseInput && hook->m_pOwner->m_Input.m_Hook)
 	{
-		hook->m_HookState = HOOK_FLYING;
 		hook->m_pCurrentState = CHookFlying::getInstance();
 
 		hook->m_HookPos = hook->m_pOwner->m_Pos + hook->m_TargetDirection* hook->m_pOwner->m_PhysSize*1.5f;

@@ -16,14 +16,14 @@ public:
 	vec2 m_HookDir;
 	vec2 m_TargetDirection;
 	int m_HookTick;
-	//Need to disapear;
-	int m_HookState;
 
 	CHook(CCharacterCore *character);
 
 	void Reset();
 	void HookTick(bool useInput);
-	int GetHookState(){ return m_HookState;};
+
+	int GetHookState(){ return m_pCurrentState->getState();}
+	void SetHookState(int state);
 };
 
 #endif

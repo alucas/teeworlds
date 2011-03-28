@@ -4,6 +4,7 @@
 
 CHookGrabbed::CHookGrabbed()
 {
+	m_HookState = HOOK_GRABBED;
 }
 
 CHookGrabbed::~CHookGrabbed()
@@ -28,7 +29,6 @@ void CHookGrabbed::Execute(CHook*hook, bool UseInput)
 		{
 			// release hook
 			hook->m_pOwner->m_HookedPlayer = -1;
-			hook->m_HookState = HOOK_RETRACTED;
 			hook->m_pCurrentState = CHookRetracted::getInstance();
 			hook->m_HookPos = hook->m_pOwner->m_Pos;
 		}
@@ -63,7 +63,6 @@ void CHookGrabbed::Execute(CHook*hook, bool UseInput)
 			(hook->m_HookTick > SERVER_TICK_SPEED+SERVER_TICK_SPEED/5 || ! hook->m_pOwner->m_pWorld->m_apCharacters[hook->m_pOwner->m_HookedPlayer]))
 	{
 		hook->m_pOwner->m_HookedPlayer = -1;
-		hook->m_HookState = HOOK_RETRACTED;
 		hook->m_pCurrentState = CHookRetracted::getInstance();
 
 		hook->m_HookPos = hook->m_pOwner->m_Pos;

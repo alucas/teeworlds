@@ -7,15 +7,18 @@ class CHook;
 class CState
 {
 public:
-	//UseInput seems to be usefull only in hook_iddle;
+	//UseInput is usefull only in hook_iddle.
 	virtual void Execute(CHook*, bool UseInput)=0;
-	~CState(){}
+	int getState(){return m_HookState; }
 
 protected:
 	CState(){}
+	~CState(){}
+	//This int is used in the network protocol.
+	int m_HookState;
 
 private:
-	//Singleton
+	//Because all states are singleton.
 	CState(const CState &);
 	CState& operator=(const CState &);
 };

@@ -9,7 +9,6 @@ CHook::CHook(CCharacterCore *character)
 {
 	m_pOwner = character;
 	m_pCurrentState = CHookIdle::getInstance();
-	m_HookState = HOOK_IDLE;
 	m_HookPos = vec2(0,0);
 	m_HookDir = vec2(0,0);
 	m_TargetDirection = vec2(0,0);
@@ -27,7 +26,28 @@ void CHook::Reset()
 
 	m_HookTick = 0;
 	m_pCurrentState = CHookIdle::getInstance();
-	m_HookState = HOOK_IDLE;
+}
+
+void CHook::SetHookState(int state){
+	//this switch based on an int is necessary because of the network protocol.
+	switch(state)
+	{
+	case HOOK_IDLE:
+		m_pCurrentState = CHookIdle::getInstance();
+		break;
+
+	case HOOK_FLYING:
+		m_pCurrentState=CHookFlying::getInstance();
+		break;
+
+	case HOOK_GRABBED:
+		m_pCurrentState=CHookGrabbed::getInstance();
+		break;
+
+	case HOOK_RETRACTED:
+		m_pCurrentState=CHookRetracted::getInstance();
+		break;
+    }
 }
 
 void CHook::HookTick(bool useInput)
@@ -42,26 +62,5 @@ void CHook::HookTick(bool useInput)
 		}
 	}
 
-	//All the code below will be replaced by :
-	//m_pCurrentState->Execute(this,useInput);
-
-	if(m_HookState == HOOK_IDLE)
-	{
-		m_pCurrentState->Execute(this,useInput);
-	}
-	else if(m_HookState == HOOK_RETRACTED)
-	{
-		this->m_pCurrentState = CHookRetracted::getInstance();
-		this->m_pCurrentState->Execute(this, true);
-	}
-	else if(m_HookState == HOOK_FLYING)
-	{
-		m_pCurrentState = CHookFlying::getInstance();
-		m_pCurrentState->Execute(this, true);
-	}
-	else if(m_HookState == HOOK_GRABBED)
-	{
-		m_pCurrentState = CHookGrabbed::getInstance();
-		m_pCurrentState->Execute(this,true);
-	}
+	m_pCurrentState->Execute(this,useInput);
 }
