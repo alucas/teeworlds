@@ -11,6 +11,24 @@
 #include <engine/shared/protocol.h>
 #include <game/generated/protocol.h>
 
+//hooking stuff
+enum
+{
+	HOOK_RETRACTED=-1,
+	HOOK_IDLE=0,
+	HOOK_RETRACT_START=1,
+	HOOK_RETRACT_END=3,
+	HOOK_FLYING,
+	HOOK_GRABBED,
+
+	COREEVENT_GROUND_JUMP=0x01,
+	COREEVENT_AIR_JUMP=0x02,
+	COREEVENT_HOOK_LAUNCH=0x04,
+	COREEVENT_HOOK_ATTACH_PLAYER=0x08,
+	COREEVENT_HOOK_ATTACH_GROUND=0x10,
+	COREEVENT_HOOK_HIT_NOHOOK=0x20,
+	COREEVENT_HOOK_RETRACT=0x40,
+};
 
 class CTuneParam
 {
@@ -141,24 +159,6 @@ inline T SaturatedAdd(T Min, T Max, T Current, T Modifier)
 
 float VelocityRamp(float Value, float Start, float Range, float Curvature);
 
-// hooking stuff
-enum
-{
-	HOOK_RETRACTED=-1,
-	HOOK_IDLE=0,
-	HOOK_RETRACT_START=1,
-	HOOK_RETRACT_END=3,
-	HOOK_FLYING,
-	HOOK_GRABBED,
-	
-	COREEVENT_GROUND_JUMP=0x01,
-	COREEVENT_AIR_JUMP=0x02,
-	COREEVENT_HOOK_LAUNCH=0x04,
-	COREEVENT_HOOK_ATTACH_PLAYER=0x08,
-	COREEVENT_HOOK_ATTACH_GROUND=0x10,
-	COREEVENT_HOOK_HIT_NOHOOK=0x20,
-	COREEVENT_HOOK_RETRACT=0x40,
-};
 
 class CWorldCore
 {
@@ -172,18 +172,18 @@ public:
 	class CCharacterCore *m_apCharacters[MAX_CLIENTS];
 };
 
+class CHook;
+
 class CCharacterCore
 {
+public:
 	CWorldCore *m_pWorld;
 	CCollision *m_pCollision;
-public:
 	vec2 m_Pos;
 	vec2 m_Vel;
+	float m_PhysSize;
+	CHook *m_pHook;
 	
-	vec2 m_HookPos;
-	vec2 m_HookDir;
-	int m_HookTick;
-	int m_HookState;
 	int m_HookedPlayer;
 	
 	int m_Jumped;
@@ -202,6 +202,10 @@ public:
 	void Read(const CNetObj_CharacterCore *pObjCore);
 	void Write(CNetObj_CharacterCore *pObjCore);
 	void Quantize();
+
+	int GetHookState();
+	void setHookPosition(float x, float y);
+	void setHookDirection(float x, float y);
 };
 
 #endif
